@@ -1,0 +1,10 @@
+{
+  "name": "ipython-deps",
+  "version": "0.0.1",
+  "dependencies": {
+    "bootstrap": "2.3.1",
+    "less.js": "1.4.0-b2",
+    "marked": "0.2.8",
+    "jquery-ui": "1.10.2"
+  }
+}
