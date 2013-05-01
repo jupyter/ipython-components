@@ -1,3 +1,14 @@
 *.pyc
 *~
 __pycache__
+test
+tests
+node_modules
+demo
+doc
+docs
+man
+benchmark
+highlight.js/tools
+components/jquery-ui/themes/*
+!components/jquery-ui/themes/base
