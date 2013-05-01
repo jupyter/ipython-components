@@ -58,7 +58,17 @@ def nonbower():
 def postprocess():
     with lcd(pjoin(components_dir, "bootstrap")):
         local("npm install")
-        local("make")
+        local("make bootstrap-css")
+        local("make bootstrap-js")
+    
+    # build less
+    shutil.rmtree(pjoin(components_dir, "less.js", "dist"))
+    with lcd(pjoin(components_dir, "less.js")):
+        local("make less")
+    
+    # build highlight.js
+    with lcd(pjoin(components_dir, "highlight.js")):
+        local("python tools/build.py")
 
 def update():
     clean()
