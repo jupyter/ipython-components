@@ -1,5 +1,9 @@
-""" fabfile to prepare the notebook """
+"""fabfile to prepare IPython notebook dependencies
 
+via bower and bower-like process for non-bowerables
+"""
+
+import glob
 import json
 import os
 import tempfile
@@ -78,6 +82,9 @@ def postprocess():
     # build highlight.js
     with lcd(pjoin(components_dir, "highlight.js")):
         local("python tools/build.py")
+    
+    for toignore in glob.glob(pjoin(here, "*", ".gitignore")):
+        os.unlink(toignore)
 
 def update():
     clean()
