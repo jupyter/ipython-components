@@ -17,16 +17,25 @@ pjoin = os.path.join
 
 here = os.path.dirname(__file__)
 
-static_dir = here
-components_dir = pjoin(static_dir, 'components')
+components_dir = here
 
 def clean():
-    if os.path.exists(components_dir):
-        shutil.rmtree(components_dir)
+    for cfgfile in ("bower.json", "nonbower.json"):
+        with open(cfgfile) as f:
+            cfg = json.load(f)
+        
+        for name in cfg.get('dependencies', {}).keys():
+            d = pjoin(components_dir, name)
+            if os.path.exists(d):
+                print("removing %s" % d)
+                shutil.rmtree(d)
 
-def components():
+def dependencies():
+    local("npm install -g bower")
+
+def bower():
     """install components with bower"""
-    with lcd(static_dir):
+    with lcd(here):
         local('bower install')
 
 def nonbower():
@@ -72,6 +81,6 @@ def postprocess():
 
 def update():
     clean()
-    components()
+    bower()
     nonbower()
     postprocess()

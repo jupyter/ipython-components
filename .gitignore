@@ -10,9 +10,9 @@ docs
 man
 benchmark
 codemirror/mode/*/index.html
-components/highlight.js/tools
-components/jquery-ui/themes/*
-!components/jquery-ui/themes/base
+highlight.js/tools
+jquery-ui/themes/*
+!jquery-ui/themes/base
 
-components/less.js/lib
-components/less.js/build
+less.js/lib
+less.js/build
