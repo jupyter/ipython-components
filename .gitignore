@@ -18,3 +18,10 @@ requirejs/*.sh
 requirejs/dist
 
 less.js/build
+
+# is there a better way to express 'only this subtree'?
+font-awesome/build/*
+!font-awesome/build/assets
+font-awesome/build/assets/*
+!font-awesome/build/assets/font-awesome
+
