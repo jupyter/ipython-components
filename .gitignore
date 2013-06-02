@@ -14,4 +14,7 @@ highlight.js/tools
 jquery-ui/themes/*
 !jquery-ui/themes/base
 
+requirejs/*.sh
+requirejs/dist
+
 less.js/build
