@@ -14,6 +14,16 @@ highlight.js/tools
 jquery-ui/themes/*
 !jquery-ui/themes/smoothness
 
+# exclude jquery-ui sub-pieces
+jquery-ui/ui/*.js
+jquery-ui/ui/*/*.js
+jquery-ui/ui/*/*/*.js
+!jquery-ui/ui/jquery-ui.js
+!jquery-ui/ui/i18n/jquery-ui-i18n.js
+!jquery-ui/ui/minified/jquery-ui.min.js
+!jquery-ui/ui/minified/i18n/jquery-ui-i18n.min.js
+
+
 requirejs/*.sh
 requirejs/dist
 
