@@ -1,6 +1,6 @@
 {
   "name": "marked",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "repository": {
     "type": "git",
     "url": "git://github.com/chjj/marked.git"
