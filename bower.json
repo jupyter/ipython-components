@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "bootstrap": "~2.3",
-    "codemirror": "~3.13",
+    "codemirror": "~3.14",
     "font-awesome": "~3.1",
     "jquery": "~2.0",
     "jquery-ui": "~1.10",
