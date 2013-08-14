@@ -93,8 +93,10 @@
 
 .cm-invalidchar {color: #f00;}
 
-div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
-div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
+/* Add .selected selector here to only show matching bracket styling on the 
+   current cell. */
+.cell.selected div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
+.cell.selected div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
 /* STOP */
 
