@@ -7,6 +7,7 @@ node_modules
 demo
 doc
 docs
+examples
 man
 benchmark
 codemirror/mode/*/index.html
