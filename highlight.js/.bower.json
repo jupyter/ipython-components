@@ -9,6 +9,6 @@
     "commit": "0c7a69c80091fb23c55e4e56f84cf49406f22280"
   },
   "_source": "git://github.com/danielditgens/highlight.js.git",
-  "_target": "~7.3",
+  "_target": "~7",
   "_originalSource": "highlight.js"
 }

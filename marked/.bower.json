@@ -9,6 +9,6 @@
     "commit": "0d27d58f16e3aa478cbc89a9a304e592e2862c5a"
   },
   "_source": "git://github.com/chjj/marked.git",
-  "_target": "~0.2.8",
+  "_target": "~0.2",
   "_originalSource": "marked"
 }
