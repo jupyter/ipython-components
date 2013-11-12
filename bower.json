@@ -9,7 +9,6 @@
     "highlight.js": "~7",
     "jquery": "~2.0",
     "jquery-ui": "~1.10",
-    "less.js": "~1.4",
     "marked": "~0.2",
     "requirejs": "~2.1",
     "underscore": "~1.5"
