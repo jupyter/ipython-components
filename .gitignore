@@ -11,7 +11,7 @@ examples
 man
 benchmark
 codemirror/mode/*/index.html
-highlight.js/tools
+highlight.js/tools/*.jar
 jquery-ui/themes/*
 !jquery-ui/themes/smoothness
 
