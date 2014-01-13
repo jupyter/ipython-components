@@ -79,11 +79,6 @@ def postprocess():
     bins = glob.glob(pjoin(components_dir, "bootstrap", "node_modules", "*", "bin"))
     os.environ['PATH'] = os.pathsep.join(bins + [os.environ['PATH']])
     
-    # build less
-    shutil.rmtree(pjoin(components_dir, "less.js", "dist"))
-    with lcd(pjoin(components_dir, "less.js")):
-        local("make min")
-    
     # build highlight.js
     with lcd(pjoin(components_dir, "highlight.js")):
         local("python tools/build.py")
