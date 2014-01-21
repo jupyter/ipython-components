@@ -5,6 +5,7 @@
     "backbone": "~1.1",
     "bootstrap": "~2.3",
     "codemirror": "~3",
+    "d3": "~3",
     "font-awesome": "~3.1",
     "highlight.js": "~7",
     "jquery": "~2.0",
