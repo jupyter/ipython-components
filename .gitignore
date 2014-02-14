@@ -34,3 +34,7 @@ less.js/build
 font-awesome/src
 font-awesome/.ruby-version
 font-awesome/Gemfile*
+
+
+bootstrap-tour/src
+bootstrap-tour/build/*/*standalone*
