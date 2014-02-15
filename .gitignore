@@ -10,8 +10,23 @@ docs
 examples
 man
 benchmark
+CNAME
+.editorconfig
+_config.yml
+*/.travis.yml
+Gruntfile*
+.editorconfig
+component.json
+composer.json
+package.json
+
 codemirror/mode/*/index.html
+
 highlight.js/tools/*.jar
+
+# sizzle from jquery, for no reason
+sizzle
+
 jquery-ui/themes/*
 !jquery-ui/themes/smoothness
 
@@ -27,14 +42,6 @@ jquery-ui/ui/*/*/*.js
 
 requirejs/*.sh
 requirejs/dist
-
-less.js/build
-
-# is there a better way to express 'only this subtree'?
-font-awesome/src
-font-awesome/.ruby-version
-font-awesome/Gemfile*
-
 
 bootstrap-tour/src
 bootstrap-tour/build/*/*standalone*
