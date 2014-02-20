@@ -2,16 +2,16 @@
   "name": "ipython-deps",
   "version": "0.0.1",
   "dependencies": {
-    "backbone": "~1.1",
+    "backbone": "components/backbone#~1.1",
     "bootstrap": "~2.3",
+    "bootstrap-tour": "0.9.0",
     "codemirror": "~3",
-    "font-awesome": "~3.2",
+    "font-awesome": "components/font-awesome#~3.2",
     "highlight.js": "~7",
-    "jquery": "~2.0",
-    "jquery-ui": "~1.10",
+    "jquery": "components/jquery#~2.0",
+    "jquery-ui": "components/jqueryui#~1.10",
     "marked": "~0.2",
     "requirejs": "~2.1",
-    "underscore": "~1.5",
-    "bootstrap-tour": "0.9.0"
+    "underscore": "components/underscore#~1.5"
   }
 }
