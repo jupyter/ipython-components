@@ -11,7 +11,7 @@
     "highlight.js": "~7",
     "jquery": "components/jquery#~2.0",
     "jquery-ui": "components/jqueryui#~1.10",
-    "marked": "~0.2",
+    "marked": "~0.3",
     "requirejs": "~2.1",
     "underscore": "components/underscore#~1.5"
   }
