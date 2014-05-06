@@ -8,26 +8,21 @@
 
 (function() {
   function searchOverlay(query, caseInsensitive) {
-    var startChar;
-    if (typeof query == "string") {
-      startChar = query.charAt(0);
-      query = new RegExp("^" + query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),
-                         caseInsensitive ? "i" : "");
-    } else {
-      query = new RegExp("^(?:" + query.source + ")", query.ignoreCase ? "i" : "");
-    }
-    if (typeof query == "string") return {token: function(stream) {
-      if (stream.match(query)) return "searching";
-      stream.next();
-      stream.skipTo(query.charAt(0)) || stream.skipToEnd();
-    }};
+    if (typeof query == "string")
+      query = new RegExp(query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), caseInsensitive ? "gi" : "g");
+    else if (!query.global)
+      query = new RegExp(query.source, query.ignoreCase ? "gi" : "g");
+
     return {token: function(stream) {
-      if (stream.match(query)) return "searching";
-      while (!stream.eol()) {
-        stream.next();
-        if (startChar)
-          stream.skipTo(startChar) || stream.skipToEnd();
-        if (stream.match(query, false)) break;
+      query.lastIndex = stream.pos;
+      var match = query.exec(stream.string);
+      if (match && match.index == stream.pos) {
+        stream.pos += match[0].length;
+        return "searching";
+      } else if (match) {
+        stream.pos = match.index;
+      } else {
+        stream.skipToEnd();
       }
     }};
   }
@@ -74,7 +69,7 @@
         if (!query || state.query) return;
         state.query = parseQuery(query);
         cm.removeOverlay(state.overlay, queryCaseInsensitive(state.query));
-        state.overlay = searchOverlay(state.query);
+        state.overlay = searchOverlay(state.query, queryCaseInsensitive(state.query));
         cm.addOverlay(state.overlay);
         state.posFrom = state.posTo = cm.getCursor();
         findNext(cm, rev);
