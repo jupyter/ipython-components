@@ -19,6 +19,7 @@ Gruntfile*
 component.json
 composer.json
 package.json
+.DS_Store
 
 codemirror/mode/*/index.html
 
