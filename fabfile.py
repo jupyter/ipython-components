@@ -69,15 +69,6 @@ def nonbower():
         shutil.rmtree(pjoin(components_dir, name, '.git'))
 
 def postprocess():
-    with lcd(pjoin(components_dir, "bootstrap")):
-        local("npm install")
-        local("make bootstrap-css")
-        local("make bootstrap-js")
-    
-    # add bootsrap packages to the PATH
-    # (less.js needs uglify, which bootstrap just installed above)
-    bins = glob.glob(pjoin(components_dir, "bootstrap", "node_modules", "*", "bin"))
-    os.environ['PATH'] = os.pathsep.join(bins + [os.environ['PATH']])
     
     # build highlight.js
     with lcd(pjoin(components_dir, "highlight.js")):
