@@ -6,7 +6,7 @@
     "bootstrap": "components/bootstrap#~3.1",
     "bootstrap-tour": "0.9.0",
     "codemirror": "~3",
-    "font-awesome": "components/font-awesome#~3.2",
+    "font-awesome": "components/font-awesome#~4.1.0",
     "google-caja": "5669",
     "highlight.js": "~7",
     "jquery": "components/jquery#~2.0",
