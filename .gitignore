@@ -49,3 +49,9 @@ requirejs/dist
 
 bootstrap-tour/src
 bootstrap-tour/build/*/*standalone*
+
+moment/*
+!moment/moment.js
+!moment/min/
+moment/min/*
+!moment/min/moment.min.js
