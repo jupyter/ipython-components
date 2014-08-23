@@ -13,10 +13,10 @@
     "marked": "~0.3",
     "requirejs": "~2.1",
     "underscore": "components/underscore#~1.5",
-    "moment": "~2.7.0"
-    "codemirror": "~4.4.0"
+    "moment": "~2.7.0",
+    "codemirror": "~4.6.0"
   },
   "resolutions": {
-    "codemirror": "~4.4.0"
+    "codemirror": "~4.6.0"
   }
 }
