@@ -56,3 +56,8 @@ moment/*
 !moment/min/
 moment/min/*
 !moment/min/moment.min.js
+
+# We only need the utf8 implementation
+text-encoding/index.js
+text-encoding/lib/encoding-indexes.js
+
