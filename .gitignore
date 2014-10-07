@@ -66,3 +66,7 @@ term.js/example/
 term.js/index.js
 term.js/lib/
 term.js/.npmignore
+
+# Bootstrap-tags excludes
+bootstrap-tags/Guardfile
+bootstrap-tags/sass/*.scss

@@ -1,11 +1,12 @@
 {
   "name": "bootstrap-tags",
+  "version": "1.1.5",
   "homepage": "http://github.com/maxwells/bootstrap-tags",
   "bugs": "https://github.com/maxwells/bootstrap-tags/issues",
   "authors": [
     "Max Lahey <maxwellslahey@gmail.com>"
   ],
-  "description": "Bootstrap-themed jquery tag interface",
+  "description": "Boostrap-themed jquery tag interface",
   "main": [
     "dist/js/bootstrap-tags.js",
     "dist/css/bootstrap-tags.css"
@@ -32,13 +33,13 @@
   "scripts": {
     "test": "grunt jasmine"
   },
-  "_release": "b29420d14a",
+  "_release": "1.1.5",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "b29420d14a273bf18fce5063bb2a432381ca05d2"
+    "type": "version",
+    "tag": "1.1.5",
+    "commit": "893dd88dcc0d2c9fb1ee72b882830085ef748e7c"
   },
   "_source": "git://github.com/maxwells/bootstrap-tags.git",
-  "_target": "master",
+  "_target": "~1.1",
   "_originalSource": "bootstrap-tags"
 }
