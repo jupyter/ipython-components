@@ -61,3 +61,6 @@ moment/min/*
 text-encoding/index.js
 text-encoding/lib/encoding-indexes.js
 
+# Bootstrap-tags excludes
+bootstrap-tags/Guardfile
+bootstrap-tags/sass/*.scss
