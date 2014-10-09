@@ -5,7 +5,7 @@
     "backbone": "components/backbone#~1.1",
     "bootstrap": "components/bootstrap#~3.1",
     "bootstrap-tour": "0.9.0",
-    "font-awesome": "components/font-awesome#~4.1.0",
+    "font-awesome": "components/font-awesome#~4.2.0",
     "google-caja": "5669",
     "highlight.js": "~7",
     "jquery": "components/jquery#~2.0",
