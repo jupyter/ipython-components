@@ -61,3 +61,8 @@ moment/min/*
 text-encoding/index.js
 text-encoding/lib/encoding-indexes.js
 
+term.js/Makefile
+term.js/example/
+term.js/index.js
+term.js/lib/
+term.js/.npmignore
