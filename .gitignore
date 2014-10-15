@@ -27,8 +27,6 @@ google-caja/*.js
 !google-caja/html*sanitizer-bundle.js
 !google-caja/html*sanitizer-minified.js
 
-highlight.js/tools/*.jar
-
 # sizzle from jquery, for no reason
 sizzle
 

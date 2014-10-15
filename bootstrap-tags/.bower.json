@@ -40,6 +40,6 @@
     "commit": "893dd88dcc0d2c9fb1ee72b882830085ef748e7c"
   },
   "_source": "git://github.com/maxwells/bootstrap-tags.git",
-  "_target": "~1.1",
+  "_target": "1.1",
   "_originalSource": "bootstrap-tags"
 }
