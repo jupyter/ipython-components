@@ -29,7 +29,6 @@
     "commit": "7ee012e6931f3af4e606b833948f55946bdc53db"
   },
   "_source": "git://github.com/inexorabletash/text-encoding.git",
-  "_target": "~0.1.0",
-  "_originalSource": "text-encoding",
-  "_direct": true
+  "_target": "~0.1",
+  "_originalSource": "text-encoding"
 }
