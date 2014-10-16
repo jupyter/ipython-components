@@ -9,7 +9,7 @@
     "codemirror": "~4.6.0",
     "font-awesome": "components/font-awesome#~4.2.0",
     "google-caja": "5669",
-    "highlight.js": "~7",
+    "highlightjs": "~8",
     "jquery": "components/jquery#~2.0",
     "jquery-ui": "components/jqueryui#~1.10",
     "marked": "~0.3",
