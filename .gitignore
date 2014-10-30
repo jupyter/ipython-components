@@ -20,6 +20,7 @@ component.json
 composer.json
 package.json
 .DS_Store
+*/.bower.json
 
 codemirror/mode/*/index.html
 
@@ -56,6 +57,11 @@ moment/*
 !moment/min/
 moment/min/*
 !moment/min/moment.min.js
+
+#bootstrap excludes
+bootstrap/dist
+bootstrap/font
+bootstrap/grunt
 
 # We only need the utf8 implementation
 text-encoding/index.js
