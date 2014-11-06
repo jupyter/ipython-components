@@ -70,3 +70,5 @@ term.js/.npmignore
 # Bootstrap-tags excludes
 bootstrap-tags/Guardfile
 bootstrap-tags/sass/*.scss
+
+rsvp/rsvp.amd.js

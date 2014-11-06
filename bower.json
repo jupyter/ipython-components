@@ -4,7 +4,6 @@
   "dependencies": {
     "backbone": "components/backbone#~1.1",
     "bootstrap": "components/bootstrap#~3.1",
-    "bootstrap-tags": "1.1",
     "bootstrap-tour": "0.9.0",
     "codemirror": "~4",
     "font-awesome": "components/font-awesome#~4.2.0",
@@ -15,6 +14,7 @@
     "marked": "~0.3",
     "moment": "~2.7.0",
     "requirejs": "~2.1",
+    "rsvp": "~3.0",
     "term.js": "chjj/term.js#~0.0.4",
     "text-encoding": "~0.1",
     "underscore": "components/underscore#~1.5"
