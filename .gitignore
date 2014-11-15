@@ -50,6 +50,40 @@ requirejs/dist
 bootstrap-tour/src
 bootstrap-tour/build/*/*standalone*
 
+## MathJax exclusions (mathjax starts huge)
+# ref: https://github.com/mathjax/MathJax-docs/wiki/Guide%3A-reducing-size-of-a-mathjax-installation
+
+# remove totally unused stuff:
+mathjax/CONTRIBUTING.md
+mathjax/README-branch.txt
+mathjax/docs
+mathjax/test
+mathjax/unpacked
+
+# only ship AMS_HTML-full config
+mathjax/config/*
+!mathjax/config/TeX-AMS_HTML-full.js
+
+# only STIX-Web fonts
+mathjax/fonts/HTML-CSS/*
+!mathjax/fonts/HTML-CSS/STIX-Web
+mathjax/fonts/HTML-CSS/STIX-Web/*
+!mathjax/fonts/HTML-CSS/STIX-Web/woff
+mathjax/jax/output/HTML-CSS/fonts/*
+!mathjax/jax/output/HTML-CSS/fonts/STIX-Web
+
+# only English localization
+mathjax/localization/*
+!mathjax/localization/en
+# only TeX input
+mathjax/jax/input/*
+!mathjax/jax/input/TeX
+
+# only HTML-CSS output
+mathjax/jax/output/*
+!mathjax/jax/output/HTML-CSS
+
+
 moment/*
 !moment/moment.js
 !moment/min/

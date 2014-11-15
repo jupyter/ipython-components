@@ -12,6 +12,7 @@
     "jquery": "components/jquery#~2.0",
     "jquery-ui": "components/jqueryui#~1.10",
     "marked": "~0.3",
+    "mathjax": "mathjax/MathJax#~2.4.0",
     "moment": "~2.7.0",
     "requirejs": "~2.1",
     "term.js": "chjj/term.js#~0.0.4",
