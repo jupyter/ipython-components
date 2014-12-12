@@ -21,6 +21,7 @@ composer.json
 package.json
 .DS_Store
 .bower.json
+*/.gitignore
 
 codemirror/mode/*/index.html
 
@@ -55,6 +56,10 @@ moment/*
 !moment/min/
 moment/min/*
 !moment/min/moment.min.js
+
+#bootstrap excludes
+bootstrap/css
+bootstrap/fonts/*.svg
 
 # We only need the utf8 implementation
 text-encoding/index.js
