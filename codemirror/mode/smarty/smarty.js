@@ -5,17 +5,17 @@
  * Smarty 2 and 3 mode.
  */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("smarty", function(config) {
+CodeMirror.defineMode("smarty", config => {
   "use strict";
 
   // our default settings; check to see if they're overridden
@@ -43,11 +43,11 @@ CodeMirror.defineMode("smarty", function(config) {
   };
 
   var helpers = {
-    cont: function(style, lastType) {
+    cont(style, lastType) {
       last = lastType;
       return style;
     },
-    chain: function(stream, state, parser) {
+    chain(stream, state, parser) {
       state.tokenize = parser;
       return parser(stream, state);
     }
@@ -58,7 +58,7 @@ CodeMirror.defineMode("smarty", function(config) {
   var parsers = {
 
     // the main tokenizer
-    tokenizer: function(stream, state) {
+    tokenizer(stream, state) {
       if (stream.match(settings.leftDelimiter, true)) {
         if (stream.eat("*")) {
           return helpers.chain(stream, state, parsers.inBlock("comment", "*" + settings.rightDelimiter));
@@ -83,7 +83,7 @@ CodeMirror.defineMode("smarty", function(config) {
     },
 
     // parsing Smarty content
-    smarty: function(stream, state) {
+    smarty(stream, state) {
       if (stream.match(settings.rightDelimiter, true)) {
         if (settings.smartyVersion === 3) {
           state.depth--;
@@ -166,8 +166,8 @@ CodeMirror.defineMode("smarty", function(config) {
       }
     },
 
-    inAttribute: function(quote) {
-      return function(stream, state) {
+    inAttribute(quote) {
+      return (stream, state) => {
         var prevChar = null;
         var currChar = null;
         while (!stream.eol()) {
@@ -182,8 +182,8 @@ CodeMirror.defineMode("smarty", function(config) {
       };
     },
 
-    inBlock: function(style, terminator) {
-      return function(stream, state) {
+    inBlock(style, terminator) {
+      return (stream, state) => {
         while (!stream.eol()) {
           if (stream.match(terminator)) {
             state.tokenize = parsers.tokenizer;
@@ -199,7 +199,7 @@ CodeMirror.defineMode("smarty", function(config) {
 
   // the public API for CodeMirror
   return {
-    startState: function() {
+    startState() {
       return {
         tokenize: parsers.tokenizer,
         mode: "smarty",
@@ -207,7 +207,7 @@ CodeMirror.defineMode("smarty", function(config) {
         depth: 0
       };
     },
-    token: function(stream, state) {
+    token(stream, state) {
       var style = state.tokenize(stream, state);
       state.last = last;
       return style;

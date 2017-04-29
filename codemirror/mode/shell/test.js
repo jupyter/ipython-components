@@ -1,7 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function() {
+((() => {
   var mode = CodeMirror.getMode({}, "shell");
   function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
@@ -55,4 +55,4 @@
      "[builtin ls] [attribute -l] [attribute --human-readable]");
   MT("operator",
      "[def var][operator =]value");
-})();
+}))();

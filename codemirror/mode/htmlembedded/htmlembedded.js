@@ -1,24 +1,26 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../htmlmixed/htmlmixed"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
-
+CodeMirror.defineMode("htmlembedded", (config, parserConfig) => {
   //config settings
-  var scriptStartRegex = parserConfig.scriptStartRegex || /^<%/i,
-      scriptEndRegex = parserConfig.scriptEndRegex || /^%>/i;
+  var scriptStartRegex = parserConfig.scriptStartRegex || /^<%/i;
+
+  var scriptEndRegex = parserConfig.scriptEndRegex || /^%>/i;
 
   //inner modes
-  var scriptingMode, htmlMixedMode;
+  var scriptingMode;
+
+  var htmlMixedMode;
 
   //tokenizer when in html mode
   function htmlDispatch(stream, state) {
@@ -42,7 +44,7 @@ CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
 
 
   return {
-    startState: function() {
+    startState() {
       scriptingMode = scriptingMode || CodeMirror.getMode(config, parserConfig.scriptingModeSpec);
       htmlMixedMode = htmlMixedMode || CodeMirror.getMode(config, "htmlmixed");
       return {
@@ -52,18 +54,18 @@ CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
       };
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       return state.token(stream, state);
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       if (state.token == htmlDispatch)
         return htmlMixedMode.indent(state.htmlState, textAfter);
       else if (scriptingMode.indent)
         return scriptingMode.indent(state.scriptState, textAfter);
     },
 
-    copyState: function(state) {
+    copyState(state) {
       return {
        token : state.token,
        htmlState : CodeMirror.copyState(htmlMixedMode, state.htmlState),
@@ -71,7 +73,7 @@ CodeMirror.defineMode("htmlembedded", function(config, parserConfig) {
       };
     },
 
-    innerMode: function(state) {
+    innerMode(state) {
       if (state.token == scriptingDispatch) return {state: state.scriptState, mode: scriptingMode};
       else return {state: state.htmlState, mode: htmlMixedMode};
     }

@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode('z80', function() {
+CodeMirror.defineMode('z80', () => {
   var keywords1 = /^(exx?|(ld|cp|in)([di]r?)?|pop|push|ad[cd]|cpl|daa|dec|inc|neg|sbc|sub|and|bit|[cs]cf|x?or|res|set|r[lr]c?a?|r[lr]d|s[lr]a|srl|djnz|nop|rst|[de]i|halt|im|ot[di]r|out[di]?)\b/i;
   var keywords2 = /^(call|j[pr]|ret[in]?)\b/i;
   var keywords3 = /^b_?(call|jump)\b/i;
@@ -21,10 +21,10 @@ CodeMirror.defineMode('z80', function() {
   var numbers = /^([\da-f]+h|[0-7]+o|[01]+b|\d+)\b/i;
 
   return {
-    startState: function() {
+    startState() {
       return {context: 0};
     },
-    token: function(stream, state) {
+    token(stream, state) {
       if (!stream.column())
         state.context = 0;
 

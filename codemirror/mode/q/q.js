@@ -1,24 +1,25 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("q",function(config){
-  var indentUnit=config.indentUnit,
-      curPunc,
-      keywords=buildRE(["abs","acos","aj","aj0","all","and","any","asc","asin","asof","atan","attr","avg","avgs","bin","by","ceiling","cols","cor","cos","count","cov","cross","csv","cut","delete","deltas","desc","dev","differ","distinct","div","do","each","ej","enlist","eval","except","exec","exit","exp","fby","fills","first","fkeys","flip","floor","from","get","getenv","group","gtime","hclose","hcount","hdel","hopen","hsym","iasc","idesc","if","ij","in","insert","inter","inv","key","keys","last","like","list","lj","load","log","lower","lsq","ltime","ltrim","mavg","max","maxs","mcount","md5","mdev","med","meta","min","mins","mmax","mmin","mmu","mod","msum","neg","next","not","null","or","over","parse","peach","pj","plist","prd","prds","prev","prior","rand","rank","ratios","raze","read0","read1","reciprocal","reverse","rload","rotate","rsave","rtrim","save","scan","select","set","setenv","show","signum","sin","sqrt","ss","ssr","string","sublist","sum","sums","sv","system","tables","tan","til","trim","txf","type","uj","ungroup","union","update","upper","upsert","value","var","view","views","vs","wavg","where","where","while","within","wj","wj1","wsum","xasc","xbar","xcol","xcols","xdesc","xexp","xgroup","xkey","xlog","xprev","xrank"]),
-      E=/[|/&^!+:\\\-*%$=~#;@><,?_\'\"\[\(\]\)\s{}]/;
+CodeMirror.defineMode("q",config => {
+  var indentUnit=config.indentUnit;
+  var curPunc;
+  var keywords=buildRE(["abs","acos","aj","aj0","all","and","any","asc","asin","asof","atan","attr","avg","avgs","bin","by","ceiling","cols","cor","cos","count","cov","cross","csv","cut","delete","deltas","desc","dev","differ","distinct","div","do","each","ej","enlist","eval","except","exec","exit","exp","fby","fills","first","fkeys","flip","floor","from","get","getenv","group","gtime","hclose","hcount","hdel","hopen","hsym","iasc","idesc","if","ij","in","insert","inter","inv","key","keys","last","like","list","lj","load","log","lower","lsq","ltime","ltrim","mavg","max","maxs","mcount","md5","mdev","med","meta","min","mins","mmax","mmin","mmu","mod","msum","neg","next","not","null","or","over","parse","peach","pj","plist","prd","prds","prev","prior","rand","rank","ratios","raze","read0","read1","reciprocal","reverse","rload","rotate","rsave","rtrim","save","scan","select","set","setenv","show","signum","sin","sqrt","ss","ssr","string","sublist","sum","sums","sv","system","tables","tan","til","trim","txf","type","uj","ungroup","union","update","upper","upsert","value","var","view","views","vs","wavg","where","where","while","within","wj","wj1","wsum","xasc","xbar","xcol","xcols","xdesc","xexp","xgroup","xkey","xlog","xprev","xrank"]);
+  var E=/[|/&^!+:\\\-*%$=~#;@><,?_\'\"\[\(\]\)\s{}]/;
   function buildRE(w){return new RegExp("^("+w.join("|")+")$");}
   function tokenBase(stream,state){
-    var sol=stream.sol(),c=stream.next();
+    var sol=stream.sol();
+    var c=stream.next();
     curPunc=null;
     if(sol)
       if(c=="/")
@@ -71,7 +72,9 @@ CodeMirror.defineMode("q",function(config){
   }
   function tokenCommentToEOF(stream){return stream.skipToEnd(),"comment";}
   function tokenString(stream,state){
-    var escaped=false,next,end=false;
+    var escaped=false;
+    var next;
+    var end=false;
     while((next=stream.next())){
       if(next=="\""&&!escaped){end=true;break;}
       escaped=!escaped&&next=="\\";
@@ -79,16 +82,16 @@ CodeMirror.defineMode("q",function(config){
     if(end)state.tokenize=tokenBase;
     return"string";
   }
-  function pushContext(state,type,col){state.context={prev:state.context,indent:state.indent,col:col,type:type};}
+  function pushContext(state,type,col){state.context={prev:state.context,indent:state.indent,col,type};}
   function popContext(state){state.indent=state.context.indent;state.context=state.context.prev;}
-  return{
-    startState:function(){
+  return {
+    startState() {
       return{tokenize:tokenBase,
              context:null,
              indent:0,
              col:0};
     },
-    token:function(stream,state){
+    token(stream, state) {
       if(stream.sol()){
         if(state.context&&state.context.align==null)
           state.context.align=false;
@@ -117,7 +120,7 @@ CodeMirror.defineMode("q",function(config){
       }
       return style;
     },
-    indent:function(state,textAfter){
+    indent(state, textAfter) {
       var firstChar=textAfter&&textAfter.charAt(0);
       var context=state.context;
       if(/[\]\}]/.test(firstChar))

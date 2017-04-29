@@ -1,7 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"),
         require("../../addon/mode/overlay"));
@@ -10,10 +10,10 @@
             "../../addon/mode/overlay"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
-  CodeMirror.defineMode("tornado:inner", function() {
+  CodeMirror.defineMode("tornado:inner", () => {
     var keywords = ["and","as","assert","autoescape","block","break","class","comment","context",
                     "continue","datetime","def","del","elif","else","end","escape","except",
                     "exec","extends","false","finally","for","from","global","if","import","in",
@@ -36,7 +36,7 @@
       if (close == "{") {
         close = "}";
       }
-      return function (stream, state) {
+      return (stream, state) => {
         var ch = stream.next();
         if ((ch == close) && stream.eat("}")) {
           state.tokenize = tokenBase;
@@ -49,16 +49,16 @@
       };
     }
     return {
-      startState: function () {
+      startState() {
         return {tokenize: tokenBase};
       },
-      token: function (stream, state) {
+      token(stream, state) {
         return state.tokenize(stream, state);
       }
     };
   });
 
-  CodeMirror.defineMode("tornado", function(config) {
+  CodeMirror.defineMode("tornado", config => {
     var htmlBase = CodeMirror.getMode(config, "text/html");
     var tornadoInner = CodeMirror.getMode(config, "tornado:inner");
     return CodeMirror.overlayMode(htmlBase, tornadoInner);

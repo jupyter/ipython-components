@@ -3,7 +3,7 @@ if (typeof module !== "undefined" && module.exports) {
   this["encoding-indexes"] = require("./encoding-indexes.js")["encoding-indexes"];
 }
 
-(function(global) {
+((global => {
   'use strict';
 
   //
@@ -58,13 +58,11 @@ if (typeof module !== "undefined" && module.exports) {
      * @this {ByteInputStream}
      * @return {number} Get the next byte from the stream.
      */
-    this.get = function() {
-      return (pos >= bytes.length) ? EOF_byte : Number(bytes[pos]);
-    };
+    this.get = () => (pos >= bytes.length) ? EOF_byte : Number(bytes[pos]);
 
     /** @param {number} n Number (positive or negative) by which to
      *      offset the byte pointer. */
-    this.offset = function(n) {
+    this.offset = n => {
       pos += n;
       if (pos < 0) {
         throw new Error('Seeking past start of the buffer');
@@ -79,7 +77,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @return {boolean} True if the start of the stream matches the test
      *     bytes.
      */
-    this.match = function(test) {
+    this.match = test => {
       if (test.length > pos + bytes.length) {
         return false;
       }
@@ -129,8 +127,11 @@ if (typeof module !== "undefined" && module.exports) {
     function stringToCodePoints(string) {
       /** @type {Array.<number>} */
       var cps = [];
+
       // Based on http://www.w3.org/TR/WebIDL/#idl-DOMString
-      var i = 0, n = string.length;
+      var i = 0;
+
+      var n = string.length;
       while (i < string.length) {
         var c = string.charCodeAt(i);
         if (!inRange(c, 0xD800, 0xDFFF)) {
@@ -164,7 +165,7 @@ if (typeof module !== "undefined" && module.exports) {
 
     /** @param {number} n The number of bytes (positive or negative)
      *      to advance the code point pointer by.*/
-    this.offset = function(n) {
+    this.offset = n => {
       pos += n;
       if (pos < 0) {
         throw new Error('Seeking past start of the buffer');
@@ -176,7 +177,7 @@ if (typeof module !== "undefined" && module.exports) {
 
 
     /** @return {number} Get the next code point from the stream. */
-    this.get = function() {
+    this.get = () => {
       if (pos >= cps.length) {
         return EOF_code_point;
       }
@@ -192,12 +193,10 @@ if (typeof module !== "undefined" && module.exports) {
     var string = '';
 
     /** @return {string} The accumulated string. */
-    this.string = function() {
-      return string;
-    };
+    this.string = () => string;
 
     /** @param {number} c The code point to encode into the stream. */
-    this.emit = function(c) {
+    this.emit = c => {
       if (c <= 0xFFFF) {
         string += String.fromCharCode(c);
       } else {
@@ -710,10 +709,10 @@ if (typeof module !== "undefined" && module.exports) {
 
   var name_to_encoding = {};
   var label_to_encoding = {};
-  encodings.forEach(function(category) {
-    category['encodings'].forEach(function(encoding) {
+  encodings.forEach(category => {
+    category['encodings'].forEach(encoding => {
       name_to_encoding[encoding['name']] = encoding;
-      encoding['labels'].forEach(function(label) {
+      encoding['labels'].forEach(label => {
         label_to_encoding[label] = encoding;
       });
     });
@@ -764,9 +763,9 @@ if (typeof module !== "undefined" && module.exports) {
     if ((pointer > 39419 && pointer < 189000) || (pointer > 1237575)) {
       return null;
     }
-    var /** @type {number} */ offset = 0,
-        /** @type {number} */ code_point_offset = 0,
-        /** @type {Array.<Array.<number>>} */ idx = index('gb18030');
+    var /** @type {number} */ offset = 0;
+    var /** @type {number} */ code_point_offset = 0;
+    var /** @type {Array.<Array.<number>>} */ idx = index('gb18030');
     var i;
     for (i = 0; i < idx.length; ++i) {
       var entry = idx[i];
@@ -786,9 +785,9 @@ if (typeof module !== "undefined" && module.exports) {
    *     gb18030 index.
    */
   function indexGB18030PointerFor(code_point) {
-    var /** @type {number} */ offset = 0,
-        /** @type {number} */ pointer_offset = 0,
-        /** @type {Array.<Array.<number>>} */ idx = index('gb18030');
+    var /** @type {number} */ offset = 0;
+    var /** @type {number} */ pointer_offset = 0;
+    var /** @type {Array.<Array.<number>>} */ idx = index('gb18030');
     var i;
     for (i = 0; i < idx.length; ++i) {
       var entry = idx[i];
@@ -843,7 +842,7 @@ if (typeof module !== "undefined" && module.exports) {
     if (Object.defineProperty) {
       Object.defineProperty(
           this, 'encoding',
-          { get: function() { return this._encoding.name; } });
+          { get() { return this._encoding.name; } });
     } else {
       this.encoding = this._encoding.name;
     }
@@ -951,7 +950,7 @@ if (typeof module !== "undefined" && module.exports) {
     if (Object.defineProperty) {
       Object.defineProperty(
           this, 'encoding',
-          { get: function() { return this._encoding.name; } });
+          { get() { return this._encoding.name; } });
     } else {
       this.encoding = this._encoding.name;
     }
@@ -1004,17 +1003,17 @@ if (typeof module !== "undefined" && module.exports) {
    */
   function UTF8Decoder(options) {
     var fatal = options.fatal;
-    var /** @type {number} */ utf8_code_point = 0,
-        /** @type {number} */ utf8_bytes_needed = 0,
-        /** @type {number} */ utf8_bytes_seen = 0,
-        /** @type {number} */ utf8_lower_boundary = 0;
+    var /** @type {number} */ utf8_code_point = 0;
+    var /** @type {number} */ utf8_bytes_needed = 0;
+    var /** @type {number} */ utf8_bytes_seen = 0;
+    var /** @type {number} */ utf8_lower_boundary = 0;
 
     /**
      * @param {ByteInputStream} byte_pointer The byte stream to decode.
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte) {
         if (utf8_bytes_needed !== 0) {
@@ -1043,7 +1042,7 @@ if (typeof module !== "undefined" && module.exports) {
         } else {
           return decoderError(fatal);
         }
-        utf8_code_point = utf8_code_point * Math.pow(64, utf8_bytes_needed);
+        utf8_code_point = utf8_code_point * (64 ** utf8_bytes_needed);
         return null;
       }
       if (!inRange(bite, 0x80, 0xBF)) {
@@ -1056,7 +1055,7 @@ if (typeof module !== "undefined" && module.exports) {
       }
       utf8_bytes_seen += 1;
       utf8_code_point = utf8_code_point + (bite - 0x80) *
-          Math.pow(64, utf8_bytes_needed - utf8_bytes_seen);
+          (64 ** (utf8_bytes_needed - utf8_bytes_seen));
       if (utf8_bytes_seen !== utf8_bytes_needed) {
         return null;
       }
@@ -1085,7 +1084,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       /** @type {number} */
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
@@ -1098,7 +1097,8 @@ if (typeof module !== "undefined" && module.exports) {
       if (inRange(code_point, 0x0000, 0x007f)) {
         return output_byte_stream.emit(code_point);
       }
-      var count, offset;
+      var count;
+      var offset;
       if (inRange(code_point, 0x0080, 0x07FF)) {
         count = 1;
         offset = 0xC0;
@@ -1110,9 +1110,9 @@ if (typeof module !== "undefined" && module.exports) {
         offset = 0xF0;
       }
       var result = output_byte_stream.emit(
-          div(code_point, Math.pow(64, count)) + offset);
+          div(code_point, 64 ** count) + offset);
       while (count > 0) {
-        var temp = div(code_point, Math.pow(64, count - 1));
+        var temp = div(code_point, 64 ** (count - 1));
         result = output_byte_stream.emit(0x80 + (temp % 64));
         count -= 1;
       }
@@ -1121,13 +1121,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['utf-8'].getEncoder = function(options) {
-    return new UTF8Encoder(options);
-  };
+  name_to_encoding['utf-8'].getEncoder = options => new UTF8Encoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['utf-8'].getDecoder = function(options) {
-    return new UTF8Decoder(options);
-  };
+  name_to_encoding['utf-8'].getDecoder = options => new UTF8Decoder(options);
 
   //
   // 9. Legacy single-byte encodings
@@ -1145,7 +1141,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte) {
         return EOF_code_point;
@@ -1174,7 +1170,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -1191,25 +1187,21 @@ if (typeof module !== "undefined" && module.exports) {
     };
   }
 
-  (function() {
+  ((() => {
     if (!('encoding-indexes' in global))
       return;
-    encodings.forEach(function(category) {
+    encodings.forEach(category => {
       if (category['heading'] !== 'Legacy single-byte encodings')
         return;
-      category['encodings'].forEach(function(encoding) {
+      category['encodings'].forEach(encoding => {
         var idx = index(encoding['name']);
         /** @param {{fatal: boolean}} options */
-        encoding.getDecoder = function(options) {
-          return new SingleByteDecoder(idx, options);
-        };
+        encoding.getDecoder = options => new SingleByteDecoder(idx, options);
         /** @param {{fatal: boolean}} options */
-        encoding.getEncoder = function(options) {
-          return new SingleByteEncoder(idx, options);
-        };
+        encoding.getEncoder = options => new SingleByteEncoder(idx, options);
       });
     });
-  }());
+  })());
 
   //
   // 10. Legacy multi-byte Chinese (simplified) encodings
@@ -1223,15 +1215,15 @@ if (typeof module !== "undefined" && module.exports) {
    */
   function GB18030Decoder(options) {
     var fatal = options.fatal;
-    var /** @type {number} */ gb18030_first = 0x00,
-        /** @type {number} */ gb18030_second = 0x00,
-        /** @type {number} */ gb18030_third = 0x00;
+    var /** @type {number} */ gb18030_first = 0x00;
+    var /** @type {number} */ gb18030_second = 0x00;
+    var /** @type {number} */ gb18030_third = 0x00;
     /**
      * @param {ByteInputStream} byte_pointer The byte stream to decode.
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte && gb18030_first === 0x00 &&
           gb18030_second === 0x00 && gb18030_third === 0x00) {
@@ -1319,7 +1311,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -1350,13 +1342,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['gb18030'].getEncoder = function(options) {
-    return new GB18030Encoder(options);
-  };
+  name_to_encoding['gb18030'].getEncoder = options => new GB18030Encoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['gb18030'].getDecoder = function(options) {
-    return new GB18030Decoder(options);
-  };
+  name_to_encoding['gb18030'].getDecoder = options => new GB18030Decoder(options);
 
   // 10.2 hz-gb-2312
 
@@ -1366,14 +1354,14 @@ if (typeof module !== "undefined" && module.exports) {
    */
   function HZGB2312Decoder(options) {
     var fatal = options.fatal;
-    var /** @type {boolean} */ hzgb2312 = false,
-        /** @type {number} */ hzgb2312_lead = 0x00;
+    var /** @type {boolean} */ hzgb2312 = false;
+    var /** @type {number} */ hzgb2312_lead = 0x00;
     /**
      * @param {ByteInputStream} byte_pointer The byte stream to decode.
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte && hzgb2312_lead === 0x00) {
         return EOF_code_point;
@@ -1452,7 +1440,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -1488,13 +1476,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['hz-gb-2312'].getEncoder = function(options) {
-    return new HZGB2312Encoder(options);
-  };
+  name_to_encoding['hz-gb-2312'].getEncoder = options => new HZGB2312Encoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['hz-gb-2312'].getDecoder = function(options) {
-    return new HZGB2312Decoder(options);
-  };
+  name_to_encoding['hz-gb-2312'].getDecoder = options => new HZGB2312Decoder(options);
 
   //
   // 11. Legacy multi-byte Chinese (traditional) encodings
@@ -1508,15 +1492,15 @@ if (typeof module !== "undefined" && module.exports) {
    */
   function Big5Decoder(options) {
     var fatal = options.fatal;
-    var /** @type {number} */ big5_lead = 0x00,
-        /** @type {?number} */ big5_pending = null;
+    var /** @type {number} */ big5_lead = 0x00;
+    var /** @type {?number} */ big5_pending = null;
 
     /**
      * @param {ByteInputStream} byte_pointer The byte steram to decode.
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       // NOTE: Hack to support emitting two code points
       if (big5_pending !== null) {
         var pending = big5_pending;
@@ -1588,7 +1572,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -1612,13 +1596,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['big5'].getEncoder = function(options) {
-    return new Big5Encoder(options);
-  };
+  name_to_encoding['big5'].getEncoder = options => new Big5Encoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['big5'].getDecoder = function(options) {
-    return new Big5Decoder(options);
-  };
+  name_to_encoding['big5'].getDecoder = options => new Big5Decoder(options);
 
 
   //
@@ -1633,14 +1613,14 @@ if (typeof module !== "undefined" && module.exports) {
    */
   function EUCJPDecoder(options) {
     var fatal = options.fatal;
-    var /** @type {number} */ eucjp_first = 0x00,
-        /** @type {number} */ eucjp_second = 0x00;
+    var /** @type {number} */ eucjp_first = 0x00;
+    var /** @type {number} */ eucjp_second = 0x00;
     /**
      * @param {ByteInputStream} byte_pointer The byte stream to decode.
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte) {
         if (eucjp_first === 0x00 && eucjp_second === 0x00) {
@@ -1652,7 +1632,8 @@ if (typeof module !== "undefined" && module.exports) {
       }
       byte_pointer.offset(1);
 
-      var lead, code_point;
+      var lead;
+      var code_point;
       if (eucjp_second !== 0x00) {
         lead = eucjp_second;
         eucjp_second = 0x00;
@@ -1716,7 +1697,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -1746,13 +1727,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['euc-jp'].getEncoder = function(options) {
-    return new EUCJPEncoder(options);
-  };
+  name_to_encoding['euc-jp'].getEncoder = options => new EUCJPEncoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['euc-jp'].getDecoder = function(options) {
-    return new EUCJPDecoder(options);
-  };
+  name_to_encoding['euc-jp'].getDecoder = options => new EUCJPDecoder(options);
 
   // 12.2 iso-2022-jp
 
@@ -1772,15 +1749,15 @@ if (typeof module !== "undefined" && module.exports) {
       trail: 5,
       Katakana: 6
     };
-    var /** @type {number} */ iso2022jp_state = state.ASCII,
-        /** @type {boolean} */ iso2022jp_jis0212 = false,
-        /** @type {number} */ iso2022jp_lead = 0x00;
+    var /** @type {number} */ iso2022jp_state = state.ASCII;
+    var /** @type {boolean} */ iso2022jp_jis0212 = false;
+    var /** @type {number} */ iso2022jp_lead = 0x00;
     /**
      * @param {ByteInputStream} byte_pointer The byte stream to decode.
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite !== EOF_byte) {
         byte_pointer.offset(1);
@@ -1922,7 +1899,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -1969,13 +1946,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['iso-2022-jp'].getEncoder = function(options) {
-    return new ISO2022JPEncoder(options);
-  };
+  name_to_encoding['iso-2022-jp'].getEncoder = options => new ISO2022JPEncoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['iso-2022-jp'].getDecoder = function(options) {
-    return new ISO2022JPDecoder(options);
-  };
+  name_to_encoding['iso-2022-jp'].getDecoder = options => new ISO2022JPDecoder(options);
 
   // 12.3 shift_jis
 
@@ -1991,7 +1964,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte && shiftjis_lead === 0x00) {
         return EOF_code_point;
@@ -2042,7 +2015,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -2073,13 +2046,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['shift_jis'].getEncoder = function(options) {
-    return new ShiftJISEncoder(options);
-  };
+  name_to_encoding['shift_jis'].getEncoder = options => new ShiftJISEncoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['shift_jis'].getDecoder = function(options) {
-    return new ShiftJISDecoder(options);
-  };
+  name_to_encoding['shift_jis'].getDecoder = options => new ShiftJISDecoder(options);
 
   //
   // 13. Legacy multi-byte Korean encodings
@@ -2099,7 +2068,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte && euckr_lead === 0) {
         return EOF_code_point;
@@ -2165,7 +2134,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -2178,7 +2147,8 @@ if (typeof module !== "undefined" && module.exports) {
       if (pointer === null) {
         return encoderError(code_point);
       }
-      var lead, trail;
+      var lead;
+      var trail;
       if (pointer < ((26 + 26 + 126) * (0xC7 - 0x81))) {
         lead = div(pointer, (26 + 26 + 126)) + 0x81;
         trail = pointer % (26 + 26 + 126);
@@ -2193,13 +2163,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['euc-kr'].getEncoder = function(options) {
-    return new EUCKREncoder(options);
-  };
+  name_to_encoding['euc-kr'].getEncoder = options => new EUCKREncoder(options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['euc-kr'].getDecoder = function(options) {
-    return new EUCKRDecoder(options);
-  };
+  name_to_encoding['euc-kr'].getDecoder = options => new EUCKRDecoder(options);
 
 
   //
@@ -2219,14 +2185,14 @@ if (typeof module !== "undefined" && module.exports) {
    */
   function UTF16Decoder(utf16_be, options) {
     var fatal = options.fatal;
-    var /** @type {?number} */ utf16_lead_byte = null,
-        /** @type {?number} */ utf16_lead_surrogate = null;
+    var /** @type {?number} */ utf16_lead_byte = null;
+    var /** @type {?number} */ utf16_lead_surrogate = null;
     /**
      * @param {ByteInputStream} byte_pointer The byte stream to decode.
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte && utf16_lead_byte === null &&
           utf16_lead_surrogate === null) {
@@ -2281,7 +2247,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       /**
        * @param {number} code_unit
        * @return {number} last byte emitted
@@ -2314,23 +2280,15 @@ if (typeof module !== "undefined" && module.exports) {
 
   // 14.3 utf-16be
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['utf-16be'].getEncoder = function(options) {
-    return new UTF16Encoder(true, options);
-  };
+  name_to_encoding['utf-16be'].getEncoder = options => new UTF16Encoder(true, options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['utf-16be'].getDecoder = function(options) {
-    return new UTF16Decoder(true, options);
-  };
+  name_to_encoding['utf-16be'].getDecoder = options => new UTF16Decoder(true, options);
 
   // 14.4 utf-16le
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['utf-16le'].getEncoder = function(options) {
-    return new UTF16Encoder(false, options);
-  };
+  name_to_encoding['utf-16le'].getEncoder = options => new UTF16Encoder(false, options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['utf-16le'].getDecoder = function(options) {
-    return new UTF16Decoder(false, options);
-  };
+  name_to_encoding['utf-16le'].getDecoder = options => new UTF16Decoder(false, options);
 
   // 14.5 x-user-defined
 
@@ -2345,7 +2303,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @return {?number} The next code point decoded, or null if not enough
      *     data exists in the input stream to decode a complete code point.
      */
-    this.decode = function(byte_pointer) {
+    this.decode = byte_pointer => {
       var bite = byte_pointer.get();
       if (bite === EOF_byte) {
         return EOF_code_point;
@@ -2369,7 +2327,7 @@ if (typeof module !== "undefined" && module.exports) {
      * @param {CodePointInputStream} code_point_pointer Input stream.
      * @return {number} The last byte emitted.
      */
-    this.encode = function(output_byte_stream, code_point_pointer) {
+    this.encode = (output_byte_stream, code_point_pointer) => {
       var code_point = code_point_pointer.get();
       if (code_point === EOF_code_point) {
         return EOF_byte;
@@ -2386,13 +2344,9 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['x-user-defined'].getEncoder = function(options) {
-    return new XUserDefinedEncoder(false, options);
-  };
+  name_to_encoding['x-user-defined'].getEncoder = options => new XUserDefinedEncoder(false, options);
   /** @param {{fatal: boolean}} options */
-  name_to_encoding['x-user-defined'].getDecoder = function(options) {
-    return new XUserDefinedDecoder(false, options);
-  };
+  name_to_encoding['x-user-defined'].getDecoder = options => new XUserDefinedDecoder(false, options);
 
   // NOTE: currently unused
   /**
@@ -2417,4 +2371,4 @@ if (typeof module !== "undefined" && module.exports) {
 
   if (!('TextEncoder' in global)) global['TextEncoder'] = TextEncoder;
   if (!('TextDecoder' in global)) global['TextDecoder'] = TextDecoder;
-}(this));
+})(this));

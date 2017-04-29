@@ -1,19 +1,19 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode('tiki', function(config) {
+CodeMirror.defineMode('tiki', config => {
   function inBlock(style, terminator, returnTokenizer) {
-    return function(stream, state) {
+    return (stream, state) => {
       while (!stream.eol()) {
         if (stream.match(terminator)) {
           state.tokenize = inText;
@@ -29,7 +29,7 @@ CodeMirror.defineMode('tiki', function(config) {
   }
 
   function inLine(style) {
-    return function(stream, state) {
+    return (stream, state) => {
       while(!stream.eol()) {
         stream.next();
       }
@@ -140,7 +140,9 @@ CodeMirror.defineMode('tiki', function(config) {
   var indentUnit = config.indentUnit;
 
   // Return variables for tokenizers
-  var pluginName, type;
+  var pluginName;
+
+  var type;
   function inPlugin(stream, state) {
     var ch = stream.next();
     var peek = stream.peek();
@@ -176,7 +178,7 @@ CodeMirror.defineMode('tiki', function(config) {
   }
 
   function inAttribute(quote) {
-    return function(stream, state) {
+    return (stream, state) => {
       while (!stream.eol()) {
         if (stream.next() == quote) {
           state.tokenize = inPlugin;
@@ -188,7 +190,7 @@ CodeMirror.defineMode('tiki', function(config) {
   }
 
   function inAttributeNoQuote() {
-    return function(stream, state) {
+    return (stream, state) => {
       while (!stream.eol()) {
         var ch = stream.next();
         var peek = stream.peek();
@@ -201,121 +203,122 @@ CodeMirror.defineMode('tiki', function(config) {
 };
                      }
 
-var curState, setStyle;
-function pass() {
-  for (var i = arguments.length - 1; i >= 0; i--) curState.cc.push(arguments[i]);
-}
-
-function cont() {
-  pass.apply(null, arguments);
-  return true;
-}
-
-function pushContext(pluginName, startOfLine) {
-  var noIndent = curState.context && curState.context.noIndent;
-  curState.context = {
-    prev: curState.context,
-    pluginName: pluginName,
-    indent: curState.indented,
-    startOfLine: startOfLine,
-    noIndent: noIndent
-  };
-}
-
-function popContext() {
-  if (curState.context) curState.context = curState.context.prev;
-}
-
-function element(type) {
-  if (type == "openPlugin") {curState.pluginName = pluginName; return cont(attributes, endplugin(curState.startOfLine));}
-  else if (type == "closePlugin") {
-    var err = false;
-    if (curState.context) {
-      err = curState.context.pluginName != pluginName;
-      popContext();
-    } else {
-      err = true;
-    }
-    if (err) setStyle = "error";
-    return cont(endcloseplugin(err));
+  var curState;
+  var setStyle;
+  function pass(...args) {
+    for (var i = args.length - 1; i >= 0; i--) curState.cc.push(args[i]);
   }
-  else if (type == "string") {
-    if (!curState.context || curState.context.name != "!cdata") pushContext("!cdata");
-    if (curState.tokenize == inText) popContext();
-    return cont();
+
+  function cont(...args) {
+    pass(...args);
+    return true;
   }
-  else return cont();
-}
 
-function endplugin(startOfLine) {
-  return function(type) {
-    if (
-      type == "selfclosePlugin" ||
-        type == "endPlugin"
-    )
-      return cont();
-    if (type == "endPlugin") {pushContext(curState.pluginName, startOfLine); return cont();}
-    return cont();
-  };
-}
+  function pushContext(pluginName, startOfLine) {
+    var noIndent = curState.context && curState.context.noIndent;
+    curState.context = {
+      prev: curState.context,
+      pluginName,
+      indent: curState.indented,
+      startOfLine,
+      noIndent
+    };
+  }
 
-function endcloseplugin(err) {
-  return function(type) {
-    if (err) setStyle = "error";
-    if (type == "endPlugin") return cont();
-    return pass();
-  };
-}
+  function popContext() {
+    if (curState.context) curState.context = curState.context.prev;
+  }
 
-function attributes(type) {
-  if (type == "keyword") {setStyle = "attribute"; return cont(attributes);}
-  if (type == "equals") return cont(attvalue, attributes);
-  return pass();
-}
-function attvalue(type) {
-  if (type == "keyword") {setStyle = "string"; return cont();}
-  if (type == "string") return cont(attvaluemaybe);
-  return pass();
-}
-function attvaluemaybe(type) {
-  if (type == "string") return cont(attvaluemaybe);
-  else return pass();
-}
-return {
-  startState: function() {
-    return {tokenize: inText, cc: [], indented: 0, startOfLine: true, pluginName: null, context: null};
-  },
-  token: function(stream, state) {
-    if (stream.sol()) {
-      state.startOfLine = true;
-      state.indented = stream.indentation();
-    }
-    if (stream.eatSpace()) return null;
-
-    setStyle = type = pluginName = null;
-    var style = state.tokenize(stream, state);
-    if ((style || type) && style != "comment") {
-      curState = state;
-      while (true) {
-        var comb = state.cc.pop() || element;
-        if (comb(type || style)) break;
+  function element(type) {
+    if (type == "openPlugin") {curState.pluginName = pluginName; return cont(attributes, endplugin(curState.startOfLine));}
+    else if (type == "closePlugin") {
+      var err = false;
+      if (curState.context) {
+        err = curState.context.pluginName != pluginName;
+        popContext();
+      } else {
+        err = true;
       }
+      if (err) setStyle = "error";
+      return cont(endcloseplugin(err));
     }
-    state.startOfLine = false;
-    return setStyle || style;
-  },
-  indent: function(state, textAfter) {
-    var context = state.context;
-    if (context && context.noIndent) return 0;
-    if (context && /^{\//.test(textAfter))
-        context = context.prev;
-        while (context && !context.startOfLine)
+    else if (type == "string") {
+      if (!curState.context || curState.context.name != "!cdata") pushContext("!cdata");
+      if (curState.tokenize == inText) popContext();
+      return cont();
+    }
+    else return cont();
+  }
+
+  function endplugin(startOfLine) {
+    return type => {
+      if (
+        type == "selfclosePlugin" ||
+          type == "endPlugin"
+      )
+        return cont();
+      if (type == "endPlugin") {pushContext(curState.pluginName, startOfLine); return cont();}
+      return cont();
+    };
+  }
+
+  function endcloseplugin(err) {
+    return type => {
+      if (err) setStyle = "error";
+      if (type == "endPlugin") return cont();
+      return pass();
+    };
+  }
+
+  function attributes(type) {
+    if (type == "keyword") {setStyle = "attribute"; return cont(attributes);}
+    if (type == "equals") return cont(attvalue, attributes);
+    return pass();
+  }
+  function attvalue(type) {
+    if (type == "keyword") {setStyle = "string"; return cont();}
+    if (type == "string") return cont(attvaluemaybe);
+    return pass();
+  }
+  function attvaluemaybe(type) {
+    if (type == "string") return cont(attvaluemaybe);
+    else return pass();
+  }
+  return {
+    startState() {
+      return {tokenize: inText, cc: [], indented: 0, startOfLine: true, pluginName: null, context: null};
+    },
+    token(stream, state) {
+      if (stream.sol()) {
+        state.startOfLine = true;
+        state.indented = stream.indentation();
+      }
+      if (stream.eatSpace()) return null;
+
+      setStyle = type = pluginName = null;
+      var style = state.tokenize(stream, state);
+      if ((style || type) && style != "comment") {
+        curState = state;
+        while (true) {
+          var comb = state.cc.pop() || element;
+          if (comb(type || style)) break;
+        }
+      }
+      state.startOfLine = false;
+      return setStyle || style;
+    },
+    indent(state, textAfter) {
+      var context = state.context;
+      if (context && context.noIndent) return 0;
+      if (context && /^{\//.test(textAfter))
           context = context.prev;
-        if (context) return context.indent + indentUnit;
-        else return 0;
-       },
-    electricChars: "/"
-  };
+          while (context && !context.startOfLine)
+            context = context.prev;
+          if (context) return context.indent + indentUnit;
+          else return 0;
+         },
+      electricChars: "/"
+    };
 });
 
 CodeMirror.defineMIME("text/tiki", "tiki");

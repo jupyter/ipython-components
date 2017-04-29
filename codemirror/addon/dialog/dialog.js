@@ -3,14 +3,14 @@
 
 // Open simple dialogs on top of an editor. Relies on dialog.css.
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   function dialogDiv(cm, template, bottom) {
     var wrap = cm.getWrapperElement();
     var dialog;
@@ -40,7 +40,8 @@
     closeNotification(this, null);
 
     var dialog = dialogDiv(this, template, options.bottom);
-    var closed = false, me = this;
+    var closed = false;
+    var me = this;
     function close(newVal) {
       if (typeof newVal == 'string') {
         inp.value = newVal;
@@ -54,7 +55,8 @@
       }
     }
 
-    var inp = dialog.getElementsByTagName("input")[0], button;
+    var inp = dialog.getElementsByTagName("input")[0];
+    var button;
     if (inp) {
       if (options.value) {
         inp.value = options.value;
@@ -62,11 +64,11 @@
       }
 
       if (options.onInput)
-        CodeMirror.on(inp, "input", function(e) { options.onInput(e, inp.value, close);});
+        CodeMirror.on(inp, "input", e => { options.onInput(e, inp.value, close);});
       if (options.onKeyUp)
-        CodeMirror.on(inp, "keyup", function(e) {options.onKeyUp(e, inp.value, close);});
+        CodeMirror.on(inp, "keyup", e => {options.onKeyUp(e, inp.value, close);});
 
-      CodeMirror.on(inp, "keydown", function(e) {
+      CodeMirror.on(inp, "keydown", e => {
         if (options && options.onKeyDown && options.onKeyDown(e, inp.value, close)) { return; }
         if (e.keyCode == 27 || (options.closeOnEnter !== false && e.keyCode == 13)) {
           inp.blur();
@@ -80,7 +82,7 @@
 
       inp.focus();
     } else if (button = dialog.getElementsByTagName("button")[0]) {
-      CodeMirror.on(button, "click", function() {
+      CodeMirror.on(button, "click", () => {
         close();
         me.focus();
       });
@@ -96,7 +98,9 @@
     closeNotification(this, null);
     var dialog = dialogDiv(this, template, options && options.bottom);
     var buttons = dialog.getElementsByTagName("button");
-    var closed = false, me = this, blurring = 1;
+    var closed = false;
+    var me = this;
+    var blurring = 1;
     function close() {
       if (closed) return;
       closed = true;
@@ -106,18 +110,18 @@
     buttons[0].focus();
     for (var i = 0; i < buttons.length; ++i) {
       var b = buttons[i];
-      (function(callback) {
-        CodeMirror.on(b, "click", function(e) {
+      ((callback => {
+        CodeMirror.on(b, "click", e => {
           CodeMirror.e_preventDefault(e);
           close();
           if (callback) callback(me);
         });
-      })(callbacks[i]);
-      CodeMirror.on(b, "blur", function() {
+      }))(callbacks[i]);
+      CodeMirror.on(b, "blur", () => {
         --blurring;
-        setTimeout(function() { if (blurring <= 0) close(); }, 200);
+        setTimeout(() => { if (blurring <= 0) close(); }, 200);
       });
-      CodeMirror.on(b, "focus", function() { ++blurring; });
+      CodeMirror.on(b, "focus", () => { ++blurring; });
     }
   });
 
@@ -132,7 +136,8 @@
   CodeMirror.defineExtension("openNotification", function(template, options) {
     closeNotification(this, close);
     var dialog = dialogDiv(this, template, options && options.bottom);
-    var closed = false, doneTimer;
+    var closed = false;
+    var doneTimer;
     var duration = options && typeof options.duration !== "undefined" ? options.duration : 5000;
 
     function close() {
@@ -142,7 +147,7 @@
       dialog.parentNode.removeChild(dialog);
     }
 
-    CodeMirror.on(dialog, 'click', function(e) {
+    CodeMirror.on(dialog, 'click', e => {
       CodeMirror.e_preventDefault(e);
       close();
     });

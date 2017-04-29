@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("fortran", function() {
+CodeMirror.defineMode("fortran", () => {
   function words(array) {
     var keys = {};
     for (var i = 0; i < array.length; ++i) {
@@ -153,8 +153,10 @@ CodeMirror.defineMode("fortran", function() {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
-      var escaped = false, next, end = false;
+    return (stream, state) => {
+      var escaped = false;
+      var next;
+      var end = false;
       while ((next = stream.next()) != null) {
         if (next == quote && !escaped) {
             end = true;
@@ -170,11 +172,11 @@ CodeMirror.defineMode("fortran", function() {
   // Interface
 
   return {
-    startState: function() {
+    startState() {
       return {tokenize: null};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.eatSpace()) return null;
       var style = (state.tokenize || tokenBase)(stream, state);
       if (style == "comment" || style == "meta") return style;

@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
   var GUTTER_ID = "CodeMirror-lint-markers";
 
@@ -35,7 +35,7 @@
     if (!tt.parentNode) return;
     if (tt.style.opacity == null) rm(tt);
     tt.style.opacity = 0;
-    setTimeout(function() { rm(tt); }, 600);
+    setTimeout(() => { rm(tt); }, 600);
   }
 
   function showTooltipFor(e, content, node) {
@@ -44,7 +44,7 @@
       CodeMirror.off(node, "mouseout", hide);
       if (tooltip) { hideTooltip(tooltip); tooltip = null; }
     }
-    var poll = setInterval(function() {
+    var poll = setInterval(() => {
       if (tooltip) for (var n = node;; n = n.parentNode) {
         if (n && n.nodeType == 11) n = n.host;
         if (n == document.body) return;
@@ -60,7 +60,7 @@
     this.options = options;
     this.timeout = null;
     this.hasGutter = hasGutter;
-    this.onMouseOver = function(e) { onMouseOver(cm, e); };
+    this.onMouseOver = e => { onMouseOver(cm, e); };
   }
 
   function parseOptions(cm, options) {
@@ -80,14 +80,15 @@
   }
 
   function makeMarker(labels, severity, multiple, tooltips) {
-    var marker = document.createElement("div"), inner = marker;
+    var marker = document.createElement("div");
+    var inner = marker;
     marker.className = "CodeMirror-lint-marker-" + severity;
     if (multiple) {
       inner = marker.appendChild(document.createElement("div"));
       inner.className = "CodeMirror-lint-marker-multiple";
     }
 
-    if (tooltips != false) CodeMirror.on(inner, "mouseover", function(e) {
+    if (tooltips != false) CodeMirror.on(inner, "mouseover", e => {
       showTooltipFor(e, labels, inner);
     });
 
@@ -102,7 +103,8 @@
   function groupByLine(annotations) {
     var lines = [];
     for (var i = 0; i < annotations.length; ++i) {
-      var ann = annotations[i], line = ann.from.line;
+      var ann = annotations[i];
+      var line = ann.from.line;
       (lines[line] || (lines[line] = [])).push(ann);
     }
     return lines;
@@ -118,7 +120,8 @@
   }
 
   function startLinting(cm) {
-    var state = cm.state.lint, options = state.options;
+    var state = cm.state.lint;
+    var options = state.options;
     var passOptions = options.options || options; // Support deprecated passing of `options` property in options
     if (options.async || options.getAnnotations.async)
       options.getAnnotations(cm.getValue(), updateLinting, passOptions, cm);
@@ -128,7 +131,8 @@
 
   function updateLinting(cm, annotationsNotSorted) {
     clearMarks(cm);
-    var state = cm.state.lint, options = state.options;
+    var state = cm.state.lint;
+    var options = state.options;
 
     var annotations = groupByLine(annotationsNotSorted);
 
@@ -164,7 +168,7 @@
   function onChange(cm) {
     var state = cm.state.lint;
     clearTimeout(state.timeout);
-    state.timeout = setTimeout(function(){startLinting(cm);}, state.options.delay || 500);
+    state.timeout = setTimeout(() => {startLinting(cm);}, state.options.delay || 500);
   }
 
   function popupSpanTooltip(ann, e) {
@@ -175,7 +179,9 @@
   function onMouseOver(cm, e) {
     var target = e.target || e.srcElement;
     if (!/\bCodeMirror-lint-mark-/.test(target.className)) return;
-    var box = target.getBoundingClientRect(), x = (box.left + box.right) / 2, y = (box.top + box.bottom) / 2;
+    var box = target.getBoundingClientRect();
+    var x = (box.left + box.right) / 2;
+    var y = (box.top + box.bottom) / 2;
     var spans = cm.findMarksAt(cm.coordsChar({left: x, top: y}, "client"));
     for (var i = 0; i < spans.length; ++i) {
       var ann = spans[i].__annotation;
@@ -183,7 +189,7 @@
     }
   }
 
-  CodeMirror.defineOption("lint", false, function(cm, val, old) {
+  CodeMirror.defineOption("lint", false, (cm, val, old) => {
     if (old && old != CodeMirror.Init) {
       clearMarks(cm);
       cm.off("change", onChange);
@@ -192,7 +198,8 @@
     }
 
     if (val) {
-      var gutters = cm.getOption("gutters"), hasLintGutter = false;
+      var gutters = cm.getOption("gutters");
+      var hasLintGutter = false;
       for (var i = 0; i < gutters.length; ++i) if (gutters[i] == GUTTER_ID) hasLintGutter = true;
       var state = cm.state.lint = new LintState(cm, parseOptions(cm, val), hasLintGutter);
       cm.on("change", onChange);

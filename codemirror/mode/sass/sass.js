@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("sass", function(config) {
+CodeMirror.defineMode("sass", config => {
   function tokenRegexp(words) {
     return new RegExp("^" + words.join("|"));
   }
@@ -46,7 +46,7 @@ CodeMirror.defineMode("sass", function(config) {
     }
   }
   function comment(indentation, multiLine) {
-    return function(stream, state) {
+    return (stream, state) => {
       if (stream.sol() && stream.indentation() <= indentation) {
         state.tokenizer = tokenBase;
         return tokenBase(stream, state);
@@ -91,7 +91,7 @@ CodeMirror.defineMode("sass", function(config) {
   }
 
   function buildInterpolationTokenizer(currentTokenizer) {
-    return function(stream, state) {
+    return (stream, state) => {
       if (stream.peek() === "}") {
         stream.next();
         state.tokenizer = currentTokenizer;
@@ -384,7 +384,7 @@ CodeMirror.defineMode("sass", function(config) {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {
         tokenizer: tokenBase,
         scopes: [{offset: 0, type: "sass"}],
@@ -395,15 +395,15 @@ CodeMirror.defineMode("sass", function(config) {
         definedMixins: []
       };
     },
-    token: function(stream, state) {
+    token(stream, state) {
       var style = tokenLexer(stream, state);
 
-      state.lastToken = { style: style, content: stream.current() };
+      state.lastToken = { style, content: stream.current() };
 
       return style;
     },
 
-    indent: function(state) {
+    indent(state) {
       return state.scopes[0].offset;
     }
   };

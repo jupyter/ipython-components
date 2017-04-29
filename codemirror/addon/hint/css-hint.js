@@ -1,26 +1,29 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../../mode/css/css"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../../mode/css/css"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var pseudoClasses = {link: 1, visited: 1, active: 1, hover: 1, focus: 1,
                        "first-letter": 1, "first-line": 1, "first-child": 1,
                        before: 1, after: 1, lang: 1};
 
-  CodeMirror.registerHelper("hint", "css", function(cm) {
-    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+  CodeMirror.registerHelper("hint", "css", cm => {
+    var cur = cm.getCursor();
+    var token = cm.getTokenAt(cur);
     var inner = CodeMirror.innerMode(cm.getMode(), token.state);
     if (inner.mode.name != "css") return;
 
-    var start = token.start, end = cur.ch, word = token.string.slice(0, end - start);
+    var start = token.start;
+    var end = cur.ch;
+    var word = token.string.slice(0, end - start);
     if (/[^\w$_-]/.test(word)) {
       word = ""; start = end = cur.ch;
     }

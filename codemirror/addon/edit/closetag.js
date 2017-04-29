@@ -25,23 +25,23 @@
  * See demos/closetag.html for a usage example.
  */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../fold/xml-fold"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../fold/xml-fold"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
-  CodeMirror.defineOption("autoCloseTags", false, function(cm, val, old) {
+}))(CodeMirror => {
+  CodeMirror.defineOption("autoCloseTags", false, (cm, val, old) => {
     if (old != CodeMirror.Init && old)
       cm.removeKeyMap("autoCloseTags");
     if (!val) return;
     var map = {name: "autoCloseTags"};
     if (typeof val != "object" || val.whenClosing)
-      map["'/'"] = function(cm) { return autoCloseSlash(cm); };
+      map["'/'"] = cm => autoCloseSlash(cm);
     if (typeof val != "object" || val.whenOpening)
-      map["'>'"] = function(cm) { return autoCloseGT(cm); };
+      map["'>'"] = cm => autoCloseGT(cm);
     cm.addKeyMap(map);
   });
 
@@ -52,14 +52,18 @@
 
   function autoCloseGT(cm) {
     if (cm.getOption("disableInput")) return CodeMirror.Pass;
-    var ranges = cm.listSelections(), replacements = [];
+    var ranges = cm.listSelections();
+    var replacements = [];
     for (var i = 0; i < ranges.length; i++) {
       if (!ranges[i].empty()) return CodeMirror.Pass;
-      var pos = ranges[i].head, tok = cm.getTokenAt(pos);
-      var inner = CodeMirror.innerMode(cm.getMode(), tok.state), state = inner.state;
+      var pos = ranges[i].head;
+      var tok = cm.getTokenAt(pos);
+      var inner = CodeMirror.innerMode(cm.getMode(), tok.state);
+      var state = inner.state;
       if (inner.mode.name != "xml" || !state.tagName) return CodeMirror.Pass;
 
-      var opt = cm.getOption("autoCloseTags"), html = inner.mode.configuration == "html";
+      var opt = cm.getOption("autoCloseTags");
+      var html = inner.mode.configuration == "html";
       var dontCloseTags = (typeof opt == "object" && opt.dontCloseTags) || (html && htmlDontClose);
       var indentTags = (typeof opt == "object" && opt.indentTags) || (html && htmlIndent);
 
@@ -76,7 +80,7 @@
         return CodeMirror.Pass;
 
       var indent = indentTags && indexOf(indentTags, lowerTagName) > -1;
-      replacements[i] = {indent: indent,
+      replacements[i] = {indent,
                          text: ">" + (indent ? "\n\n" : "") + "</" + tagName + ">",
                          newPos: indent ? CodeMirror.Pos(pos.line + 1, 0) : CodeMirror.Pos(pos.line, pos.ch + 1)};
     }
@@ -95,12 +99,15 @@
   }
 
   function autoCloseCurrent(cm, typingSlash) {
-    var ranges = cm.listSelections(), replacements = [];
+    var ranges = cm.listSelections();
+    var replacements = [];
     var head = typingSlash ? "/" : "</";
     for (var i = 0; i < ranges.length; i++) {
       if (!ranges[i].empty()) return CodeMirror.Pass;
-      var pos = ranges[i].head, tok = cm.getTokenAt(pos);
-      var inner = CodeMirror.innerMode(cm.getMode(), tok.state), state = inner.state;
+      var pos = ranges[i].head;
+      var tok = cm.getTokenAt(pos);
+      var inner = CodeMirror.innerMode(cm.getMode(), tok.state);
+      var state = inner.state;
       if (typingSlash && (tok.type == "string" || tok.string.charAt(0) != "<" ||
                           tok.start != pos.ch - 1))
         return CodeMirror.Pass;
@@ -134,7 +141,7 @@
     return autoCloseCurrent(cm, true);
   }
 
-  CodeMirror.commands.closeTag = function(cm) { return autoCloseCurrent(cm); };
+  CodeMirror.commands.closeTag = cm => autoCloseCurrent(cm);
 
   function indexOf(collection, elt) {
     if (collection.indexOf) return collection.indexOf(elt);

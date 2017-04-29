@@ -12,17 +12,17 @@
 // Warning: Don't base other modes on this one. This here is a
 // terrible way to write a mixed mode.
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"), require("../smarty/smarty"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../htmlmixed/htmlmixed", "../smarty/smarty"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("smartymixed", function(config) {
+CodeMirror.defineMode("smartymixed", config => {
   var htmlMixedMode = CodeMirror.getMode(config, "htmlmixed");
   var smartyMode = CodeMirror.getMode(config, "smarty");
 
@@ -40,7 +40,8 @@ CodeMirror.defineMode("smartymixed", function(config) {
 
   function reEsc(str) { return str.replace(/[^\s\w]/g, "\\$&"); }
 
-  var reLeft = reEsc(settings.leftDelimiter), reRight = reEsc(settings.rightDelimiter);
+  var reLeft = reEsc(settings.leftDelimiter);
+  var reRight = reEsc(settings.rightDelimiter);
   var regs = {
     smartyComment: new RegExp("^" + reRight + "\\*"),
     literalOpen: new RegExp(reLeft + "literal" + reRight),
@@ -50,22 +51,22 @@ CodeMirror.defineMode("smartymixed", function(config) {
   };
 
   var helpers = {
-    chain: function(stream, state, parser) {
+    chain(stream, state, parser) {
       state.tokenize = parser;
       return parser(stream, state);
     },
 
-    cleanChain: function(stream, state, parser) {
+    cleanChain(stream, state, parser) {
       state.tokenize = null;
       state.localState = null;
       state.localMode = null;
       return (typeof parser == "string") ? (parser ? parser : null) : parser(stream, state);
     },
 
-    maybeBackup: function(stream, pat, style) {
+    maybeBackup(stream, pat, style) {
       var cur = stream.current();
-      var close = cur.search(pat),
-      m;
+      var close = cur.search(pat);
+      var m;
       if (close > - 1) stream.backUp(cur.length - close);
       else if (m = cur.match(/<\/?$/)) {
         stream.backUp(cur.length);
@@ -76,7 +77,7 @@ CodeMirror.defineMode("smartymixed", function(config) {
   };
 
   var parsers = {
-    html: function(stream, state) {
+    html(stream, state) {
       var htmlTagName = state.htmlMixedState.htmlState.context && state.htmlMixedState.htmlState.context.tagName
         ? state.htmlMixedState.htmlState.context.tagName
         : null;
@@ -95,7 +96,7 @@ CodeMirror.defineMode("smartymixed", function(config) {
       return htmlMixedMode.token(stream, state.htmlMixedState);
     },
 
-    smarty: function(stream, state) {
+    smarty(stream, state) {
       if (stream.match(settings.leftDelimiter, false)) {
         if (stream.match(regs.smartyComment, false)) {
           return helpers.chain(stream, state, parsers.inBlock("comment", "*" + settings.rightDelimiter));
@@ -111,8 +112,8 @@ CodeMirror.defineMode("smartymixed", function(config) {
       return helpers.maybeBackup(stream, settings.rightDelimiter, smartyMode.token(stream, state.localState));
     },
 
-    inBlock: function(style, terminator) {
-      return function(stream, state) {
+    inBlock(style, terminator) {
+      return (stream, state) => {
         while (!stream.eol()) {
           if (stream.match(terminator)) {
             helpers.cleanChain(stream, state, "");
@@ -126,7 +127,7 @@ CodeMirror.defineMode("smartymixed", function(config) {
   };
 
   return {
-    startState: function() {
+    startState() {
       var state = htmlMixedMode.startState();
       return {
         token: parsers.html,
@@ -138,8 +139,9 @@ CodeMirror.defineMode("smartymixed", function(config) {
       };
     },
 
-    copyState: function(state) {
-      var local = null, tok = (state.tokenize || state.token);
+    copyState(state) {
+      var local = null;
+      var tok = (state.tokenize || state.token);
       if (state.localState) {
         local = CodeMirror.copyState((tok != parsers.html ? smartyMode : htmlMixedMode), state.localState);
       }
@@ -153,7 +155,7 @@ CodeMirror.defineMode("smartymixed", function(config) {
       };
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.match(settings.leftDelimiter, false)) {
         if (!state.inLiteral && stream.match(regs.literalOpen, true)) {
           state.inLiteral = true;
@@ -173,7 +175,7 @@ CodeMirror.defineMode("smartymixed", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       if (state.localMode == smartyMode
           || (state.inLiteral && !state.localMode)
          || regs.hasLeftDelimeter.test(textAfter)) {
@@ -182,7 +184,7 @@ CodeMirror.defineMode("smartymixed", function(config) {
       return htmlMixedMode.indent(state.htmlMixedState, textAfter);
     },
 
-    innerMode: function(state) {
+    innerMode(state) {
       return {
         state: state.localState || state.htmlMixedState,
         mode: state.localMode || htmlMixedMode

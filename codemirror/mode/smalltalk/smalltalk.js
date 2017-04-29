@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode('smalltalk', function(config) {
+CodeMirror.defineMode('smalltalk', config => {
 
   var specialChars = /[+\-\/\\*~<>=@%|&?!.,:;^]/;
   var keywords = /true|false|nil|self|super|thisContext/;
@@ -38,7 +38,7 @@ CodeMirror.defineMode('smalltalk', function(config) {
     this.userIndentationDelta = indentation > 0 ? (indentation / config.indentUnit - this.indentation) : 0;
   };
 
-  var next = function(stream, context, state) {
+  var next = (stream, context, state) => {
     var token = new Token(null, context, false);
     var aChar = stream.next();
 
@@ -99,22 +99,22 @@ CodeMirror.defineMode('smalltalk', function(config) {
     return token;
   };
 
-  var nextComment = function(stream, context) {
+  var nextComment = (stream, context) => {
     stream.eatWhile(/[^"]/);
     return new Token('comment', stream.eat('"') ? context.parent : context, true);
   };
 
-  var nextString = function(stream, context) {
+  var nextString = (stream, context) => {
     stream.eatWhile(/[^']/);
     return new Token('string', stream.eat('\'') ? context.parent : context, false);
   };
 
-  var nextSymbol = function(stream, context) {
+  var nextSymbol = (stream, context) => {
     stream.eatWhile(/[^']/);
     return new Token('string-2', stream.eat('\'') ? context.parent : context, false);
   };
 
-  var nextTemporaries = function(stream, context) {
+  var nextTemporaries = (stream, context) => {
     var token = new Token(null, context, false);
     var aChar = stream.next();
 
@@ -131,11 +131,11 @@ CodeMirror.defineMode('smalltalk', function(config) {
   };
 
   return {
-    startState: function() {
+    startState() {
       return new State;
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       state.userIndent(stream.indentation());
 
       if (stream.eatSpace()) {
@@ -149,11 +149,11 @@ CodeMirror.defineMode('smalltalk', function(config) {
       return token.name;
     },
 
-    blankLine: function(state) {
+    blankLine(state) {
       state.userIndent(0);
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       var i = state.context.next === next && textAfter && textAfter.charAt(0) === ']' ? -1 : state.userIndentationDelta;
       return (state.indentation + i) * config.indentUnit;
     },

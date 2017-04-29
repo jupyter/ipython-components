@@ -5,22 +5,29 @@
  * Author: Gautam Mehta
  * Branched from CodeMirror's Scheme mode
  */
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("cobol", function () {
-  var BUILTIN = "builtin", COMMENT = "comment", STRING = "string",
-      ATOM = "atom", NUMBER = "number", KEYWORD = "keyword", MODTAG = "header",
-      COBOLLINENUM = "def", PERIOD = "link";
+CodeMirror.defineMode("cobol", () => {
+  var BUILTIN = "builtin";
+  var COMMENT = "comment";
+  var STRING = "string";
+  var ATOM = "atom";
+  var NUMBER = "number";
+  var KEYWORD = "keyword";
+  var MODTAG = "header";
+  var COBOLLINENUM = "def";
+  var PERIOD = "link";
   function makeKeywords(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -174,14 +181,14 @@ CodeMirror.defineMode("cobol", function () {
     return false;
   }
   return {
-    startState: function () {
+    startState() {
       return {
         indentStack: null,
         indentation: 0,
         mode: false
       };
     },
-    token: function (stream, state) {
+    token(stream, state) {
       if (state.indentStack == null && stream.sol()) {
         // update indentation, but only if indentStack is empty
         state.indentation = 6 ; //stream.indentation();
@@ -243,7 +250,7 @@ CodeMirror.defineMode("cobol", function () {
       }
       return returnType;
     },
-    indent: function (state) {
+    indent(state) {
       if (state.indentStack == null) return state.indentation;
       return state.indentStack.indent;
     }

@@ -5,23 +5,28 @@
 
 // declare global: CSSLint
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.registerHelper("lint", "css", function(text) {
+CodeMirror.registerHelper("lint", "css", text => {
   var found = [];
   if (!window.CSSLint) return found;
-  var results = CSSLint.verify(text), messages = results.messages, message = null;
+  var results = CSSLint.verify(text);
+  var messages = results.messages;
+  var message = null;
   for ( var i = 0; i < messages.length; i++) {
     message = messages[i];
-    var startLine = message.line -1, endLine = message.line -1, startCol = message.col -1, endCol = message.col;
+    var startLine = message.line -1;
+    var endLine = message.line -1;
+    var startCol = message.col -1;
+    var endCol = message.col;
     found.push({
       from: CodeMirror.Pos(startLine, startCol),
       to: CodeMirror.Pos(endLine, endCol),

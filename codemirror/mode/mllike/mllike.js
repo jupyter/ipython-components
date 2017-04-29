@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode('mllike', function(_config, parserConfig) {
+CodeMirror.defineMode('mllike', (_config, parserConfig) => {
   var words = {
     'let': 'keyword',
     'rec': 'keyword',
@@ -89,7 +89,9 @@ CodeMirror.defineMode('mllike', function(_config, parserConfig) {
   }
 
   function tokenString(stream, state) {
-    var next, end = false, escaped = false;
+    var next;
+    var end = false;
+    var escaped = false;
     while ((next = stream.next()) != null) {
       if (next === '"' && !escaped) {
         end = true;
@@ -104,7 +106,8 @@ CodeMirror.defineMode('mllike', function(_config, parserConfig) {
   };
 
   function tokenComment(stream, state) {
-    var prev, next;
+    var prev;
+    var next;
     while(state.commentLevel > 0 && (next = stream.next()) != null) {
       if (prev === '(' && next === '*') state.commentLevel++;
       if (prev === '*' && next === ')') state.commentLevel--;
@@ -117,8 +120,8 @@ CodeMirror.defineMode('mllike', function(_config, parserConfig) {
   }
 
   return {
-    startState: function() {return {tokenize: tokenBase, commentLevel: 0};},
-    token: function(stream, state) {
+    startState() {return {tokenize: tokenBase, commentLevel: 0};},
+    token(stream, state) {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     },

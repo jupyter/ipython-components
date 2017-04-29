@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("commonlisp", function (config) {
+CodeMirror.defineMode("commonlisp", config => {
   var specialForm = /^(block|let*|return-from|catch|load-time-value|setq|eval-when|locally|symbol-macrolet|flet|macrolet|tagbody|function|multiple-value-call|the|go|multiple-value-prog1|throw|if|progn|unwind-protect|labels|progv|let|quote)$/;
   var assumeBody = /^with|^def|^do|^prog|case$|^cond$|bind$|when$|unless$/;
   var numLiteral = /^(?:[+\-]?(?:\d+|\d*\.\d+)(?:[efd][+\-]?\d+)?|[+\-]?\d+(?:\/[+\-]?\d+)?|#b[+\-]?[01]+|#o[+\-]?[0-7]+|#x[+\-]?[\da-f]+)/;
@@ -61,7 +61,8 @@ CodeMirror.defineMode("commonlisp", function (config) {
   }
 
   function inString(stream, state) {
-    var escaped = false, next;
+    var escaped = false;
+    var next;
     while (next = stream.next()) {
       if (next == '"' && !escaped) { state.tokenize = base; break; }
       escaped = !escaped && next == "\\";
@@ -70,7 +71,8 @@ CodeMirror.defineMode("commonlisp", function (config) {
   }
 
   function inComment(stream, state) {
-    var next, last;
+    var next;
+    var last;
     while (next = stream.next()) {
       if (next == "#" && last == "|") { state.tokenize = base; break; }
       last = next;
@@ -80,11 +82,11 @@ CodeMirror.defineMode("commonlisp", function (config) {
   }
 
   return {
-    startState: function () {
+    startState() {
       return {ctx: {prev: null, start: 0, indentTo: 0}, lastType: null, tokenize: base};
     },
 
-    token: function (stream, state) {
+    token(stream, state) {
       if (stream.sol() && typeof state.ctx.indentTo != "number")
         state.ctx.indentTo = state.ctx.start + 1;
 
@@ -106,7 +108,7 @@ CodeMirror.defineMode("commonlisp", function (config) {
       return style;
     },
 
-    indent: function (state, _textAfter) {
+    indent(state, _textAfter) {
       var i = state.ctx.indentTo;
       return typeof i == "number" ? i : state.ctx.start + 1;
     },

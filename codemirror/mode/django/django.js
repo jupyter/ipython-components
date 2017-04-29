@@ -1,7 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"),
         require("../../addon/mode/overlay"));
@@ -10,10 +10,10 @@
             "../../addon/mode/overlay"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
-  CodeMirror.defineMode("django:inner", function() {
+  CodeMirror.defineMode("django:inner", () => {
     var keywords = ["block", "endblock", "for", "endfor", "in", "true", "false",
                     "loop", "none", "self", "super", "if", "endif", "as", "not", "and",
                     "else", "import", "with", "endwith", "without", "context", "ifequal", "endifequal",
@@ -35,7 +35,7 @@
       if (close == "{") {
         close = "}";
       }
-      return function (stream, state) {
+      return (stream, state) => {
         var ch = stream.next();
         if ((ch == close) && stream.eat("}")) {
           state.tokenize = tokenBase;
@@ -48,16 +48,16 @@
       };
     }
     return {
-      startState: function () {
+      startState() {
         return {tokenize: tokenBase};
       },
-      token: function (stream, state) {
+      token(stream, state) {
         return state.tokenize(stream, state);
       }
     };
   });
 
-  CodeMirror.defineMode("django", function(config) {
+  CodeMirror.defineMode("django", config => {
     var htmlBase = CodeMirror.getMode(config, "text/html");
     var djangoInner = CodeMirror.getMode(config, "django:inner");
     return CodeMirror.overlayMode(htmlBase, djangoInner);

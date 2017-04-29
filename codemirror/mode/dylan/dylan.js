@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("dylan", function(_config) {
+CodeMirror.defineMode("dylan", _config => {
   // Words
   var words = {
     // Words that introduce unnamed definitions like "define interface"
@@ -141,8 +141,8 @@ CodeMirror.defineMode("dylan", function(_config) {
     "definition",
     "simpleDefinition",
     "signalingCalls"
-  ].forEach(function(type) {
-    words[type].forEach(function(word) {
+  ].forEach(type => {
+    words[type].forEach(word => {
       wordLookup[word] = type;
       styleLookup[word] = styles[type];
     });
@@ -154,7 +154,8 @@ CodeMirror.defineMode("dylan", function(_config) {
     return f(stream, state);
   }
 
-  var type, content;
+  var type;
+  var content;
 
   function ret(_type, style, _content) {
     type = _type;
@@ -225,9 +226,7 @@ CodeMirror.defineMode("dylan", function(_config) {
     for (var name in patterns) {
       if (patterns.hasOwnProperty(name)) {
         var pattern = patterns[name];
-        if ((pattern instanceof Array && pattern.some(function(p) {
-          return stream.match(p);
-        })) || stream.match(pattern))
+        if ((pattern instanceof Array && pattern.some(p => stream.match(p))) || stream.match(pattern))
           return ret(name, patternStyles[name], stream.current());
       }
     }
@@ -248,8 +247,8 @@ CodeMirror.defineMode("dylan", function(_config) {
   }
 
   function tokenComment(stream, state) {
-    var maybeEnd = false,
-    ch;
+    var maybeEnd = false;
+    var ch;
     while ((ch = stream.next())) {
       if (ch == "/" && maybeEnd) {
         state.tokenize = tokenBase;
@@ -261,8 +260,9 @@ CodeMirror.defineMode("dylan", function(_config) {
   }
 
   function tokenString(quote, type, style) {
-    return function(stream, state) {
-      var next, end = false;
+    return (stream, state) => {
+      var next;
+      var end = false;
       while ((next = stream.next()) != null) {
         if (next == quote) {
           end = true;
@@ -277,13 +277,13 @@ CodeMirror.defineMode("dylan", function(_config) {
 
   // Interface
   return {
-    startState: function() {
+    startState() {
       return {
         tokenize: tokenBase,
         currentIndent: 0
       };
     },
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.eatSpace())
         return null;
       var style = state.tokenize(stream, state);

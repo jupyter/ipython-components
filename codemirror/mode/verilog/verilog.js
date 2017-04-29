@@ -1,27 +1,27 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("verilog", function(config, parserConfig) {
-
-  var indentUnit = config.indentUnit,
-      statementIndentUnit = parserConfig.statementIndentUnit || indentUnit,
-      dontAlignCalls = parserConfig.dontAlignCalls,
-      noIndentKeywords = parserConfig.noIndentKeywords || [],
-      multiLineStrings = parserConfig.multiLineStrings,
-      hooks = parserConfig.hooks || {};
+CodeMirror.defineMode("verilog", (config, parserConfig) => {
+  var indentUnit = config.indentUnit;
+  var statementIndentUnit = parserConfig.statementIndentUnit || indentUnit;
+  var dontAlignCalls = parserConfig.dontAlignCalls;
+  var noIndentKeywords = parserConfig.noIndentKeywords || [];
+  var multiLineStrings = parserConfig.multiLineStrings;
+  var hooks = parserConfig.hooks || {};
 
   function words(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -108,7 +108,8 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
   var statementKeywords = words("always always_comb always_ff always_latch assert assign assume else export for foreach forever if import initial repeat while");
 
   function tokenBase(stream, state) {
-    var ch = stream.peek(), style;
+    var ch = stream.peek();
+    var style;
     if (hooks[ch] && (style = hooks[ch](stream, state)) != false) return style;
     if (hooks.tokenBase && (style = hooks.tokenBase(stream, state)) != false)
       return style;
@@ -202,8 +203,10 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
-      var escaped = false, next, end = false;
+    return (stream, state) => {
+      var escaped = false;
+      var next;
+      var end = false;
       while ((next = stream.next()) != null) {
         if (next == quote && !escaped) {end = true; break;}
         escaped = !escaped && next == "\\";
@@ -215,7 +218,8 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
   }
 
   function tokenComment(stream, state) {
-    var maybeEnd = false, ch;
+    var maybeEnd = false;
+    var ch;
     while (ch = stream.next()) {
       if (ch == "/" && maybeEnd) {
         state.tokenize = tokenBase;
@@ -284,7 +288,7 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
     // Regex to force current line to reindent
     electricInput: buildElectricInputRegEx(),
 
-    startState: function(basecolumn) {
+    startState(basecolumn) {
       var state = {
         tokenize: null,
         context: new Context((basecolumn || 0) - indentUnit, 0, "top", false),
@@ -295,7 +299,7 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
       return state;
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       var ctx = state.context;
       if (stream.sol()) {
         if (ctx.align == null) ctx.align = false;
@@ -343,13 +347,14 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       if (state.tokenize != tokenBase && state.tokenize != null) return CodeMirror.Pass;
       if (hooks.indent) {
         var fromHook = hooks.indent(state);
         if (fromHook >= 0) return fromHook;
       }
-      var ctx = state.context, firstChar = textAfter && textAfter.charAt(0);
+      var ctx = state.context;
+      var firstChar = textAfter && textAfter.charAt(0);
       if (ctx.type == "statement" && firstChar == "}") ctx = ctx.prev;
       var closing = false;
       var possibleClosing = textAfter.match(closingBracketOrWord);
@@ -384,7 +389,9 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
 
   function svxGenIndent(stream, state) {
     var svxindentUnit = 2;
-    var rtnIndent = -1, indentUnitRq = 0, curIndent = stream.indentation();
+    var rtnIndent = -1;
+    var indentUnitRq = 0;
+    var curIndent = stream.indentation();
     switch (state.svxCurCtlFlowChar) {
     case "\\":
       curIndent = 0;
@@ -427,7 +434,8 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
     name: "verilog",
     hooks: {
       "\\": function(stream, state) {
-        var vxIndent = 0, style = false;
+        var vxIndent = 0;
+        var style = false;
         var curPunc  = stream.string;
         if ((stream.sol()) && (/\\SV/.test(stream.string))) {
           curPunc = (/\\SVX_version/.test(stream.string))
@@ -447,8 +455,9 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
         }
         return style;
       },
-      tokenBase: function(stream, state) {
-        var vxIndent = 0, style = false;
+      tokenBase(stream, state) {
+        var vxIndent = 0;
+        var style = false;
         var svxisOperatorChar = /[\[\]=:]/;
         var svxkpScopePrefixs = {
           "**":"variable-2", "*":"variable-2", "$$":"variable", "$":"variable",
@@ -515,17 +524,17 @@ CodeMirror.defineMode("verilog", function(config, parserConfig) {
         }
         return style;
       },
-      token: function(stream, state) {
+      token(stream, state) {
         if (state.vxCodeActive == true && stream.sol() && state.svxCurCtlFlowChar != "") {
           state.svxPrevPrevCtlFlowChar = state.svxPrevCtlFlowChar;
           state.svxPrevCtlFlowChar = state.svxCurCtlFlowChar;
           state.svxCurCtlFlowChar = "";
         }
       },
-      indent: function(state) {
+      indent(state) {
         return (state.vxCodeActive == true) ? state.vxIndentRq : -1;
       },
-      startState: function(state) {
+      startState(state) {
         state.svxCurCtlFlowChar = "";
         state.svxPrevCtlFlowChar = "";
         state.svxPrevPrevCtlFlowChar = "";

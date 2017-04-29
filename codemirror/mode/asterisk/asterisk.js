@@ -17,51 +17,52 @@
  * =====================================================================================
  */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("asterisk", function() {
-  var atoms    = ["exten", "same", "include","ignorepat","switch"],
-      dpcmd    = ["#include","#exec"],
-      apps     = [
-                  "addqueuemember","adsiprog","aelsub","agentlogin","agentmonitoroutgoing","agi",
-                  "alarmreceiver","amd","answer","authenticate","background","backgrounddetect",
-                  "bridge","busy","callcompletioncancel","callcompletionrequest","celgenuserevent",
-                  "changemonitor","chanisavail","channelredirect","chanspy","clearhash","confbridge",
-                  "congestion","continuewhile","controlplayback","dahdiacceptr2call","dahdibarge",
-                  "dahdiras","dahdiscan","dahdisendcallreroutingfacility","dahdisendkeypadfacility",
-                  "datetime","dbdel","dbdeltree","deadagi","dial","dictate","directory","disa",
-                  "dumpchan","eagi","echo","endwhile","exec","execif","execiftime","exitwhile","extenspy",
-                  "externalivr","festival","flash","followme","forkcdr","getcpeid","gosub","gosubif",
-                  "goto","gotoif","gotoiftime","hangup","iax2provision","ices","importvar","incomplete",
-                  "ivrdemo","jabberjoin","jabberleave","jabbersend","jabbersendgroup","jabberstatus",
-                  "jack","log","macro","macroexclusive","macroexit","macroif","mailboxexists","meetme",
-                  "meetmeadmin","meetmechanneladmin","meetmecount","milliwatt","minivmaccmess","minivmdelete",
-                  "minivmgreet","minivmmwi","minivmnotify","minivmrecord","mixmonitor","monitor","morsecode",
-                  "mp3player","mset","musiconhold","nbscat","nocdr","noop","odbc","odbc","odbcfinish",
-                  "originate","ospauth","ospfinish","osplookup","ospnext","page","park","parkandannounce",
-                  "parkedcall","pausemonitor","pausequeuemember","pickup","pickupchan","playback","playtones",
-                  "privacymanager","proceeding","progress","queue","queuelog","raiseexception","read","readexten",
-                  "readfile","receivefax","receivefax","receivefax","record","removequeuemember",
-                  "resetcdr","retrydial","return","ringing","sayalpha","saycountedadj","saycountednoun",
-                  "saycountpl","saydigits","saynumber","sayphonetic","sayunixtime","senddtmf","sendfax",
-                  "sendfax","sendfax","sendimage","sendtext","sendurl","set","setamaflags",
-                  "setcallerpres","setmusiconhold","sipaddheader","sipdtmfmode","sipremoveheader","skel",
-                  "slastation","slatrunk","sms","softhangup","speechactivategrammar","speechbackground",
-                  "speechcreate","speechdeactivategrammar","speechdestroy","speechloadgrammar","speechprocessingsound",
-                  "speechstart","speechunloadgrammar","stackpop","startmusiconhold","stopmixmonitor","stopmonitor",
-                  "stopmusiconhold","stopplaytones","system","testclient","testserver","transfer","tryexec",
-                  "trysystem","unpausemonitor","unpausequeuemember","userevent","verbose","vmauthenticate",
-                  "vmsayname","voicemail","voicemailmain","wait","waitexten","waitfornoise","waitforring",
-                  "waitforsilence","waitmusiconhold","waituntil","while","zapateller"
-                 ];
+CodeMirror.defineMode("asterisk", () => {
+  var atoms    = ["exten", "same", "include","ignorepat","switch"];
+  var dpcmd    = ["#include","#exec"];
+
+  var apps     = [
+              "addqueuemember","adsiprog","aelsub","agentlogin","agentmonitoroutgoing","agi",
+              "alarmreceiver","amd","answer","authenticate","background","backgrounddetect",
+              "bridge","busy","callcompletioncancel","callcompletionrequest","celgenuserevent",
+              "changemonitor","chanisavail","channelredirect","chanspy","clearhash","confbridge",
+              "congestion","continuewhile","controlplayback","dahdiacceptr2call","dahdibarge",
+              "dahdiras","dahdiscan","dahdisendcallreroutingfacility","dahdisendkeypadfacility",
+              "datetime","dbdel","dbdeltree","deadagi","dial","dictate","directory","disa",
+              "dumpchan","eagi","echo","endwhile","exec","execif","execiftime","exitwhile","extenspy",
+              "externalivr","festival","flash","followme","forkcdr","getcpeid","gosub","gosubif",
+              "goto","gotoif","gotoiftime","hangup","iax2provision","ices","importvar","incomplete",
+              "ivrdemo","jabberjoin","jabberleave","jabbersend","jabbersendgroup","jabberstatus",
+              "jack","log","macro","macroexclusive","macroexit","macroif","mailboxexists","meetme",
+              "meetmeadmin","meetmechanneladmin","meetmecount","milliwatt","minivmaccmess","minivmdelete",
+              "minivmgreet","minivmmwi","minivmnotify","minivmrecord","mixmonitor","monitor","morsecode",
+              "mp3player","mset","musiconhold","nbscat","nocdr","noop","odbc","odbc","odbcfinish",
+              "originate","ospauth","ospfinish","osplookup","ospnext","page","park","parkandannounce",
+              "parkedcall","pausemonitor","pausequeuemember","pickup","pickupchan","playback","playtones",
+              "privacymanager","proceeding","progress","queue","queuelog","raiseexception","read","readexten",
+              "readfile","receivefax","receivefax","receivefax","record","removequeuemember",
+              "resetcdr","retrydial","return","ringing","sayalpha","saycountedadj","saycountednoun",
+              "saycountpl","saydigits","saynumber","sayphonetic","sayunixtime","senddtmf","sendfax",
+              "sendfax","sendfax","sendimage","sendtext","sendurl","set","setamaflags",
+              "setcallerpres","setmusiconhold","sipaddheader","sipdtmfmode","sipremoveheader","skel",
+              "slastation","slatrunk","sms","softhangup","speechactivategrammar","speechbackground",
+              "speechcreate","speechdeactivategrammar","speechdestroy","speechloadgrammar","speechprocessingsound",
+              "speechstart","speechunloadgrammar","stackpop","startmusiconhold","stopmixmonitor","stopmonitor",
+              "stopmusiconhold","stopplaytones","system","testclient","testserver","transfer","tryexec",
+              "trysystem","unpausemonitor","unpausequeuemember","userevent","verbose","vmauthenticate",
+              "vmsayname","voicemail","voicemailmain","wait","waitexten","waitfornoise","waitforring",
+              "waitforsilence","waitmusiconhold","waituntil","while","zapateller"
+             ];
 
   function basicToken(stream,state){
     var cur = '';
@@ -123,7 +124,7 @@ CodeMirror.defineMode("asterisk", function() {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {
         extenStart: false,
         extenSame:  false,
@@ -133,7 +134,7 @@ CodeMirror.defineMode("asterisk", function() {
         extenApplication: false
       };
     },
-    token: function(stream, state) {
+    token(stream, state) {
 
       var cur = '';
       var ch  = '';

@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("./xml-hint"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "./xml-hint"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var langs = "ab aa af ak sq am ar an hy as av ae ay az bm ba eu be bn bh bi bs br bg my ca ch ce ny zh cv kw co cr hr cs da dv nl dz en eo et ee fo fj fi fr ff gl ka de el gn gu ht ha he hz hi ho hu ia id ie ga ig ik io is it iu ja jv kl kn kr ks kk km ki rw ky kv kg ko ku kj la lb lg li ln lo lt lu lv gv mk mg ms ml mt mi mr mh mn na nv nb nd ne ng nn no ii nr oc oj cu om or os pa pi fa pl ps pt qu rm rn ro ru sa sc sd se sm sg sr gd sn si sk sl so st es su sw ss sv ta te tg th ti bo tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa cy wo fy xh yi yo za zu".split(" ");
@@ -25,7 +25,7 @@
     a: {
       attrs: {
         href: null, ping: null, type: null,
-        media: media,
+        media,
         target: targets,
         hreflang: langs
       }
@@ -37,7 +37,7 @@
     area: {
       attrs: {
         alt: null, coords: null, href: null, target: null, ping: null,
-        media: media, hreflang: langs, type: null,
+        media, hreflang: langs, type: null,
         shape: ["default", "rect", "circle", "poly"]
       }
     },
@@ -187,7 +187,7 @@
       attrs: {
         href: null, type: null,
         hreflang: langs,
-        media: media,
+        media,
         sizes: ["all", "16x16", "16x16 32x32", "16x16 32x32 64x64"]
       }
     },
@@ -224,7 +224,7 @@
     rp: s,
     rt: s,
     ruby: s,
-    s: s,
+    s,
     samp: s,
     script: {
       attrs: {
@@ -252,7 +252,7 @@
     style: {
       attrs: {
         type: ["text/css"],
-        media: media,
+        media,
         scoped: null
       }
     },

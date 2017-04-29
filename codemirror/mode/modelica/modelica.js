@@ -3,19 +3,19 @@
 
 // Modelica support for CodeMirror, copyright (c) by Lennart Ochel
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})
+}))
 
-(function(CodeMirror) {
+(CodeMirror => {
   "use strict";
 
-  CodeMirror.defineMode("modelica", function(config, parserConfig) {
+  CodeMirror.defineMode("modelica", (config, parserConfig) => {
 
     var indentUnit = config.indentUnit;
     var keywords = parserConfig.keywords || {};
@@ -34,7 +34,8 @@
     }
 
     function tokenBlockComment(stream, state) {
-      var maybeEnd = false, ch;
+      var maybeEnd = false;
+      var ch;
       while (ch = stream.next()) {
         if (maybeEnd && ch == "/") {
           state.tokenize = null;
@@ -46,7 +47,8 @@
     }
 
     function tokenString(stream, state) {
-      var escaped = false, ch;
+      var escaped = false;
+      var ch;
       while ((ch = stream.next()) != null) {
         if (ch == '"' && !escaped) {
           state.tokenize = null;
@@ -108,7 +110,7 @@
 
     // Interface
     return {
-      startState: function() {
+      startState() {
         return {
           tokenize: null,
           level: 0,
@@ -116,7 +118,7 @@
         };
       },
 
-      token: function(stream, state) {
+      token(stream, state) {
         if(state.tokenize != null) {
           return state.tokenize(stream, state);
         }
@@ -177,7 +179,7 @@
         return state.tokenize(stream, state);
       },
 
-      indent: function(state, textAfter) {
+      indent(state, textAfter) {
         if (state.tokenize != null) return CodeMirror.Pass;
 
         var level = state.level;
@@ -200,7 +202,8 @@
   });
 
   function words(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i=0; i<words.length; ++i)
       obj[words[i]] = true;
     return obj;

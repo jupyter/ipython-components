@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../../mode/sql/sql"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../../mode/sql/sql"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var tables;
@@ -102,14 +102,10 @@
 
     // Try to complete table names
     var string = nameParts.join(".");
-    addMatches(result, string, tables, function(w) {
-      return useBacktick ? insertBackticks(w) : w;
-    });
+    addMatches(result, string, tables, w => useBacktick ? insertBackticks(w) : w);
 
     // Try to complete columns from defaultTable
-    addMatches(result, string, defaultTable, function(w) {
-      return useBacktick ? insertBackticks(w) : w;
-    });
+    addMatches(result, string, defaultTable, w => useBacktick ? insertBackticks(w) : w);
 
     // Try to complete columns
     string = nameParts.pop();
@@ -124,7 +120,7 @@
       columns = columns.columns;
 
     if (columns) {
-      addMatches(result, string, columns, function(w) {
+      addMatches(result, string, columns, w => {
         if (typeof w == "string") {
           w = table + "." + w;
         } else {
@@ -149,7 +145,7 @@
 
   function convertCurToNumber(cur) {
     // max characters of a line is 999,999.
-    return cur.line + cur.ch / Math.pow(10, 6);
+    return cur.line + cur.ch / (10 ** 6);
   }
 
   function convertNumberToCur(num) {
@@ -193,7 +189,7 @@
 
     for (var i = 0; i < query.length; i++) {
       var lineText = query[i];
-      eachWord(lineText, function(word) {
+      eachWord(lineText, word => {
         var wordUpperCase = word.toUpperCase();
         if (wordUpperCase === aliasUpperCase && getItem(tables, previousWord))
           table = previousWord;
@@ -205,7 +201,7 @@
     return table;
   }
 
-  CodeMirror.registerHelper("hint", "sql", function(editor, options) {
+  CodeMirror.registerHelper("hint", "sql", (editor, options) => {
     tables = (options && options.tables) || {};
     var defaultTableName = options && options.defaultTable;
     defaultTable = (defaultTableName && getItem(tables, defaultTableName)) || [];
@@ -213,7 +209,10 @@
 
     var cur = editor.getCursor();
     var result = [];
-    var token = editor.getTokenAt(cur), start, end, search;
+    var token = editor.getTokenAt(cur);
+    var start;
+    var end;
+    var search;
     if (token.end > cur.ch) {
       token.end = cur.ch;
       token.string = token.string.slice(0, cur.ch - token.start);
@@ -230,9 +229,9 @@
     if (search.charAt(0) == "." || search.charAt(0) == "`") {
       start = nameCompletion(cur, token, result, editor);
     } else {
-      addMatches(result, search, tables, function(w) {return w;});
-      addMatches(result, search, defaultTable, function(w) {return w;});
-      addMatches(result, search, keywords, function(w) {return w.toUpperCase();});
+      addMatches(result, search, tables, w => w);
+      addMatches(result, search, defaultTable, w => w);
+      addMatches(result, search, keywords, w => w.toUpperCase());
     }
 
     return {list: result, from: Pos(cur.line, start), to: Pos(cur.line, end)};

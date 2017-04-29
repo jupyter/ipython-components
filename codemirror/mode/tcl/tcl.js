@@ -3,19 +3,20 @@
 
 //tcl mode by Ford_Lawnmower :: Based on Velocity mode by Steve O'Hara
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("tcl", function() {
+CodeMirror.defineMode("tcl", () => {
   function parseWords(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -90,21 +91,24 @@ CodeMirror.defineMode("tcl", function() {
       }
     }
     function tokenString(quote) {
-      return function(stream, state) {
-      var escaped = false, next, end = false;
-      while ((next = stream.next()) != null) {
-        if (next == quote && !escaped) {
-          end = true;
-          break;
+      return (stream, state) => {
+        var escaped = false;
+        var next;
+        var end = false;
+        while ((next = stream.next()) != null) {
+          if (next == quote && !escaped) {
+            end = true;
+            break;
+          }
+          escaped = !escaped && next == "\\";
         }
-        escaped = !escaped && next == "\\";
-      }
-      if (end) state.tokenize = tokenBase;
+        if (end) state.tokenize = tokenBase;
         return "string";
       };
     }
     function tokenComment(stream, state) {
-      var maybeEnd = false, ch;
+      var maybeEnd = false;
+      var ch;
       while (ch = stream.next()) {
         if (ch == "#" && maybeEnd) {
           state.tokenize = tokenBase;
@@ -115,7 +119,8 @@ CodeMirror.defineMode("tcl", function() {
       return "comment";
     }
     function tokenUnparsed(stream, state) {
-      var maybeEnd = 0, ch;
+      var maybeEnd = 0;
+      var ch;
       while (ch = stream.next()) {
         if (ch == "#" && maybeEnd == 2) {
           state.tokenize = tokenBase;
@@ -129,14 +134,14 @@ CodeMirror.defineMode("tcl", function() {
       return "meta";
     }
     return {
-      startState: function() {
+      startState() {
         return {
           tokenize: tokenBase,
           beforeParams: false,
           inParams: false
         };
       },
-      token: function(stream, state) {
+      token(stream, state) {
         if (stream.eatSpace()) return null;
         return state.tokenize(stream, state);
       }

@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var Pos = CodeMirror.Pos;
@@ -39,7 +39,7 @@
       addToRing(text);
     cm.replaceRange("", from, to, "+delete");
 
-    if (mayGrow) lastKill = {cm: cm, pos: from, gen: cm.changeGeneration()};
+    if (mayGrow) lastKill = {cm, pos: from, gen: cm.changeGeneration()};
     else lastKill = null;
   }
 
@@ -62,9 +62,11 @@
   }
 
   function byParagraph(cm, pos, dir) {
-    var no = pos.line, line = cm.getLine(no);
+    var no = pos.line;
+    var line = cm.getLine(no);
     var sawText = /\S/.test(dir < 0 ? line.slice(0, pos.ch) : line.slice(pos.ch));
-    var fst = cm.firstLine(), lst = cm.lastLine();
+    var fst = cm.firstLine();
+    var lst = cm.lastLine();
     for (;;) {
       no += dir;
       if (no < fst || no > lst)
@@ -77,8 +79,10 @@
   }
 
   function bySentence(cm, pos, dir) {
-    var line = pos.line, ch = pos.ch;
-    var text = cm.getLine(pos.line), sawWord = false;
+    var line = pos.line;
+    var ch = pos.ch;
+    var text = cm.getLine(pos.line);
+    var sawWord = false;
     for (;;) {
       var next = text.charAt(ch + (dir < 0 ? -1 : 0));
       if (!next) { // End/beginning of line reached
@@ -124,8 +128,8 @@
   }
 
   function repeated(cmd) {
-    var f = typeof cmd == "string" ? function(cm) { cm.execCommand(cmd); } : cmd;
-    return function(cm) {
+    var f = typeof cmd == "string" ? cm => { cm.execCommand(cmd); } : cmd;
+    return cm => {
       var prefix = getPrefix(cm);
       f(cm);
       for (var i = 1; i < prefix; ++i) f(cm);
@@ -144,7 +148,7 @@
   }
 
   function move(by, dir) {
-    var f = function(cm) {
+    var f = cm => {
       cm.extendSelection(findEnd(cm, cm.getCursor(), by, dir));
     };
     f.motion = true;
@@ -152,7 +156,8 @@
   }
 
   function killTo(cm, by, dir) {
-    var selections = cm.listSelections(), cursor;
+    var selections = cm.listSelections();
+    var cursor;
     var i = selections.length;
     while (i--) {
       cursor = selections[i].head;
@@ -162,7 +167,8 @@
 
   function killRegion(cm) {
     if (cm.somethingSelected()) {
-      var selections = cm.listSelections(), selection;
+      var selections = cm.listSelections();
+      var selection;
       var i = selections.length;
       while (i--) {
         selection = selections[i];
@@ -199,7 +205,8 @@
   function maybeDuplicateInput(cm, event) {
     var dup = getPrefix(cm);
     if (dup > 1 && event.origin == "+input") {
-      var one = event.text.join("\n"), txt = "";
+      var one = event.text.join("\n");
+      var txt = "";
       for (var i = 1; i < dup; ++i) txt += one;
       cm.replaceSelection(txt);
     }
@@ -225,7 +232,7 @@
   function setMark(cm) {
     cm.setCursor(cm.getCursor());
     cm.setExtending(!cm.getExtending());
-    cm.on("change", function() { cm.setExtending(false); });
+    cm.on("change", () => { cm.setExtending(false); });
   }
 
   function clearMark(cm) {
@@ -241,13 +248,16 @@
   }
 
   function operateOnWord(cm, op) {
-    var start = cm.getCursor(), end = cm.findPosH(start, 1, "word");
+    var start = cm.getCursor();
+    var end = cm.findPosH(start, 1, "word");
     cm.replaceRange(op(cm.getRange(start, end)), start, end);
     cm.setCursor(end);
   }
 
   function toEnclosingExpr(cm) {
-    var pos = cm.getCursor(), line = pos.line, ch = pos.ch;
+    var pos = cm.getCursor();
+    var line = pos.line;
+    var ch = pos.ch;
     var stack = [];
     while (line >= cm.firstLine()) {
       var text = cm.getLine(line);
@@ -275,8 +285,9 @@
 
   var keyMap = CodeMirror.keyMap.emacs = CodeMirror.normalizeKeyMap({
     "Ctrl-W": function(cm) {kill(cm, cm.getCursor("start"), cm.getCursor("end"));},
-    "Ctrl-K": repeated(function(cm) {
-      var start = cm.getCursor(), end = cm.clipPos(Pos(start.line));
+    "Ctrl-K": repeated(cm => {
+      var start = cm.getCursor();
+      var end = cm.clipPos(Pos(start.line));
       var text = cm.getRange(start, end);
       if (!/\S/.test(text)) {
         text += "\n";
@@ -330,36 +341,41 @@
       cm.setSelection(findEnd(cm, cursor, byExpr, 1), cursor);
     },
     "Ctrl-Alt-T": function(cm) {
-      var leftStart = byExpr(cm, cm.getCursor(), -1), leftEnd = byExpr(cm, leftStart, 1);
-      var rightEnd = byExpr(cm, leftEnd, 1), rightStart = byExpr(cm, rightEnd, -1);
+      var leftStart = byExpr(cm, cm.getCursor(), -1);
+      var leftEnd = byExpr(cm, leftStart, 1);
+      var rightEnd = byExpr(cm, leftEnd, 1);
+      var rightStart = byExpr(cm, rightEnd, -1);
       cm.replaceRange(cm.getRange(rightStart, rightEnd) + cm.getRange(leftEnd, rightStart) +
                       cm.getRange(leftStart, leftEnd), leftStart, rightEnd);
     },
     "Ctrl-Alt-U": repeated(toEnclosingExpr),
 
     "Alt-Space": function(cm) {
-      var pos = cm.getCursor(), from = pos.ch, to = pos.ch, text = cm.getLine(pos.line);
+      var pos = cm.getCursor();
+      var from = pos.ch;
+      var to = pos.ch;
+      var text = cm.getLine(pos.line);
       while (from && /\s/.test(text.charAt(from - 1))) --from;
       while (to < text.length && /\s/.test(text.charAt(to))) ++to;
       cm.replaceRange(" ", Pos(pos.line, from), Pos(pos.line, to));
     },
-    "Ctrl-O": repeated(function(cm) { cm.replaceSelection("\n", "start"); }),
-    "Ctrl-T": repeated(function(cm) {
+    "Ctrl-O": repeated(cm => { cm.replaceSelection("\n", "start"); }),
+    "Ctrl-T": repeated(cm => {
       cm.execCommand("transposeChars");
     }),
 
-    "Alt-C": repeated(function(cm) {
-      operateOnWord(cm, function(w) {
+    "Alt-C": repeated(cm => {
+      operateOnWord(cm, w => {
         var letter = w.search(/\w/);
         if (letter == -1) return w;
         return w.slice(0, letter) + w.charAt(letter).toUpperCase() + w.slice(letter + 1).toLowerCase();
       });
     }),
-    "Alt-U": repeated(function(cm) {
-      operateOnWord(cm, function(w) { return w.toUpperCase(); });
+    "Alt-U": repeated(cm => {
+      operateOnWord(cm, w => w.toUpperCase());
     }),
-    "Alt-L": repeated(function(cm) {
-      operateOnWord(cm, function(w) { return w.toLowerCase(); });
+    "Alt-L": repeated(cm => {
+      operateOnWord(cm, w => w.toLowerCase());
     }),
 
     "Alt-;": "toggleComment",
@@ -375,7 +391,7 @@
       var prefix = getPrefix(cm, true);
       if (prefix != null && prefix > 0) return cm.setCursor(prefix - 1);
 
-      getInput(cm, "Goto line", function(str) {
+      getInput(cm, "Goto line", str => {
         var num;
         if (str && !isNaN(num = Number(str)) && num == num|0 && num > 0)
           cm.setCursor(num - 1);
@@ -403,8 +419,8 @@
 
   var prefixMap = {"Ctrl-G": clearPrefix};
   function regPrefix(d) {
-    prefixMap[d] = function(cm) { addPrefix(cm, d); };
-    keyMap["Ctrl-" + d] = function(cm) { addPrefix(cm, d); };
+    prefixMap[d] = cm => { addPrefix(cm, d); };
+    keyMap["Ctrl-" + d] = cm => { addPrefix(cm, d); };
     prefixPreservingKeys["Ctrl-" + d] = true;
   }
   for (var i = 0; i < 10; ++i) regPrefix(String(i));

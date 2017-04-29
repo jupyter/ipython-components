@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
 CodeMirror.multiplexingMode = function(outer /*, others */) {
@@ -23,7 +23,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {
         outer: CodeMirror.startState(outer),
         innerActive: null,
@@ -31,7 +31,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
       };
     },
 
-    copyState: function(state) {
+    copyState(state) {
       return {
         outer: CodeMirror.copyState(outer, state.outer),
         innerActive: state.innerActive,
@@ -39,9 +39,10 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
       };
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (!state.innerActive) {
-        var cutOff = Infinity, oldContent = stream.string;
+        var cutOff = Infinity;
+        var oldContent = stream.string;
         for (var i = 0; i < n_others; ++i) {
           var other = others[i];
           var found = indexOf(oldContent, other.open, stream.pos);
@@ -59,7 +60,8 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
         if (cutOff != Infinity) stream.string = oldContent;
         return outerToken;
       } else {
-        var curInner = state.innerActive, oldContent = stream.string;
+        var curInner = state.innerActive;
+        var oldContent = stream.string;
         if (!curInner.close && stream.sol()) {
           state.innerActive = state.inner = null;
           return this.token(stream, state);
@@ -83,13 +85,13 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
       }
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       var mode = state.innerActive ? state.innerActive.mode : outer;
       if (!mode.indent) return CodeMirror.Pass;
       return mode.indent(state.innerActive ? state.inner : state.outer, textAfter);
     },
 
-    blankLine: function(state) {
+    blankLine(state) {
       var mode = state.innerActive ? state.innerActive.mode : outer;
       if (mode.blankLine) {
         mode.blankLine(state.innerActive ? state.inner : state.outer);
@@ -109,7 +111,7 @@ CodeMirror.multiplexingMode = function(outer /*, others */) {
 
     electricChars: outer.electricChars,
 
-    innerMode: function(state) {
+    innerMode(state) {
       return state.inner ? {state: state.inner, mode: state.innerActive.mode} : {state: state.outer, mode: outer};
     }
   };

@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("puppet", function () {
+CodeMirror.defineMode("puppet", () => {
   // Stores the words from the define method
   var words = {};
   // Taken, mostly, from the Puppet official variable standards regex
@@ -45,7 +45,9 @@ CodeMirror.defineMode("puppet", function () {
   // If a variable is encountered along the way, we display it differently when it
   // is encapsulated in a double-quoted string.
   function tokenString(stream, state) {
-    var current, prev, found_var = false;
+    var current;
+    var prev;
+    var found_var = false;
     while (!stream.eol() && (current = stream.next()) != state.pending) {
       if (current === '$' && prev != '\\' && state.pending == '"') {
         found_var = true;
@@ -198,7 +200,7 @@ CodeMirror.defineMode("puppet", function () {
   }
   // Start it all
   return {
-    startState: function () {
+    startState() {
       var state = {};
       state.inDefinition = false;
       state.inInclude = false;
@@ -206,7 +208,7 @@ CodeMirror.defineMode("puppet", function () {
       state.pending = false;
       return state;
     },
-    token: function (stream, state) {
+    token(stream, state) {
       // Strip the spaces, but regex will account for them eitherway
       if (stream.eatSpace()) return null;
       // Go through the main process

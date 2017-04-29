@@ -1,27 +1,27 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("sql", function(config, parserConfig) {
+CodeMirror.defineMode("sql", (config, parserConfig) => {
   "use strict";
 
-  var client         = parserConfig.client || {},
-      atoms          = parserConfig.atoms || {"false": true, "true": true, "null": true},
-      builtin        = parserConfig.builtin || {},
-      keywords       = parserConfig.keywords || {},
-      operatorChars  = parserConfig.operatorChars || /^[*+\-%<>!=&|~^]/,
-      support        = parserConfig.support || {},
-      hooks          = parserConfig.hooks || {},
-      dateSQL        = parserConfig.dateSQL || {"date" : true, "time" : true, "timestamp" : true};
+  var client         = parserConfig.client || {};
+  var atoms          = parserConfig.atoms || {"false": true, "true": true, "null": true};
+  var builtin        = parserConfig.builtin || {};
+  var keywords       = parserConfig.keywords || {};
+  var operatorChars  = parserConfig.operatorChars || /^[*+\-%<>!=&|~^]/;
+  var support        = parserConfig.support || {};
+  var hooks          = parserConfig.hooks || {};
+  var dateSQL        = parserConfig.dateSQL || {"date" : true, "time" : true, "timestamp" : true};
 
   function tokenBase(stream, state) {
     var ch = stream.next();
@@ -118,8 +118,9 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
 
   // 'string', with char specified in quote escaped by '\'
   function tokenLiteral(quote) {
-    return function(stream, state) {
-      var escaped = false, ch;
+    return (stream, state) => {
+      var escaped = false;
+      var ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped) {
           state.tokenize = tokenBase;
@@ -151,7 +152,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
       prev: state.context,
       indent: stream.indentation(),
       col: stream.column(),
-      type: type
+      type
     };
   }
 
@@ -161,11 +162,11 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {tokenize: tokenBase, context: null};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.sol()) {
         if (state.context && state.context.align == null)
           state.context.align = false;
@@ -188,7 +189,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       var cx = state.context;
       if (!cx) return CodeMirror.Pass;
       var closing = textAfter.charAt(0) == cx.type;
@@ -202,7 +203,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
   };
 });
 
-(function() {
+((() => {
   "use strict";
 
   // `identifier`
@@ -261,7 +262,8 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
 
   // turn a space-separated list into an array
   function set(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -357,7 +359,7 @@ CodeMirror.defineMode("sql", function(config, parserConfig) {
     dateSQL: set("date timestamp"),
     support: set("ODBCdotTable doubleQuote binaryNumber hexNumber")
   });
-}());
+})());
 
 });
 

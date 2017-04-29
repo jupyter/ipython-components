@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("turtle", function(config) {
+CodeMirror.defineMode("turtle", config => {
   var indentUnit = config.indentUnit;
   var curPunc;
 
@@ -75,8 +75,9 @@ CodeMirror.defineMode("turtle", function(config) {
   }
 
   function tokenLiteral(quote) {
-    return function(stream, state) {
-      var escaped = false, ch;
+    return (stream, state) => {
+      var escaped = false;
+      var ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped) {
           state.tokenize = tokenBase;
@@ -89,7 +90,7 @@ CodeMirror.defineMode("turtle", function(config) {
   }
 
   function pushContext(state, type, col) {
-    state.context = {prev: state.context, indent: state.indent, col: col, type: type};
+    state.context = {prev: state.context, indent: state.indent, col, type};
   }
   function popContext(state) {
     state.indent = state.context.indent;
@@ -97,14 +98,14 @@ CodeMirror.defineMode("turtle", function(config) {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {tokenize: tokenBase,
               context: null,
               indent: 0,
               col: 0};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.sol()) {
         if (state.context && state.context.align == null) state.context.align = false;
         state.indent = stream.indentation();
@@ -136,7 +137,7 @@ CodeMirror.defineMode("turtle", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       var firstChar = textAfter && textAfter.charAt(0);
       var context = state.context;
       if (/[\]\}]/.test(firstChar))

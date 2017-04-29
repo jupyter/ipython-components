@@ -6,24 +6,32 @@
  * Branched from CodeMirror's Scheme mode (by Koh Zi Han, based on implementation by Koh Zi Chun)
  */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("clojure", function (options) {
-    var BUILTIN = "builtin", COMMENT = "comment", STRING = "string", CHARACTER = "string-2",
-        ATOM = "atom", NUMBER = "number", BRACKET = "bracket", KEYWORD = "keyword", VAR = "variable";
+CodeMirror.defineMode("clojure", options => {
+    var BUILTIN = "builtin";
+    var COMMENT = "comment";
+    var STRING = "string";
+    var CHARACTER = "string-2";
+    var ATOM = "atom";
+    var NUMBER = "number";
+    var BRACKET = "bracket";
+    var KEYWORD = "keyword";
+    var VAR = "variable";
     var INDENT_WORD_SKIP = options.indentUnit || 2;
     var NORMAL_INDENT_UNIT = options.indentUnit || 2;
 
     function makeKeywords(str) {
-        var obj = {}, words = str.split(" ");
+        var obj = {};
+        var words = str.split(" ");
         for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
         return obj;
     }
@@ -124,7 +132,7 @@ CodeMirror.defineMode("clojure", function (options) {
     }
 
     return {
-        startState: function () {
+        startState() {
             return {
                 indentStack: null,
                 indentation: 0,
@@ -132,7 +140,7 @@ CodeMirror.defineMode("clojure", function (options) {
             };
         },
 
-        token: function (stream, state) {
+        token(stream, state) {
             if (state.indentStack == null && stream.sol()) {
                 // update indentation, but only if indentStack is empty
                 state.indentation = stream.indentation();
@@ -145,8 +153,10 @@ CodeMirror.defineMode("clojure", function (options) {
             var returnType = null;
 
             switch(state.mode){
-                case "string": // multi-line string parsing mode
-                    var next, escaped = false;
+                case // multi-line string parsing mode
+                "string":
+                    var next;
+                    var escaped = false;
                     while ((next = stream.next()) != null) {
                         if (next == "\"" && !escaped) {
 
@@ -174,7 +184,9 @@ CodeMirror.defineMode("clojure", function (options) {
                     } else if (isNumber(ch,stream)){
                         returnType = NUMBER;
                     } else if (ch == "(" || ch == "[" || ch == "{" ) {
-                        var keyWord = '', indentTemp = stream.column(), letter;
+                        var keyWord = '';
+                        var indentTemp = stream.column();
+                        var letter;
                         /**
                         Either
                         (indent-word ..
@@ -229,7 +241,7 @@ CodeMirror.defineMode("clojure", function (options) {
             return returnType;
         },
 
-        indent: function (state) {
+        indent(state) {
             if (state.indentStack == null) return state.indentation;
             return state.indentStack.indent;
         },

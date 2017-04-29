@@ -1,8 +1,8 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function() {
-  CodeMirror.defineMode("markdown_with_stex", function(){
+((() => {
+  CodeMirror.defineMode("markdown_with_stex", () => {
     var inner = CodeMirror.getMode({}, "stex");
     var outer = CodeMirror.getMode({}, "markdown");
 
@@ -30,4 +30,4 @@
   MT(
     "stexInsideMarkdown",
     "[strong **Equation:**] [delim $][inner&tag \\pi][delim $]");
-})();
+}))();

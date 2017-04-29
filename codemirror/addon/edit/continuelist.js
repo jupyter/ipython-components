@@ -1,25 +1,27 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
-  var listRE = /^(\s*)(>[> ]*|[*+-]\s|(\d+)\.)(\s*)/,
-      emptyListRE = /^(\s*)(>[> ]*|[*+-]|(\d+)\.)(\s*)$/,
-      unorderedListRE = /[*+-]\s/;
+  var listRE = /^(\s*)(>[> ]*|[*+-]\s|(\d+)\.)(\s*)/;
+  var emptyListRE = /^(\s*)(>[> ]*|[*+-]|(\d+)\.)(\s*)$/;
+  var unorderedListRE = /[*+-]\s/;
 
-  CodeMirror.commands.newlineAndIndentContinueMarkdownList = function(cm) {
+  CodeMirror.commands.newlineAndIndentContinueMarkdownList = cm => {
     if (cm.getOption("disableInput")) return CodeMirror.Pass;
-    var ranges = cm.listSelections(), replacements = [];
+    var ranges = cm.listSelections();
+    var replacements = [];
     for (var i = 0; i < ranges.length; i++) {
-      var pos = ranges[i].head, match;
+      var pos = ranges[i].head;
+      var match;
       var eolState = cm.getStateAfter(pos.line);
       var inList = eolState.list !== false;
       var inQuote = eolState.quote !== false;
@@ -37,7 +39,8 @@
         replacements[i] = "\n";
 
       } else {
-        var indent = match[1], after = match[4];
+        var indent = match[1];
+        var after = match[4];
         var bullet = unorderedListRE.test(match[2]) || match[2].indexOf(">") >= 0
           ? match[2]
           : (parseInt(match[3], 10) + 1) + ".";

@@ -18,14 +18,14 @@
 // delay is used to specify how much time to wait, in milliseconds, before
 // highlighting the matches.
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var DEFAULT_MIN_CHARS = 2;
@@ -48,7 +48,7 @@
     this.overlay = this.timeout = null;
   }
 
-  CodeMirror.defineOption("highlightSelectionMatches", false, function(cm, val, old) {
+  CodeMirror.defineOption("highlightSelectionMatches", false, (cm, val, old) => {
     if (old && old != CodeMirror.Init) {
       var over = cm.state.matchHighlighter.overlay;
       if (over) cm.removeOverlay(over);
@@ -66,11 +66,11 @@
   function cursorActivity(cm) {
     var state = cm.state.matchHighlighter;
     clearTimeout(state.timeout);
-    state.timeout = setTimeout(function() {highlightMatches(cm);}, state.delay);
+    state.timeout = setTimeout(() => {highlightMatches(cm);}, state.delay);
   }
 
   function highlightMatches(cm) {
-    cm.operation(function() {
+    cm.operation(() => {
       var state = cm.state.matchHighlighter;
       if (state.overlay) {
         cm.removeOverlay(state.overlay);
@@ -78,14 +78,18 @@
       }
       if (!cm.somethingSelected() && state.showToken) {
         var re = state.showToken === true ? /[\w$]/ : state.showToken;
-        var cur = cm.getCursor(), line = cm.getLine(cur.line), start = cur.ch, end = start;
+        var cur = cm.getCursor();
+        var line = cm.getLine(cur.line);
+        var start = cur.ch;
+        var end = start;
         while (start && re.test(line.charAt(start - 1))) --start;
         while (end < line.length && re.test(line.charAt(end))) ++end;
         if (start < end)
           cm.addOverlay(state.overlay = makeOverlay(line.slice(start, end), re, state.style));
         return;
       }
-      var from = cm.getCursor("from"), to = cm.getCursor("to");
+      var from = cm.getCursor("from");
+      var to = cm.getCursor("to");
       if (from.line != to.line) return;
       if (state.wordsOnly && !isWord(cm, from, to)) return;
       var selection = cm.getRange(from, to).replace(/^\s+|\s+$/g, "");
@@ -117,7 +121,7 @@
   }
 
   function makeOverlay(query, hasBoundary, style) {
-    return {token: function(stream) {
+    return {token(stream) {
       if (stream.match(query) &&
           (!hasBoundary || boundariesAround(stream, hasBoundary)))
         return style;

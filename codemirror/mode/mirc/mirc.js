@@ -3,20 +3,21 @@
 
 //mIRC mode by Ford_Lawnmower :: Based on Velocity mode by Steve O'Hara
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
 CodeMirror.defineMIME("text/mirc", "mirc");
-CodeMirror.defineMode("mirc", function() {
+CodeMirror.defineMode("mirc", () => {
   function parseWords(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -151,7 +152,8 @@ CodeMirror.defineMode("mirc", function() {
     }
   }
   function tokenComment(stream, state) {
-    var maybeEnd = false, ch;
+    var maybeEnd = false;
+    var ch;
     while (ch = stream.next()) {
       if (ch == "/" && maybeEnd) {
         state.tokenize = tokenBase;
@@ -162,7 +164,8 @@ CodeMirror.defineMode("mirc", function() {
     return "comment";
   }
   function tokenUnparsed(stream, state) {
-    var maybeEnd = 0, ch;
+    var maybeEnd = 0;
+    var ch;
     while (ch = stream.next()) {
       if (ch == ";" && maybeEnd == 2) {
         state.tokenize = tokenBase;
@@ -176,14 +179,14 @@ CodeMirror.defineMode("mirc", function() {
     return "meta";
   }
   return {
-    startState: function() {
+    startState() {
       return {
         tokenize: tokenBase,
         beforeParams: false,
         inParams: false
       };
     },
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.eatSpace()) return null;
       return state.tokenize(stream, state);
     }

@@ -4,17 +4,17 @@
 // CodeMirror2 mode/perl/perl.js (text/x-perl) beta 0.10 (2011-11-08)
 // This is a part of CodeMirror from https://github.com/sabaca/CodeMirror_mode_perl (mail@sabaca.com)
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("perl",function(){
+CodeMirror.defineMode("perl",() => {
         // http://perldoc.perl.org
         var PERL={                                      //   null - magic touch
                                                         //   1 - keyword
@@ -484,8 +484,10 @@ CodeMirror.defineMode("perl",function(){
                 state.chain=null;                               //                                                          12   3tail
                 state.style=null;
                 state.tail=null;
-                state.tokenize=function(stream,state){
-                        var e=false,c,i=0;
+                state.tokenize=(stream, state) => {
+                        var e=false;
+                        var c;
+                        var i=0;
                         while(c=stream.next()){
                                 if(c===chain[i]&&!e){
                                         if(chain[++i]!==undefined){
@@ -497,11 +499,12 @@ CodeMirror.defineMode("perl",function(){
                                         state.tokenize=tokenPerl;
                                         return style;}
                                 e=!e&&c=="\\";}
-                        return style;};
+                        return style;
+                };
                 return state.tokenize(stream,state);}
 
         function tokenSOMETHING(stream,state,string){
-                state.tokenize=function(stream,state){
+                state.tokenize=(stream, state) => {
                         if(stream.string==string)
                                 state.tokenize=tokenPerl;
                         stream.skipToEnd();
@@ -781,7 +784,7 @@ CodeMirror.defineMode("perl",function(){
                 return null;}
 
         return {
-            startState: function() {
+            startState() {
                 return {
                     tokenize: tokenPerl,
                     chain: null,
@@ -789,7 +792,7 @@ CodeMirror.defineMode("perl",function(){
                     tail: null
                 };
             },
-            token: function(stream, state) {
+            token(stream, state) {
                 return (state.tokenize || tokenPerl)(stream, state);
             },
             lineComment: '#'

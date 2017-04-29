@@ -5,17 +5,17 @@
 // CodeMirror 1 mode.
 // highlights keywords, strings, comments (no leveling supported! ("[==[")), tokens, basic indenting
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("lua", function(config, parserConfig) {
+CodeMirror.defineMode("lua", (config, parserConfig) => {
   var indentUnit = config.indentUnit;
 
   function prefixRE(words) {
@@ -98,8 +98,9 @@ CodeMirror.defineMode("lua", function(config, parserConfig) {
   }
 
   function bracketed(level, style) {
-    return function(stream, state) {
-      var curlev = null, ch;
+    return (stream, state) => {
+      var curlev = null;
+      var ch;
       while ((ch = stream.next()) != null) {
         if (curlev == null) {if (ch == "]") curlev = 0;}
         else if (ch == "=") ++curlev;
@@ -111,8 +112,9 @@ CodeMirror.defineMode("lua", function(config, parserConfig) {
   }
 
   function string(quote) {
-    return function(stream, state) {
-      var escaped = false, ch;
+    return (stream, state) => {
+      var escaped = false;
+      var ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped) break;
         escaped = !escaped && ch == "\\";
@@ -123,11 +125,11 @@ CodeMirror.defineMode("lua", function(config, parserConfig) {
   }
 
   return {
-    startState: function(basecol) {
+    startState(basecol) {
       return {basecol: basecol || 0, indentDepth: 0, cur: normal};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.eatSpace()) return null;
       var style = state.cur(stream, state);
       var word = stream.current();
@@ -143,7 +145,7 @@ CodeMirror.defineMode("lua", function(config, parserConfig) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       var closing = dedentPartial.test(textAfter);
       return state.basecol + indentUnit * (state.indentDepth - (closing ? 1 : 0));
     },

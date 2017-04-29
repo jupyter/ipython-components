@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   function wordRegexp(words) {
@@ -45,7 +45,7 @@
     return state.scopes[state.scopes.length - 1];
   }
 
-  CodeMirror.defineMode("python", function(conf, parserConf) {
+  CodeMirror.defineMode("python", (conf, parserConf) => {
     var ERRORCLASS = "error";
 
     var singleDelimiters = parserConf.singleDelimiters || new RegExp("^[\\(\\)\\[\\]\\{\\}@,:`=;\\.]");
@@ -64,7 +64,8 @@
 
     var hangingIndent = parserConf.hangingIndent || conf.indentUnit;
 
-    var myKeywords = commonKeywords, myBuiltins = commonBuiltins;
+    var myKeywords = commonKeywords;
+    var myBuiltins = commonBuiltins;
     if(parserConf.extra_keywords != undefined){
       myKeywords = myKeywords.concat(parserConf.extra_keywords);
     }
@@ -224,7 +225,8 @@
     }
 
     function pushScope(stream, state, type) {
-      var offset = 0, align = null;
+      var offset = 0;
+      var align = null;
       if (type == "py") {
         while (top(state).type != "py")
           state.scopes.pop();
@@ -232,7 +234,7 @@
       offset = top(state).offset + (type == "py" ? conf.indentUnit : hangingIndent);
       if (type != "py" && !stream.match(/^(\s|#.*)*$/, false))
         align = stream.column() + 1;
-      state.scopes.push({offset: offset, type: type, align: align});
+      state.scopes.push({offset, type, align});
     }
 
     function dedent(stream, state) {
@@ -298,7 +300,7 @@
     }
 
     var external = {
-      startState: function(basecolumn) {
+      startState(basecolumn) {
         return {
           tokenize: tokenBase,
           scopes: [{offset: basecolumn || 0, type: "py", align: null}],
@@ -309,7 +311,7 @@
         };
       },
 
-      token: function(stream, state) {
+      token(stream, state) {
         var addErr = state.errorToken;
         if (addErr) state.errorToken = false;
         var style = tokenLexer(stream, state);
@@ -325,7 +327,7 @@
         return addErr ? style + " " + ERRORCLASS : style;
       },
 
-      indent: function(state, textAfter) {
+      indent(state, textAfter) {
         if (state.tokenize != tokenBase)
           return state.tokenize.isString ? CodeMirror.Pass : 0;
 
@@ -347,7 +349,7 @@
 
   CodeMirror.defineMIME("text/x-python", "python");
 
-  var words = function(str) { return str.split(" "); };
+  var words = str => str.split(" ");
 
   CodeMirror.defineMIME("text/x-cython", {
     name: "python",

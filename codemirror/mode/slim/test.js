@@ -3,7 +3,7 @@
 
 // Slim Highlighting for CodeMirror copyright (c) HicknHack Software Gmbh
 
-(function() {
+((() => {
   var mode = CodeMirror.getMode({tabSize: 4, indentUnit: 2}, "slim");
   function MT(name) { test.mode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
@@ -93,4 +93,4 @@
 
   MT("interpolationInHTMLAttribute",
      "[tag div]([attribute title]=[string \"]#{[variable test]}[string _]#{[variable ting]()}[string \"]) Test");
-})();
+}))();

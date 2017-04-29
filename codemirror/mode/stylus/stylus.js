@@ -1,28 +1,27 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
-  CodeMirror.defineMode("stylus", function(config) {
+  CodeMirror.defineMode("stylus", config => {
+    var operatorsRegexp = /^(\?:?|\+[+=]?|-[\-=]?|\*[\*=]?|\/=?|[=!:\?]?=|<=?|>=?|%=?|&&|\|=?|\~|!|\^|\\)/;
+    var delimitersRegexp = /^(?:[()\[\]{},:`=;]|\.\.?\.?)/;
+    var wordOperatorsRegexp = wordRegexp(wordOperators);
+    var commonKeywordsRegexp = wordRegexp(commonKeywords);
+    var commonAtomsRegexp = wordRegexp(commonAtoms);
+    var commonDefRegexp = wordRegexp(commonDef);
+    var vendorPrefixesRegexp = new RegExp(/^\-(moz|ms|o|webkit)-/);
+    var cssValuesWithBracketsRegexp = new RegExp("^(" + cssValuesWithBrackets_.join("|") + ")\\([\\w\-\\#\\,\\.\\%\\s\\(\\)]*\\)");
 
-    var operatorsRegexp = /^(\?:?|\+[+=]?|-[\-=]?|\*[\*=]?|\/=?|[=!:\?]?=|<=?|>=?|%=?|&&|\|=?|\~|!|\^|\\)/,
-        delimitersRegexp = /^(?:[()\[\]{},:`=;]|\.\.?\.?)/,
-        wordOperatorsRegexp = wordRegexp(wordOperators),
-        commonKeywordsRegexp = wordRegexp(commonKeywords),
-        commonAtomsRegexp = wordRegexp(commonAtoms),
-        commonDefRegexp = wordRegexp(commonDef),
-        vendorPrefixesRegexp = new RegExp(/^\-(moz|ms|o|webkit)-/),
-        cssValuesWithBracketsRegexp = new RegExp("^(" + cssValuesWithBrackets_.join("|") + ")\\([\\w\-\\#\\,\\.\\%\\s\\(\\)]*\\)");
-
-    var tokenBase = function(stream, state) {
+    var tokenBase = (stream, state) => {
 
       if (stream.eatSpace()) return null;
 
@@ -253,7 +252,7 @@
 
     };
 
-    var tokenLexer = function(stream, state) {
+    var tokenLexer = (stream, state) => {
 
       if (stream.sol()) {
         state.indentCount = 0;
@@ -287,20 +286,20 @@
     };
 
     return {
-      startState: function() {
+      startState() {
         return {
           tokenizer: tokenBase,
           scopes: [{offset: 0, type: 'styl'}]
         };
       },
 
-      token: function(stream, state) {
+      token(stream, state) {
         var style = tokenLexer(stream, state);
-        state.lastToken = { style: style, content: stream.current() };
+        state.lastToken = { style, content: stream.current() };
         return style;
       },
 
-      indent: function(state) {
+      indent(state) {
         return state.scopes[0].offset;
       },
 
@@ -374,7 +373,7 @@
     }
 
     function buildInterpolationTokenizer(currentTokenizer) {
-      return function(stream, state) {
+      return (stream, state) => {
         if (stream.peek() === "}") {
           stream.next();
           state.tokenizer = currentTokenizer;
@@ -398,7 +397,6 @@
       if (state.scopes.length == 1) { return true; }
       state.scopes.shift();
     }
-
   });
 
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
@@ -410,25 +408,26 @@
   var cssColorValues_ = ["aliceblue","antiquewhite","aqua","aquamarine","azure","beige","bisque","black","blanchedalmond","blue","blueviolet","brown","burlywood","cadetblue","chartreuse","chocolate","coral","cornflowerblue","cornsilk","crimson","cyan","darkblue","darkcyan","darkgoldenrod","darkgray","darkgreen","darkkhaki","darkmagenta","darkolivegreen","darkorange","darkorchid","darkred","darksalmon","darkseagreen","darkslateblue","darkslategray","darkturquoise","darkviolet","deeppink","deepskyblue","dimgray","dodgerblue","firebrick","floralwhite","forestgreen","fuchsia","gainsboro","ghostwhite","gold","goldenrod","gray","grey","green","greenyellow","honeydew","hotpink","indianred","indigo","ivory","khaki","lavender","lavenderblush","lawngreen","lemonchiffon","lightblue","lightcoral","lightcyan","lightgoldenrodyellow","lightgray","lightgreen","lightpink","lightsalmon","lightseagreen","lightskyblue","lightslategray","lightsteelblue","lightyellow","lime","limegreen","linen","magenta","maroon","mediumaquamarine","mediumblue","mediumorchid","mediumpurple","mediumseagreen","mediumslateblue","mediumspringgreen","mediumturquoise","mediumvioletred","midnightblue","mintcream","mistyrose","moccasin","navajowhite","navy","oldlace","olive","olivedrab","orange","orangered","orchid","palegoldenrod","palegreen","paleturquoise","palevioletred","papayawhip","peachpuff","peru","pink","plum","powderblue","purple","red","rosybrown","royalblue","saddlebrown","salmon","sandybrown","seagreen","seashell","sienna","silver","skyblue","slateblue","slategray","snow","springgreen","steelblue","tan","teal","thistle","tomato","turquoise","violet","wheat","white","whitesmoke","yellow","yellowgreen"];
   var cssValuesWithBrackets_ = ["gradient","linear-gradient","radial-gradient","repeating-linear-gradient","repeating-radial-gradient","cubic-bezier","translateX","translateY","translate3d","rotate3d","scale","scale3d","perspective","skewX"];
 
-  var wordOperators = ["in", "and", "or", "not", "is a", "is", "isnt", "defined", "if unless"],
-      commonKeywords = ["for", "if", "else", "unless", "return"],
-      commonAtoms = ["null", "true", "false", "href", "title", "type", "not-allowed", "readonly", "disabled"],
-      commonDef = ["@font-face", "@keyframes", "@media", "@viewport", "@page", "@host", "@supports", "@block", "@css"],
-      cssTypeSelectors = keySet(cssTypeSelectors_),
-      cssProperties = keySet(cssProperties_),
-      cssValues = keySet(cssValues_.concat(cssColorValues_)),
-      hintWords = wordOperators.concat(commonKeywords,
-                                       commonAtoms,
-                                       commonDef,
-                                       cssTypeSelectors_,
-                                       cssProperties_,
-                                       cssValues_,
-                                       cssValuesWithBrackets_,
-                                       cssColorValues_);
+  var wordOperators = ["in", "and", "or", "not", "is a", "is", "isnt", "defined", "if unless"];
+  var commonKeywords = ["for", "if", "else", "unless", "return"];
+  var commonAtoms = ["null", "true", "false", "href", "title", "type", "not-allowed", "readonly", "disabled"];
+  var commonDef = ["@font-face", "@keyframes", "@media", "@viewport", "@page", "@host", "@supports", "@block", "@css"];
+  var cssTypeSelectors = keySet(cssTypeSelectors_);
+  var cssProperties = keySet(cssProperties_);
+  var cssValues = keySet(cssValues_.concat(cssColorValues_));
+
+  var hintWords = wordOperators.concat(commonKeywords,
+                                   commonAtoms,
+                                   commonDef,
+                                   cssTypeSelectors_,
+                                   cssProperties_,
+                                   cssValues_,
+                                   cssValuesWithBrackets_,
+                                   cssColorValues_);
 
   function wordRegexp(words) {
     return new RegExp("^((" + words.join(")|(") + "))\\b");
-  };
+  }
 
   function keySet(array) {
     var keys = {};
@@ -436,9 +435,8 @@
       keys[array[i]] = true;
     }
     return keys;
-  };
+  }
 
   CodeMirror.registerHelper("hintWords", "stylus", hintWords);
   CodeMirror.defineMIME("text/x-styl", "stylus");
-
 });

@@ -1,22 +1,21 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.registerHelper("fold", "indent", function(cm, start) {
-  var tabSize = cm.getOption("tabSize"), firstLine = cm.getLine(start.line);
+CodeMirror.registerHelper("fold", "indent", (cm, start) => {
+  var tabSize = cm.getOption("tabSize");
+  var firstLine = cm.getLine(start.line);
   if (!/\S/.test(firstLine)) return;
-  var getIndent = function(line) {
-    return CodeMirror.countColumn(line, null, tabSize);
-  };
+  var getIndent = line => CodeMirror.countColumn(line, null, tabSize);
   var myIndent = getIndent(firstLine);
   var lastLineInFold = null;
   // Go through lines until we find a line that definitely doesn't belong in

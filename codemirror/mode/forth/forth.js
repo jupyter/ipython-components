@@ -3,19 +3,19 @@
 
 // Author: Aliaksei Chapyzhenka
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   function toWordList(words) {
     var ret = [];
-    words.split(' ').forEach(function(e){
+    words.split(' ').forEach(e => {
       ret.push({name: e});
     });
     return ret;
@@ -63,7 +63,7 @@
 
   var immediateWordList = toWordList('IF ELSE THEN BEGIN WHILE REPEAT UNTIL RECURSE [IF] [ELSE] [THEN] ?DO DO LOOP +LOOP UNLOOP LEAVE EXIT AGAIN CASE OF ENDOF ENDCASE');
 
-  CodeMirror.defineMode('forth', function() {
+  CodeMirror.defineMode('forth', () => {
     function searchWordList (wordList, word) {
       var i;
       for (i = wordList.length - 1; i >= 0; i--) {
@@ -74,16 +74,16 @@
       return undefined;
     }
   return {
-    startState: function() {
+    startState() {
       return {
         state: '',
         base: 10,
-        coreWordList: coreWordList,
-        immediateWordList: immediateWordList,
+        coreWordList,
+        immediateWordList,
         wordList: []
       };
     },
-    token: function (stream, stt) {
+    token(stream, stt) {
       var mat;
       if (stream.eatSpace()) {
         return null;
@@ -146,19 +146,19 @@
           }
 
           if (mat[1] === '(') {
-            stream.eatWhile(function (s) { return s !== ')'; });
+            stream.eatWhile(s => s !== ')');
             stream.eat(')');
             return 'comment' + stt.state;
           }
 
           // // strings
           if (mat[1] === '.(') {
-            stream.eatWhile(function (s) { return s !== ')'; });
+            stream.eatWhile(s => s !== ')');
             stream.eat(')');
             return 'string' + stt.state;
           }
           if (mat[1] === 'S"' || mat[1] === '."' || mat[1] === 'C"') {
-            stream.eatWhile(function (s) { return s !== '"'; });
+            stream.eatWhile(s => s !== '"');
             stream.eat('"');
             return 'string' + stt.state;
           }

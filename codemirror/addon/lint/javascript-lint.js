@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
   // declare global: JSHINT
 
@@ -24,7 +24,8 @@
   function validator(text, options) {
     if (!window.JSHINT) return [];
     JSHINT(text, options);
-    var errors = JSHINT.data().errors, result = [];
+    var errors = JSHINT.data().errors;
+    var result = [];
     if (errors) parseErrors(errors, result);
     return result;
   }
@@ -40,7 +41,11 @@
   }
 
   function fixWith(error, fixes, severity, force) {
-    var description, fix, find, replace, found;
+    var description;
+    var fix;
+    var find;
+    var replace;
+    var found;
 
     description = error.description;
 
@@ -73,7 +78,8 @@
     for ( var i = 0; i < errors.length; i++) {
       var error = errors[i];
       if (error) {
-        var linetabpositions, index;
+        var linetabpositions;
+        var index;
 
         linetabpositions = [];
 
@@ -92,8 +98,7 @@
             tabpositions = [];
             // ugggh phantomjs does not like this
             // forEachChar(evidence, function(item, index) {
-            Array.prototype.forEach.call(evidence, function(item,
-                                                            index) {
+            Array.prototype.forEach.call(evidence, (item, index) => {
               if (item === '\t') {
                 // First col is 1 (not 0) to match error
                 // positions
@@ -104,14 +109,15 @@
           }
           if (tabpositions.length > 0) {
             var pos = error.character;
-            tabpositions.forEach(function(tabposition) {
+            tabpositions.forEach(tabposition => {
               if (pos > tabposition) pos -= 1;
             });
             error.character = pos;
           }
         }
 
-        var start = error.character - 1, end = start + 1;
+        var start = error.character - 1;
+        var end = start + 1;
         if (error.evidence) {
           index = error.evidence.substring(start).search(/.\b/);
           if (index > -1) {
