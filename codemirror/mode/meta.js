@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   CodeMirror.modeInfo = [
@@ -137,7 +137,7 @@
     if (info.mimes) info.mime = info.mimes[0];
   }
 
-  CodeMirror.findModeByMIME = function(mime) {
+  CodeMirror.findModeByMIME = mime => {
     mime = mime.toLowerCase();
     for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
       var info = CodeMirror.modeInfo[i];
@@ -147,7 +147,7 @@
     }
   };
 
-  CodeMirror.findModeByExtension = function(ext) {
+  CodeMirror.findModeByExtension = ext => {
     for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
       var info = CodeMirror.modeInfo[i];
       if (info.ext) for (var j = 0; j < info.ext.length; j++)
@@ -155,7 +155,7 @@
     }
   };
 
-  CodeMirror.findModeByFileName = function(filename) {
+  CodeMirror.findModeByFileName = filename => {
     for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
       var info = CodeMirror.modeInfo[i];
       if (info.file && info.file.test(filename)) return info;
@@ -165,7 +165,7 @@
     if (ext) return CodeMirror.findModeByExtension(ext);
   };
 
-  CodeMirror.findModeByName = function(name) {
+  CodeMirror.findModeByName = name => {
     name = name.toLowerCase();
     for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
       var info = CodeMirror.modeInfo[i];

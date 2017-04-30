@@ -1,19 +1,20 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("groovy", function(config) {
+CodeMirror.defineMode("groovy", config => {
   function words(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -83,7 +84,9 @@ CodeMirror.defineMode("groovy", function(config) {
       else return "string";
     }
     function t(stream, state) {
-      var escaped = false, next, end = !tripleQuoted;
+      var escaped = false;
+      var next;
+      var end = !tripleQuoted;
       while ((next = stream.next()) != null) {
         if (next == quote && !escaped) {
           if (!tripleQuoted) { break; }
@@ -121,7 +124,8 @@ CodeMirror.defineMode("groovy", function(config) {
   }
 
   function tokenComment(stream, state) {
-    var maybeEnd = false, ch;
+    var maybeEnd = false;
+    var ch;
     while (ch = stream.next()) {
       if (ch == "/" && maybeEnd) {
         state.tokenize.pop();
@@ -157,7 +161,7 @@ CodeMirror.defineMode("groovy", function(config) {
   // Interface
 
   return {
-    startState: function(basecolumn) {
+    startState(basecolumn) {
       return {
         tokenize: [tokenBase],
         context: new Context((basecolumn || 0) - config.indentUnit, 0, "top", false),
@@ -167,7 +171,7 @@ CodeMirror.defineMode("groovy", function(config) {
       };
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       var ctx = state.context;
       if (stream.sol()) {
         if (ctx.align == null) ctx.align = false;
@@ -206,9 +210,10 @@ CodeMirror.defineMode("groovy", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       if (!state.tokenize[state.tokenize.length-1].isBase) return 0;
-      var firstChar = textAfter && textAfter.charAt(0), ctx = state.context;
+      var firstChar = textAfter && textAfter.charAt(0);
+      var ctx = state.context;
       if (ctx.type == "statement" && !expectExpression(state.lastToken)) ctx = ctx.prev;
       var closing = firstChar == ctx.type;
       if (ctx.type == "statement") return ctx.indented + (firstChar == "{" ? 0 : config.indentUnit);

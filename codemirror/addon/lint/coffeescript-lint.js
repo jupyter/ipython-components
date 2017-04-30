@@ -5,19 +5,19 @@
 
 // declare global: coffeelint
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.registerHelper("lint", "coffeescript", function(text) {
+CodeMirror.registerHelper("lint", "coffeescript", text => {
   var found = [];
-  var parseError = function(err) {
+  var parseError = err => {
     var loc = err.lineNumber;
     found.push({from: CodeMirror.Pos(loc-1, 0),
                 to: CodeMirror.Pos(loc, 0),

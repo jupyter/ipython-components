@@ -5,13 +5,13 @@
 
 var server;
 
-this.onmessage = function(e) {
+this.onmessage = e => {
   var data = e.data;
   switch (data.type) {
   case "init": return startServer(data.defs, data.plugins, data.scripts);
   case "add": return server.addFile(data.name, data.text);
   case "del": return server.delFile(data.name);
-  case "req": return server.request(data.body, function(err, reqData) {
+  case "req": return server.request(data.body, (err, reqData) => {
     postMessage({id: data.id, body: reqData, err: err && String(err)});
   });
   case "getFile":
@@ -22,23 +22,24 @@ this.onmessage = function(e) {
   }
 };
 
-var nextId = 0, pending = {};
+var nextId = 0;
+var pending = {};
 function getFile(file, c) {
   postMessage({type: "getFile", name: file, id: ++nextId});
   pending[nextId] = c;
 }
 
 function startServer(defs, plugins, scripts) {
-  if (scripts) importScripts.apply(null, scripts);
+  if (scripts) importScripts(...scripts);
 
   server = new tern.Server({
-    getFile: getFile,
+    getFile,
     async: true,
-    defs: defs,
-    plugins: plugins
+    defs,
+    plugins
   });
 }
 
 var console = {
-  log: function(v) { postMessage({type: "debug", message: v}); }
+  log(v) { postMessage({type: "debug", message: v}); }
 };

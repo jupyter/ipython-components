@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   var DEFAULT_BRACKETS = "()[]{}''\"\"";
   var DEFAULT_TRIPLES = "'\"";
   var DEFAULT_EXPLODE_ON_ENTER = "[]{}";
@@ -16,11 +16,13 @@
 
   var Pos = CodeMirror.Pos;
 
-  CodeMirror.defineOption("autoCloseBrackets", false, function(cm, val, old) {
+  CodeMirror.defineOption("autoCloseBrackets", false, (cm, val, old) => {
     if (old != CodeMirror.Init && old)
       cm.removeKeyMap("autoCloseBrackets");
     if (!val) return;
-    var pairs = DEFAULT_BRACKETS, triples = DEFAULT_TRIPLES, explode = DEFAULT_EXPLODE_ON_ENTER;
+    var pairs = DEFAULT_BRACKETS;
+    var triples = DEFAULT_TRIPLES;
+    var explode = DEFAULT_EXPLODE_ON_ENTER;
     if (typeof val == "string") pairs = val;
     else if (typeof val == "object") {
       if (val.pairs != null) pairs = val.pairs;
@@ -57,7 +59,7 @@
   function buildKeymap(pairs, triples) {
     var map = {
       name : "autoCloseBrackets",
-      Backspace: function(cm) {
+      Backspace(cm) {
         if (cm.getOption("disableInput")) return CodeMirror.Pass;
         var ranges = cm.listSelections();
         for (var i = 0; i < ranges.length; i++) {
@@ -72,13 +74,17 @@
       }
     };
     var closingBrackets = "";
-    for (var i = 0; i < pairs.length; i += 2) (function(left, right) {
+    for (var i = 0; i < pairs.length; i += 2) (((left, right) => {
       closingBrackets += right;
-      map["'" + left + "'"] = function(cm) {
+      map["'" + left + "'"] = cm => {
         if (cm.getOption("disableInput")) return CodeMirror.Pass;
-        var ranges = cm.listSelections(), type, next;
+        var ranges = cm.listSelections();
+        var type;
+        var next;
         for (var i = 0; i < ranges.length; i++) {
-          var range = ranges[i], cur = range.head, curType;
+          var range = ranges[i];
+          var cur = range.head;
+          var curType;
           var next = cm.getRange(cur, Pos(cur.line, cur.ch + 1));
           if (!range.empty()) {
             curType = "surround";
@@ -103,7 +109,7 @@
           else if (type != curType) return CodeMirror.Pass;
         }
 
-        cm.operation(function() {
+        cm.operation(() => {
           if (type == "skip") {
             cm.execCommand("goCharRight");
           } else if (type == "skipThree") {
@@ -123,7 +129,7 @@
           }
         });
       };
-      if (left != right) map["'" + right + "'"] = function(cm) {
+      if (left != right) map["'" + right + "'"] = cm => {
         var ranges = cm.listSelections();
         for (var i = 0; i < ranges.length; i++) {
           var range = ranges[i];
@@ -133,12 +139,12 @@
         }
         cm.execCommand("goCharRight");
       };
-    })(pairs.charAt(i), pairs.charAt(i + 1));
+    }))(pairs.charAt(i), pairs.charAt(i + 1));
     return map;
   }
 
   function buildExplodeHandler(pairs) {
-    return function(cm) {
+    return cm => {
       if (cm.getOption("disableInput")) return CodeMirror.Pass;
       var ranges = cm.listSelections();
       for (var i = 0; i < ranges.length; i++) {
@@ -146,7 +152,7 @@
         var around = charsAround(cm, ranges[i].head);
         if (!around || pairs.indexOf(around) % 2 != 0) return CodeMirror.Pass;
       }
-      cm.operation(function() {
+      cm.operation(() => {
         cm.replaceSelection("\n\n", null);
         cm.execCommand("goCharLeft");
         ranges = cm.listSelections();

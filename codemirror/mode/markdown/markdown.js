@@ -1,18 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../xml/xml"), require("../meta"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../meta"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
-
+CodeMirror.defineMode("markdown", (cmCfg, modeCfg) => {
   var htmlFound = CodeMirror.modes.hasOwnProperty("xml");
   var htmlMode = CodeMirror.getMode(cmCfg, htmlFound ? {name: "xml", htmlMode: true} : "text/plain");
 
@@ -51,30 +50,32 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
 
   var codeDepth = 0;
 
-  var header   = 'header'
-  ,   code     = 'comment'
-  ,   quote    = 'quote'
-  ,   list1    = 'variable-2'
-  ,   list2    = 'variable-3'
-  ,   list3    = 'keyword'
-  ,   hr       = 'hr'
-  ,   image    = 'tag'
-  ,   formatting = 'formatting'
-  ,   linkinline = 'link'
-  ,   linkemail = 'link'
-  ,   linktext = 'link'
-  ,   linkhref = 'string'
-  ,   em       = 'em'
-  ,   strong   = 'strong'
-  ,   strikethrough = 'strikethrough';
+  var header   = 'header';
+  var code     = 'comment';
+  var quote    = 'quote';
+  var list1    = 'variable-2';
+  var list2    = 'variable-3';
+  var list3    = 'keyword';
+  var hr       = 'hr';
+  var image    = 'tag';
+  var formatting = 'formatting';
+  var linkinline = 'link';
+  var linkemail = 'link';
+  var linktext = 'link';
+  var linkhref = 'string';
+  var em       = 'em';
+  var strong   = 'strong';
+  var strikethrough = 'strikethrough';
+  var hrRE = /^([*\-=_])(?:\s*\1){2,}\s*$/;
+  var ulRE = /^[*\-+]\s+/;
+  var olRE = /^[0-9]+\.\s+/;
 
-  var hrRE = /^([*\-=_])(?:\s*\1){2,}\s*$/
-  ,   ulRE = /^[*\-+]\s+/
-  ,   olRE = /^[0-9]+\.\s+/
-  ,   taskListRE = /^\[(x| )\](?=\s)/ // Must follow ulRE or olRE
-  ,   atxHeaderRE = /^#+/
-  ,   setextHeaderRE = /^(?:\={1,}|-{1,})$/
-  ,   textRE = /^[^#!\[\]*_\\<>` "'(~]+/;
+  var // Must follow ulRE or olRE
+  taskListRE = /^\[(x| )\](?=\s)/;
+
+  var atxHeaderRE = /^#+/;
+  var setextHeaderRE = /^(?:\={1,}|-{1,})$/;
+  var textRE = /^[^#!\[\]*_\\<>` "'(~]+/;
 
   function switchInline(stream, state, f) {
     state.f = state.inline = f;
@@ -565,7 +566,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
   }
 
   function getLinkHrefInside(endChar) {
-    return function(stream, state) {
+    return (stream, state) => {
       var ch = stream.next();
 
       if (ch === endChar) {
@@ -640,7 +641,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
   }
 
   var mode = {
-    startState: function() {
+    startState() {
       return {
         f: blockNormal,
 
@@ -671,7 +672,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
       };
     },
 
-    copyState: function(s) {
+    copyState(s) {
       return {
         f: s.f,
 
@@ -703,7 +704,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
       };
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
 
       // Reset state.formatting
       state.formatting = false;
@@ -745,15 +746,15 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
       return state.f(stream, state);
     },
 
-    innerMode: function(state) {
+    innerMode(state) {
       if (state.block == htmlBlock) return {state: state.htmlState, mode: htmlMode};
       if (state.localState) return {state: state.localState, mode: state.localMode};
-      return {state: state, mode: mode};
+      return {state, mode};
     },
 
-    blankLine: blankLine,
+    blankLine,
 
-    getType: getType,
+    getType,
 
     fold: "markdown"
   };

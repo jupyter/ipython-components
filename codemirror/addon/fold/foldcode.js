@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   function doFold(cm, pos, options, force) {
@@ -43,7 +43,7 @@
     if (!range || range.cleared || force === "unfold") return;
 
     var myWidget = makeWidget(cm, options);
-    CodeMirror.on(myWidget, "mousedown", function(e) {
+    CodeMirror.on(myWidget, "mousedown", e => {
       myRange.clear();
       CodeMirror.e_preventDefault(e);
     });
@@ -52,7 +52,7 @@
       clearOnEnter: true,
       __isFold: true
     });
-    myRange.on("clear", function(from, to) {
+    myRange.on("clear", (from, to) => {
       CodeMirror.signal(cm, "unfold", cm, from, to);
     });
     CodeMirror.signal(cm, "fold", cm, range.from, range.to);
@@ -70,9 +70,7 @@
   }
 
   // Clumsy backwards-compatible interface
-  CodeMirror.newFoldFunction = function(rangeFinder, widget) {
-    return function(cm, pos) { doFold(cm, pos, {rangeFinder: rangeFinder, widget: widget}); };
-  };
+  CodeMirror.newFoldFunction = (rangeFinder, widget) => (cm, pos) => { doFold(cm, pos, {rangeFinder, widget}); };
 
   // New-style interface
   CodeMirror.defineExtension("foldCode", function(pos, options, force) {
@@ -85,31 +83,31 @@
       if (marks[i].__isFold) return true;
   });
 
-  CodeMirror.commands.toggleFold = function(cm) {
+  CodeMirror.commands.toggleFold = cm => {
     cm.foldCode(cm.getCursor());
   };
-  CodeMirror.commands.fold = function(cm) {
+  CodeMirror.commands.fold = cm => {
     cm.foldCode(cm.getCursor(), null, "fold");
   };
-  CodeMirror.commands.unfold = function(cm) {
+  CodeMirror.commands.unfold = cm => {
     cm.foldCode(cm.getCursor(), null, "unfold");
   };
-  CodeMirror.commands.foldAll = function(cm) {
-    cm.operation(function() {
+  CodeMirror.commands.foldAll = cm => {
+    cm.operation(() => {
       for (var i = cm.firstLine(), e = cm.lastLine(); i <= e; i++)
         cm.foldCode(CodeMirror.Pos(i, 0), null, "fold");
     });
   };
-  CodeMirror.commands.unfoldAll = function(cm) {
-    cm.operation(function() {
+  CodeMirror.commands.unfoldAll = cm => {
+    cm.operation(() => {
       for (var i = cm.firstLine(), e = cm.lastLine(); i <= e; i++)
         cm.foldCode(CodeMirror.Pos(i, 0), null, "unfold");
     });
   };
 
-  CodeMirror.registerHelper("fold", "combine", function() {
-    var funcs = Array.prototype.slice.call(arguments, 0);
-    return function(cm, start) {
+  CodeMirror.registerHelper("fold", "combine", function(...args) {
+    var funcs = Array.prototype.slice.call(args, 0);
+    return (cm, start) => {
       for (var i = 0; i < funcs.length; ++i) {
         var found = funcs[i](cm, start);
         if (found) return found;
@@ -117,7 +115,7 @@
     };
   });
 
-  CodeMirror.registerHelper("fold", "auto", function(cm, start) {
+  CodeMirror.registerHelper("fold", "auto", (cm, start) => {
     var helpers = cm.getHelpers(start, "fold");
     for (var i = 0; i < helpers.length; i++) {
       var cur = helpers[i](cm, start);

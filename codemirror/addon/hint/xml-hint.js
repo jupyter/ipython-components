@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var Pos = CodeMirror.Pos;
@@ -17,16 +17,20 @@
     var tags = options && options.schemaInfo;
     var quote = (options && options.quoteChar) || '"';
     if (!tags) return;
-    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+    var cur = cm.getCursor();
+    var token = cm.getTokenAt(cur);
     if (token.end > cur.ch) {
       token.end = cur.ch;
       token.string = token.string.slice(0, cur.ch - token.start);
     }
     var inner = CodeMirror.innerMode(cm.getMode(), token.state);
     if (inner.mode.name != "xml") return;
-    var result = [], replaceToken = false, prefix;
+    var result = [];
+    var replaceToken = false;
+    var prefix;
     var tag = /\btag\b/.test(token.type) && !/>$/.test(token.string);
-    var tagName = tag && /^\w/.test(token.string), tagStart;
+    var tagName = tag && /^\w/.test(token.string);
+    var tagStart;
 
     if (tagName) {
       var before = cm.getLine(cur.line).slice(Math.max(0, token.start - 2), token.start);
@@ -42,7 +46,8 @@
       if (tagName)
         prefix = token.string;
       replaceToken = tagType;
-      var cx = inner.state.context, curTag = cx && tags[cx.tagName];
+      var cx = inner.state.context;
+      var curTag = cx && tags[cx.tagName];
       var childList = cx ? curTag && curTag.children : tags["!top"];
       if (childList && tagType != "close") {
         for (var i = 0; i < childList.length; ++i) if (!prefix || childList[i].lastIndexOf(prefix, 0) == 0)
@@ -56,7 +61,9 @@
         result.push("</" + cx.tagName + ">");
     } else {
       // Attribute completion
-      var curTag = tags[inner.state.tagName], attrs = curTag && curTag.attrs;
+      var curTag = tags[inner.state.tagName];
+
+      var attrs = curTag && curTag.attrs;
       var globalAttrs = tags["!attrs"];
       if (!attrs && !globalAttrs) return;
       if (!attrs) {
@@ -67,10 +74,12 @@
         for (var nm in attrs) if (attrs.hasOwnProperty(nm)) set[nm] = attrs[nm];
         attrs = set;
       }
-      if (token.type == "string" || token.string == "=") { // A value
+      if (token.type == "string" || token.string == "=") {
+        // A value
         var before = cm.getRange(Pos(cur.line, Math.max(0, cur.ch - 60)),
                                  Pos(cur.line, token.type == "string" ? token.start : token.end));
-        var atName = before.match(/([^\s\u00a0=<>\"\']+)=$/), atValues;
+        var atName = before.match(/([^\s\u00a0=<>\"\']+)=$/);
+        var atValues;
         if (!atName || !attrs.hasOwnProperty(atName[1]) || !(atValues = attrs[atName[1]])) return;
         if (typeof atValues == 'function') atValues = atValues.call(this, cm); // Functions can be used to supply values for autocomplete widget
         if (token.type == "string") {

@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
   var Pos = CodeMirror.Pos;
 
@@ -25,10 +25,13 @@
     // more matches were found.
     if (typeof query != "string") { // Regexp match
       if (!query.global) query = new RegExp(query.source, query.ignoreCase ? "ig" : "g");
-      this.matches = function(reverse, pos) {
+      this.matches = (reverse, pos) => {
         if (reverse) {
           query.lastIndex = 0;
-          var line = doc.getLine(pos.line).slice(0, pos.ch), cutOff = 0, match, start;
+          var line = doc.getLine(pos.line).slice(0, pos.ch);
+          var cutOff = 0;
+          var match;
+          var start;
           for (;;) {
             query.lastIndex = cutOff;
             var newMatch = query.exec(line);
@@ -47,7 +50,8 @@
           }
         } else {
           query.lastIndex = pos.ch;
-          var line = doc.getLine(pos.line), match = query.exec(line);
+          var line = doc.getLine(pos.line);
+          var match = query.exec(line);
           var matchLen = (match && match[0].length) || 0;
           var start = match && match.index;
           if (start + matchLen != line.length && !matchLen) matchLen = 1;
@@ -55,41 +59,43 @@
         if (match && matchLen)
           return {from: Pos(pos.line, start),
                   to: Pos(pos.line, start + matchLen),
-                  match: match};
+                  match};
       };
     } else { // String query
       var origQuery = query;
       if (caseFold) query = query.toLowerCase();
-      var fold = caseFold ? function(str){return str.toLowerCase();} : function(str){return str;};
+      var fold = caseFold ? str => str.toLowerCase() : str => str;
       var target = query.split("\n");
       // Different methods for single-line and multi-line queries
       if (target.length == 1) {
         if (!query.length) {
           // Empty string would match anything and never progress, so
           // we define it to match nothing instead.
-          this.matches = function() {};
+          this.matches = () => {};
         } else {
-          this.matches = function(reverse, pos) {
+          this.matches = (reverse, pos) => {
             if (reverse) {
-              var orig = doc.getLine(pos.line).slice(0, pos.ch), line = fold(orig);
+              var orig = doc.getLine(pos.line).slice(0, pos.ch);
+              var line = fold(orig);
               var match = line.lastIndexOf(query);
               if (match > -1) {
                 match = adjustPos(orig, line, match);
                 return {from: Pos(pos.line, match), to: Pos(pos.line, match + origQuery.length)};
               }
-             } else {
-               var orig = doc.getLine(pos.line).slice(pos.ch), line = fold(orig);
-               var match = line.indexOf(query);
-               if (match > -1) {
-                 match = adjustPos(orig, line, match) + pos.ch;
-                 return {from: Pos(pos.line, match), to: Pos(pos.line, match + origQuery.length)};
-               }
+            } else {
+              var orig = doc.getLine(pos.line).slice(pos.ch);
+              var line = fold(orig);
+              var match = line.indexOf(query);
+              if (match > -1) {
+                match = adjustPos(orig, line, match) + pos.ch;
+                return {from: Pos(pos.line, match), to: Pos(pos.line, match + origQuery.length)};
+              }
             }
           };
         }
       } else {
         var origTarget = origQuery.split("\n");
-        this.matches = function(reverse, pos) {
+        this.matches = (reverse, pos) => {
           var last = target.length - 1;
           if (reverse) {
             if (pos.line - (target.length - 1) < doc.firstLine()) return;
@@ -97,18 +103,20 @@
             var to = Pos(pos.line, origTarget[last].length);
             for (var ln = pos.line - 1, i = last - 1; i >= 1; --i, --ln)
               if (target[i] != fold(doc.getLine(ln))) return;
-            var line = doc.getLine(ln), cut = line.length - origTarget[0].length;
+            var line = doc.getLine(ln);
+            var cut = line.length - origTarget[0].length;
             if (fold(line.slice(cut)) != target[0]) return;
-            return {from: Pos(ln, cut), to: to};
+            return {from: Pos(ln, cut), to};
           } else {
             if (pos.line + (target.length - 1) > doc.lastLine()) return;
-            var line = doc.getLine(pos.line), cut = line.length - origTarget[0].length;
+            var line = doc.getLine(pos.line);
+            var cut = line.length - origTarget[0].length;
             if (fold(line.slice(cut)) != target[0]) return;
             var from = Pos(pos.line, cut);
             for (var ln = pos.line + 1, i = 1; i < last; ++i, ++ln)
               if (target[i] != fold(doc.getLine(ln))) return;
             if (fold(doc.getLine(ln).slice(0, origTarget[last].length)) != target[last]) return;
-            return {from: from, to: Pos(ln, origTarget[last].length)};
+            return {from, to: Pos(ln, origTarget[last].length)};
           }
         };
       }
@@ -116,11 +124,12 @@
   }
 
   SearchCursor.prototype = {
-    findNext: function() {return this.find(false);},
-    findPrevious: function() {return this.find(true);},
+    findNext() {return this.find(false);},
+    findPrevious() {return this.find(true);},
 
-    find: function(reverse) {
-      var self = this, pos = this.doc.clipPos(reverse ? this.pos.from : this.pos.to);
+    find(reverse) {
+      var self = this;
+      var pos = this.doc.clipPos(reverse ? this.pos.from : this.pos.to);
       function savePosAndFail(line) {
         var pos = Pos(line, 0);
         self.pos = {from: pos, to: pos};
@@ -145,10 +154,10 @@
       }
     },
 
-    from: function() {if (this.atOccurrence) return this.pos.from;},
-    to: function() {if (this.atOccurrence) return this.pos.to;},
+    from() {if (this.atOccurrence) return this.pos.from;},
+    to() {if (this.atOccurrence) return this.pos.to;},
 
-    replace: function(newText) {
+    replace(newText) {
       if (!this.atOccurrence) return;
       var lines = CodeMirror.splitLines(newText);
       this.doc.replaceRange(lines, this.pos.from, this.pos.to);
@@ -177,7 +186,8 @@
   });
 
   CodeMirror.defineExtension("selectMatches", function(query, caseFold) {
-    var ranges = [], next;
+    var ranges = [];
+    var next;
     var cur = this.getSearchCursor(query, this.getCursor("from"), caseFold);
     while (next = cur.findNext()) {
       if (CodeMirror.cmpPos(cur.to(), this.getCursor("to")) > 0) break;

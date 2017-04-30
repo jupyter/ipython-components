@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../clike/clike"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../clike/clike"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var keywords = ("this super static final const abstract class extends external factory " +
@@ -44,7 +44,5 @@
   CodeMirror.registerHelper("hintWords", "application/dart", keywords.concat(atoms).concat(builtins));
 
   // This is needed to make loading through meta.js work.
-  CodeMirror.defineMode("dart", function(conf) {
-    return CodeMirror.getMode(conf, "application/dart");
-  }, "clike");
+  CodeMirror.defineMode("dart", conf => CodeMirror.getMode(conf, "application/dart"), "clike");
 });

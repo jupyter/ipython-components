@@ -4,7 +4,7 @@
 * Copyright 2013 jQuery Foundation and other contributors; Licensed MIT */
 /* Afrikaans initialisation for the jQuery UI date picker plugin. */
 /* Written by Renier Pretorius. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['af'] = {
 		closeText: 'Selekteer',
 		prevText: 'Vorige',
@@ -29,7 +29,7 @@ jQuery(function($){
 /* Algerian Arabic Translation for jQuery UI date picker plugin. (can be used for Tunisia)*/
 /* Mohamed Cherif BOUCHELAGHEM -- cherifbouchelaghem@yahoo.fr */
 
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ar-DZ'] = {
 		closeText: 'إغلاق',
 		prevText: '&#x3C;السابق',
@@ -53,7 +53,7 @@ jQuery(function($){
 /* Arabic Translation for jQuery UI date picker plugin. */
 /* Khaled Alhourani -- me@khaledalhourani.com */
 /* NOTE: monthNames are the original months names and they are the Arabic names, not the new months name فبراير - يناير and there isn't any Arabic roots for these months */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ar'] = {
 		closeText: 'إغلاق',
 		prevText: '&#x3C;السابق',
@@ -76,7 +76,7 @@ jQuery(function($){
 
 /* Azerbaijani (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Jamil Najafov (necefov33@gmail.com). */
-jQuery(function($) {
+jQuery($ => {
 	$.datepicker.regional['az'] = {
 		closeText: 'Bağla',
 		prevText: '&#x3C;Geri',
@@ -100,7 +100,7 @@ jQuery(function($) {
 
 /* Belarusian initialisation for the jQuery UI date picker plugin. */
 /* Written by Pavel Selitskas <p.selitskas@gmail.com> */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['be'] = {
 		closeText: 'Зачыніць',
 		prevText: '&larr;Папяр.',
@@ -124,7 +124,7 @@ jQuery(function($){
 
 /* Bulgarian initialisation for the jQuery UI date picker plugin. */
 /* Written by Stoyan Kyosev (http://svest.org). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['bg'] = {
 		closeText: 'затвори',
 		prevText: '&#x3C;назад',
@@ -149,7 +149,7 @@ jQuery(function($){
 
 /* Bosnian i18n for the jQuery UI date picker plugin. */
 /* Written by Kenan Konjo. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['bs'] = {
 		closeText: 'Zatvori',
 		prevText: '&#x3C;',
@@ -173,7 +173,7 @@ jQuery(function($){
 
 /* Inicialització en català per a l'extensió 'UI date picker' per jQuery. */
 /* Writers: (joan.leon@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ca'] = {
 		closeText: 'Tanca',
 		prevText: 'Anterior',
@@ -197,7 +197,7 @@ jQuery(function($){
 
 /* Czech initialisation for the jQuery UI date picker plugin. */
 /* Written by Tomas Muller (tomas@tomas-muller.net). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['cs'] = {
 		closeText: 'Zavřít',
 		prevText: '&#x3C;Dříve',
@@ -221,7 +221,7 @@ jQuery(function($){
 
 /* Welsh/UK initialisation for the jQuery UI date picker plugin. */
 /* Written by William Griffiths. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['cy-GB'] = {
 		closeText: 'Done',
 		prevText: 'Prev',
@@ -245,7 +245,7 @@ jQuery(function($){
 
 /* Danish initialisation for the jQuery UI date picker plugin. */
 /* Written by Jan Christensen ( deletestuff@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['da'] = {
 		closeText: 'Luk',
 		prevText: '&#x3C;Forrige',
@@ -269,7 +269,7 @@ jQuery(function($){
 
 /* German initialisation for the jQuery UI date picker plugin. */
 /* Written by Milian Wolff (mail@milianw.de). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['de'] = {
 		closeText: 'Schließen',
 		prevText: '&#x3C;Zurück',
@@ -293,7 +293,7 @@ jQuery(function($){
 
 /* Greek (el) initialisation for the jQuery UI date picker plugin. */
 /* Written by Alex Cicovic (http://www.alexcicovic.com) */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['el'] = {
 		closeText: 'Κλείσιμο',
 		prevText: 'Προηγούμενος',
@@ -317,7 +317,7 @@ jQuery(function($){
 
 /* English/Australia initialisation for the jQuery UI date picker plugin. */
 /* Based on the en-GB initialisation. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['en-AU'] = {
 		closeText: 'Done',
 		prevText: 'Prev',
@@ -341,7 +341,7 @@ jQuery(function($){
 
 /* English/UK initialisation for the jQuery UI date picker plugin. */
 /* Written by Stuart. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['en-GB'] = {
 		closeText: 'Done',
 		prevText: 'Prev',
@@ -365,7 +365,7 @@ jQuery(function($){
 
 /* English/New Zealand initialisation for the jQuery UI date picker plugin. */
 /* Based on the en-GB initialisation. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['en-NZ'] = {
 		closeText: 'Done',
 		prevText: 'Prev',
@@ -389,7 +389,7 @@ jQuery(function($){
 
 /* Esperanto initialisation for the jQuery UI date picker plugin. */
 /* Written by Olivier M. (olivierweb@ifrance.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['eo'] = {
 		closeText: 'Fermi',
 		prevText: '&#x3C;Anta',
@@ -413,7 +413,7 @@ jQuery(function($){
 
 /* Inicialización en español para la extensión 'UI date picker' para jQuery. */
 /* Traducido por Vester (xvester@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['es'] = {
 		closeText: 'Cerrar',
 		prevText: '&#x3C;Ant',
@@ -437,7 +437,7 @@ jQuery(function($){
 
 /* Estonian initialisation for the jQuery UI date picker plugin. */
 /* Written by Mart Sõmermaa (mrts.pydev at gmail com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['et'] = {
 		closeText: 'Sulge',
 		prevText: 'Eelnev',
@@ -461,7 +461,7 @@ jQuery(function($){
 
 /* Euskarako oinarria 'UI date picker' jquery-ko extentsioarentzat */
 /* Karrikas-ek itzulia (karrikas@karrikas.com) */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['eu'] = {
 		closeText: 'Egina',
 		prevText: '&#x3C;Aur',
@@ -486,7 +486,7 @@ jQuery(function($){
 /* Persian (Farsi) Translation for the jQuery UI date picker plugin. */
 /* Javad Mowlanezhad -- jmowla@gmail.com */
 /* Jalali calendar should supported soon! (Its implemented but I have to test it) */
-jQuery(function($) {
+jQuery($ => {
 	$.datepicker.regional['fa'] = {
 		closeText: 'بستن',
 		prevText: '&#x3C;قبلی',
@@ -545,7 +545,7 @@ jQuery(function($) {
 
 /* Finnish initialisation for the jQuery UI date picker plugin. */
 /* Written by Harri Kilpiö (harrikilpio@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['fi'] = {
 		closeText: 'Sulje',
 		prevText: '&#xAB;Edellinen',
@@ -569,7 +569,7 @@ jQuery(function($){
 
 /* Faroese initialisation for the jQuery UI date picker plugin */
 /* Written by Sverri Mohr Olsen, sverrimo@gmail.com */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['fo'] = {
 		closeText: 'Lat aftur',
 		prevText: '&#x3C;Fyrra',
@@ -592,7 +592,7 @@ jQuery(function($){
 });
 
 /* Canadian-French initialisation for the jQuery UI date picker plugin. */
-jQuery(function ($) {
+jQuery($ => {
 	$.datepicker.regional['fr-CA'] = {
 		closeText: 'Fermer',
 		prevText: 'Précédent',
@@ -617,7 +617,7 @@ jQuery(function ($) {
 
 /* Swiss-French initialisation for the jQuery UI date picker plugin. */
 /* Written Martin Voelkle (martin.voelkle@e-tc.ch). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['fr-CH'] = {
 		closeText: 'Fermer',
 		prevText: '&#x3C;Préc',
@@ -643,7 +643,7 @@ jQuery(function($){
 /* Written by Keith Wood (kbwood{at}iinet.com.au),
 			  Stéphane Nahmani (sholby@sholby.net),
 			  Stéphane Raimbault <stephane.raimbault@gmail.com> */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['fr'] = {
 		closeText: 'Fermer',
 		prevText: 'Précédent',
@@ -667,7 +667,7 @@ jQuery(function($){
 
 /* Galician localization for 'UI date picker' jQuery extension. */
 /* Translated by Jorge Barreiro <yortx.barry@gmail.com>. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['gl'] = {
 		closeText: 'Pechar',
 		prevText: '&#x3C;Ant',
@@ -691,7 +691,7 @@ jQuery(function($){
 
 /* Hebrew initialisation for the UI Datepicker extension. */
 /* Written by Amir Hardon (ahardon at gmail dot com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['he'] = {
 		closeText: 'סגור',
 		prevText: '&#x3C;הקודם',
@@ -715,7 +715,7 @@ jQuery(function($){
 
 /* Hindi initialisation for the jQuery UI date picker plugin. */
 /* Written by Michael Dawart. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['hi'] = {
 		closeText: 'बंद',
 		prevText: 'पिछला',
@@ -739,7 +739,7 @@ jQuery(function($){
 
 /* Croatian i18n for the jQuery UI date picker plugin. */
 /* Written by Vjekoslav Nesek. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['hr'] = {
 		closeText: 'Zatvori',
 		prevText: '&#x3C;',
@@ -763,7 +763,7 @@ jQuery(function($){
 
 /* Hungarian initialisation for the jQuery UI date picker plugin. */
 /* Written by Istvan Karaszi (jquery@spam.raszi.hu). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['hu'] = {
 		closeText: 'bezár',
 		prevText: 'vissza',
@@ -787,7 +787,7 @@ jQuery(function($){
 
 /* Armenian(UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Levon Zakaryan (levon.zakaryan@gmail.com)*/
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['hy'] = {
 		closeText: 'Փակել',
 		prevText: '&#x3C;Նախ.',
@@ -811,7 +811,7 @@ jQuery(function($){
 
 /* Indonesian initialisation for the jQuery UI date picker plugin. */
 /* Written by Deden Fathurahman (dedenf@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['id'] = {
 		closeText: 'Tutup',
 		prevText: '&#x3C;mundur',
@@ -835,7 +835,7 @@ jQuery(function($){
 
 /* Icelandic initialisation for the jQuery UI date picker plugin. */
 /* Written by Haukur H. Thorsson (haukur@eskill.is). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['is'] = {
 		closeText: 'Loka',
 		prevText: '&#x3C; Fyrri',
@@ -859,7 +859,7 @@ jQuery(function($){
 
 /* Italian initialisation for the jQuery UI date picker plugin. */
 /* Written by Antonello Pasella (antonello.pasella@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['it'] = {
 		closeText: 'Chiudi',
 		prevText: '&#x3C;Prec',
@@ -883,7 +883,7 @@ jQuery(function($){
 
 /* Japanese initialisation for the jQuery UI date picker plugin. */
 /* Written by Kentaro SATO (kentaro@ranvis.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ja'] = {
 		closeText: '閉じる',
 		prevText: '&#x3C;前',
@@ -907,7 +907,7 @@ jQuery(function($){
 
 /* Georgian (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Lado Lomidze (lado.lomidze@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ka'] = {
 		closeText: 'დახურვა',
 		prevText: '&#x3c; წინა',
@@ -929,7 +929,7 @@ jQuery(function($){
 
 /* Kazakh (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Dmitriy Karasyov (dmitriy.karasyov@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['kk'] = {
 		closeText: 'Жабу',
 		prevText: '&#x3C;Алдыңғы',
@@ -953,7 +953,7 @@ jQuery(function($){
 
 /* Khmer initialisation for the jQuery calendar extension. */
 /* Written by Chandara Om (chandara.teacher@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['km'] = {
 		closeText: 'ធ្វើ​រួច',
 		prevText: 'មុន',
@@ -977,7 +977,7 @@ jQuery(function($){
 
 /* Korean initialisation for the jQuery calendar extension. */
 /* Written by DaeKwon Kang (ncrash.dk@gmail.com), Edited by Genie. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ko'] = {
 		closeText: '닫기',
 		prevText: '이전달',
@@ -1001,7 +1001,7 @@ jQuery(function($){
 
 /* Kyrgyz (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Sergey Kartashov (ebishkek@yandex.ru). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ky'] = {
 		closeText: 'Жабуу',
 		prevText: '&#x3c;Мур',
@@ -1026,7 +1026,7 @@ jQuery(function($){
 
 /* Luxembourgish initialisation for the jQuery UI date picker plugin. */
 /* Written by Michel Weimerskirch <michel@weimerskirch.net> */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['lb'] = {
 		closeText: 'Fäerdeg',
 		prevText: 'Zréck',
@@ -1050,7 +1050,7 @@ jQuery(function($){
 
 /* Lithuanian (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* @author Arturas Paleicikas <arturas@avalon.lt> */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['lt'] = {
 		closeText: 'Uždaryti',
 		prevText: '&#x3C;Atgal',
@@ -1074,7 +1074,7 @@ jQuery(function($){
 
 /* Latvian (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* @author Arturas Paleicikas <arturas.paleicikas@metasite.net> */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['lv'] = {
 		closeText: 'Aizvērt',
 		prevText: 'Iepr',
@@ -1098,7 +1098,7 @@ jQuery(function($){
 
 /* Macedonian i18n for the jQuery UI date picker plugin. */
 /* Written by Stojce Slavkovski. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['mk'] = {
 		closeText: 'Затвори',
 		prevText: '&#x3C;',
@@ -1122,7 +1122,7 @@ jQuery(function($){
 
 /* Malayalam (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Saji Nediyanchath (saji89@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ml'] = {
 		closeText: 'ശരി',
 		prevText: 'മുന്നത്തെ',
@@ -1146,7 +1146,7 @@ jQuery(function($){
 
 /* Malaysian initialisation for the jQuery UI date picker plugin. */
 /* Written by Mohd Nawawi Mohamad Jamili (nawawi@ronggeng.net). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ms'] = {
 		closeText: 'Tutup',
 		prevText: '&#x3C;Sebelum',
@@ -1170,7 +1170,7 @@ jQuery(function($){
 
 /* Norwegian Bokmål initialisation for the jQuery UI date picker plugin. */
 /* Written by Bjørn Johansen (post@bjornjohansen.no). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['nb'] = {
 		closeText: 'Lukk',
 		prevText: '&#xAB;Forrige',
@@ -1193,7 +1193,7 @@ jQuery(function($){
 
 /* Dutch (Belgium) initialisation for the jQuery UI date picker plugin. */
 /* David De Sloovere @DavidDeSloovere */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['nl-BE'] = {
 		closeText: 'Sluiten',
 		prevText: '←',
@@ -1217,7 +1217,7 @@ jQuery(function($){
 
 /* Dutch (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Mathias Bynens <http://mathiasbynens.be/> */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional.nl = {
 		closeText: 'Sluiten',
 		prevText: '←',
@@ -1241,7 +1241,7 @@ jQuery(function($){
 
 /* Norwegian Nynorsk initialisation for the jQuery UI date picker plugin. */
 /* Written by Bjørn Johansen (post@bjornjohansen.no). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['nn'] = {
 		closeText: 'Lukk',
 		prevText: '&#xAB;Førre',
@@ -1265,7 +1265,7 @@ jQuery(function($){
 /* Norwegian initialisation for the jQuery UI date picker plugin. */
 /* Written by Naimdjon Takhirov (naimdjon@gmail.com). */
 
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['no'] = {
 		closeText: 'Lukk',
 		prevText: '&#xAB;Forrige',
@@ -1288,7 +1288,7 @@ jQuery(function($){
 
 /* Polish initialisation for the jQuery UI date picker plugin. */
 /* Written by Jacek Wysocki (jacek.wysocki@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['pl'] = {
 		closeText: 'Zamknij',
 		prevText: '&#x3C;Poprzedni',
@@ -1312,7 +1312,7 @@ jQuery(function($){
 
 /* Brazilian initialisation for the jQuery UI date picker plugin. */
 /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['pt-BR'] = {
 		closeText: 'Fechar',
 		prevText: '&#x3C;Anterior',
@@ -1335,7 +1335,7 @@ jQuery(function($){
 });
 
 /* Portuguese initialisation for the jQuery UI date picker plugin. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['pt'] = {
 		closeText: 'Fechar',
 		prevText: '&#x3C;Anterior',
@@ -1359,7 +1359,7 @@ jQuery(function($){
 
 /* Romansh initialisation for the jQuery UI date picker plugin. */
 /* Written by Yvonne Gienal (yvonne.gienal@educa.ch). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['rm'] = {
 		closeText: 'Serrar',
 		prevText: '&#x3C;Suandant',
@@ -1384,7 +1384,7 @@ jQuery(function($){
  * Written by Edmond L. (ll_edmond@walla.com)
  * and Ionut G. Stan (ionut.g.stan@gmail.com)
  */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ro'] = {
 		closeText: 'Închide',
 		prevText: '&#xAB; Luna precedentă',
@@ -1408,7 +1408,7 @@ jQuery(function($){
 
 /* Russian (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Andrew Stromnov (stromnov@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ru'] = {
 		closeText: 'Закрыть',
 		prevText: '&#x3C;Пред',
@@ -1432,7 +1432,7 @@ jQuery(function($){
 
 /* Slovak initialisation for the jQuery UI date picker plugin. */
 /* Written by Vojtech Rinik (vojto@hmm.sk). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['sk'] = {
 		closeText: 'Zavrieť',
 		prevText: '&#x3C;Predchádzajúci',
@@ -1457,7 +1457,7 @@ jQuery(function($){
 /* Slovenian initialisation for the jQuery UI date picker plugin. */
 /* Written by Jaka Jancar (jaka@kubje.org). */
 /* c = č, s = š z = ž C = Č S = Š Z = Ž */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['sl'] = {
 		closeText: 'Zapri',
 		prevText: '&#x3C;Prejšnji',
@@ -1481,7 +1481,7 @@ jQuery(function($){
 
 /* Albanian initialisation for the jQuery UI date picker plugin. */
 /* Written by Flakron Bytyqi (flakron@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['sq'] = {
 		closeText: 'mbylle',
 		prevText: '&#x3C;mbrapa',
@@ -1505,7 +1505,7 @@ jQuery(function($){
 
 /* Serbian i18n for the jQuery UI date picker plugin. */
 /* Written by Dejan Dimić. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['sr-SR'] = {
 		closeText: 'Zatvori',
 		prevText: '&#x3C;',
@@ -1529,7 +1529,7 @@ jQuery(function($){
 
 /* Serbian i18n for the jQuery UI date picker plugin. */
 /* Written by Dejan Dimić. */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['sr'] = {
 		closeText: 'Затвори',
 		prevText: '&#x3C;',
@@ -1553,7 +1553,7 @@ jQuery(function($){
 
 /* Swedish initialisation for the jQuery UI date picker plugin. */
 /* Written by Anders Ekdahl ( anders@nomadiz.se). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['sv'] = {
 		closeText: 'Stäng',
 		prevText: '&#xAB;Förra',
@@ -1577,7 +1577,7 @@ jQuery(function($){
 
 /* Tamil (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by S A Sureshkumar (saskumar@live.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['ta'] = {
 		closeText: 'மூடு',
 		prevText: 'முன்னையது',
@@ -1601,7 +1601,7 @@ jQuery(function($){
 
 /* Thai initialisation for the jQuery UI date picker plugin. */
 /* Written by pipo (pipo@sixhead.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['th'] = {
 		closeText: 'ปิด',
 		prevText: '&#xAB;&#xA0;ย้อน',
@@ -1625,7 +1625,7 @@ jQuery(function($){
 
 /* Tajiki (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Abdurahmon Saidov (saidovab@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['tj'] = {
 		closeText: 'Идома',
 		prevText: '&#x3c;Қафо',
@@ -1649,7 +1649,7 @@ jQuery(function($){
 
 /* Turkish initialisation for the jQuery UI date picker plugin. */
 /* Written by Izzet Emre Erkan (kara@karalamalar.net). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['tr'] = {
 		closeText: 'kapat',
 		prevText: '&#x3C;geri',
@@ -1674,7 +1674,7 @@ jQuery(function($){
 /* Ukrainian (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Maxim Drogobitskiy (maxdao@gmail.com). */
 /* Corrected by Igor Milla (igor.fsp.milla@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['uk'] = {
 		closeText: 'Закрити',
 		prevText: '&#x3C;',
@@ -1698,7 +1698,7 @@ jQuery(function($){
 
 /* Vietnamese initialisation for the jQuery UI date picker plugin. */
 /* Translated by Le Thanh Huy (lthanhhuy@cit.ctu.edu.vn). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['vi'] = {
 		closeText: 'Đóng',
 		prevText: '&#x3C;Trước',
@@ -1722,7 +1722,7 @@ jQuery(function($){
 
 /* Chinese initialisation for the jQuery UI date picker plugin. */
 /* Written by Cloudream (cloudream@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['zh-CN'] = {
 		closeText: '关闭',
 		prevText: '&#x3C;上月',
@@ -1746,7 +1746,7 @@ jQuery(function($){
 
 /* Chinese initialisation for the jQuery UI date picker plugin. */
 /* Written by SCCY (samuelcychan@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['zh-HK'] = {
 		closeText: '關閉',
 		prevText: '&#x3C;上月',
@@ -1770,7 +1770,7 @@ jQuery(function($){
 
 /* Chinese initialisation for the jQuery UI date picker plugin. */
 /* Written by Ressol (ressol@gmail.com). */
-jQuery(function($){
+jQuery($ => {
 	$.datepicker.regional['zh-TW'] = {
 		closeText: '關閉',
 		prevText: '&#x3C;上月',

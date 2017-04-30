@@ -6,25 +6,26 @@
  * https://github.com/duralog/CodeMirror
  */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
-  CodeMirror.defineMode('livescript', function(){
-    var tokenBase = function(stream, state) {
+  CodeMirror.defineMode('livescript', () => {
+    var tokenBase = (stream, state) => {
       var next_rule = state.next || "start";
       if (next_rule) {
         state.next = state.next;
         var nr = Rules[next_rule];
         if (nr.splice) {
           for (var i$ = 0; i$ < nr.length; ++i$) {
-            var r = nr[i$], m;
+            var r = nr[i$];
+            var m;
             if (r.regex && (m = stream.match(r.regex))) {
               state.next = r.next || state.next;
               return r.token;
@@ -47,23 +48,23 @@
       return 'error';
     };
     var external = {
-      startState: function(){
+      startState() {
         return {
           next: 'start',
           lastToken: null
         };
       },
-      token: function(stream, state){
+      token(stream, state) {
         while (stream.pos == stream.start)
           var style = tokenBase(stream, state);
         state.lastToken = {
-          style: style,
+          style,
           indent: stream.indentation(),
           content: stream.current()
         };
         return style.replace(/\./g, ' ');
       },
-      indent: function(state){
+      indent(state) {
         var indentation = state.lastToken.indent;
         if (state.lastToken.content.match(indenter)) {
           indentation += 2;

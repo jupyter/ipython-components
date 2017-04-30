@@ -6,17 +6,17 @@
  * Licence: MIT
  */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
-  CodeMirror.defineMode("stex", function() {
+  CodeMirror.defineMode("stex", () => {
     "use strict";
 
     function pushCommand(state, command) {
@@ -48,7 +48,7 @@
         }
         return plug;
       }
-      return { styleIdentifier: function() { return null; } };
+      return { styleIdentifier() { return null; } };
     }
 
     function addPluginPattern(pluginName, cmdStyle, styles) {
@@ -66,7 +66,7 @@
           this.bracketNo++;
           return "bracket";
         };
-        this.closeBracket = function() {};
+        this.closeBracket = () => {};
       };
     }
 
@@ -82,7 +82,7 @@
       this.name = "DEFAULT";
       this.style = "tag";
 
-      this.styleIdentifier = this.openBracket = this.closeBracket = function() {};
+      this.styleIdentifier = this.openBracket = this.closeBracket = () => {};
     };
 
     function setState(state, f) {
@@ -114,15 +114,15 @@
 
       // find if we're starting various math modes
       if (source.match("\\[")) {
-        setState(state, function(source, state){ return inMathMode(source, state, "\\]"); });
+        setState(state, (source, state) => inMathMode(source, state, "\\]"));
         return "keyword";
       }
       if (source.match("$$")) {
-        setState(state, function(source, state){ return inMathMode(source, state, "$$"); });
+        setState(state, (source, state) => inMathMode(source, state, "$$"));
         return "keyword";
       }
       if (source.match("$")) {
-        setState(state, function(source, state){ return inMathMode(source, state, "$"); });
+        setState(state, (source, state) => inMathMode(source, state, "$"));
         return "keyword";
       }
 
@@ -203,7 +203,8 @@
     }
 
     function beginParams(source, state) {
-      var ch = source.peek(), lastPlug;
+      var ch = source.peek();
+      var lastPlug;
       if (ch == '{' || ch == '[') {
         lastPlug = peekCommand(state);
         lastPlug.openBracket(ch);
@@ -222,22 +223,22 @@
     }
 
     return {
-      startState: function() {
+      startState() {
         return {
           cmdState: [],
           f: normal
         };
       },
-      copyState: function(s) {
+      copyState(s) {
         return {
           cmdState: s.cmdState.slice(),
           f: s.f
         };
       },
-      token: function(stream, state) {
+      token(stream, state) {
         return state.f(stream, state);
       },
-      blankLine: function(state) {
+      blankLine(state) {
         state.f = normal;
         state.cmdState.length = 0;
       },

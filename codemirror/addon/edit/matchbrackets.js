@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   var ie_lt8 = /MSIE \d/.test(navigator.userAgent) &&
     (document.documentMode == null || document.documentMode < 8);
 
@@ -17,7 +17,8 @@
   var matching = {"(": ")>", ")": "(<", "[": "]>", "]": "[<", "{": "}>", "}": "{<"};
 
   function findMatchingBracket(cm, where, strict, config) {
-    var line = cm.getLineHandle(where.line), pos = where.ch - 1;
+    var line = cm.getLineHandle(where.line);
+    var pos = where.ch - 1;
     var match = (pos >= 0 && matching[line.text.charAt(pos)]) || matching[line.text.charAt(++pos)];
     if (!match) return null;
     var dir = match.charAt(1) == ">" ? 1 : -1;
@@ -48,7 +49,8 @@
     for (var lineNo = where.line; lineNo != lineEnd; lineNo += dir) {
       var line = cm.getLine(lineNo);
       if (!line) continue;
-      var pos = dir > 0 ? 0 : line.length - 1, end = dir > 0 ? line.length : -1;
+      var pos = dir > 0 ? 0 : line.length - 1;
+      var end = dir > 0 ? line.length : -1;
       if (line.length > maxScanLen) continue;
       if (lineNo == where.line) pos = where.ch - (dir < 0 ? 1 : 0);
       for (; pos != end; pos += dir) {
@@ -56,7 +58,7 @@
         if (re.test(ch) && (style === undefined || cm.getTokenTypeAt(Pos(lineNo, pos + 1)) == style)) {
           var match = matching[ch];
           if ((match.charAt(1) == ">") == (dir > 0)) stack.push(ch);
-          else if (!stack.length) return {pos: Pos(lineNo, pos), ch: ch};
+          else if (!stack.length) return {pos: Pos(lineNo, pos), ch};
           else stack.pop();
         }
       }
@@ -67,7 +69,8 @@
   function matchBrackets(cm, autoclear, config) {
     // Disable brace matching in long lines, since it'll cause hugely slow updates
     var maxHighlightLen = cm.state.matchBrackets.maxHighlightLineLength || 1000;
-    var marks = [], ranges = cm.listSelections();
+    var marks = [];
+    var ranges = cm.listSelections();
     for (var i = 0; i < ranges.length; i++) {
       var match = ranges[i].empty() && findMatchingBracket(cm, ranges[i].head, false, config);
       if (match && cm.getLine(match.from.line).length <= maxHighlightLen) {
@@ -83,8 +86,8 @@
       // input stops going to the textare whever this fires.
       if (ie_lt8 && cm.state.focused) cm.display.input.focus();
 
-      var clear = function() {
-        cm.operation(function() {
+      var clear = () => {
+        cm.operation(() => {
           for (var i = 0; i < marks.length; i++) marks[i].clear();
         });
       };
@@ -95,13 +98,13 @@
 
   var currentlyHighlighted = null;
   function doMatchBrackets(cm) {
-    cm.operation(function() {
+    cm.operation(() => {
       if (currentlyHighlighted) {currentlyHighlighted(); currentlyHighlighted = null;}
       currentlyHighlighted = matchBrackets(cm, false, cm.state.matchBrackets);
     });
   }
 
-  CodeMirror.defineOption("matchBrackets", false, function(cm, val, old) {
+  CodeMirror.defineOption("matchBrackets", false, (cm, val, old) => {
     if (old && old != CodeMirror.Init)
       cm.off("cursorActivity", doMatchBrackets);
     if (val) {

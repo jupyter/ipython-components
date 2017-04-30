@@ -3,14 +3,14 @@
 
 // declare global: diff_match_patch, DIFF_INSERT, DIFF_DELETE, DIFF_EQUAL
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("diff_match_patch"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "diff_match_patch"], mod);
   else // Plain browser env
     mod(CodeMirror, diff_match_patch);
-})(function(CodeMirror, diff_match_patch) {
+}))((CodeMirror, diff_match_patch) => {
   "use strict";
   var Pos = CodeMirror.Pos;
   var svgNS = "http://www.w3.org/2000/svg";
@@ -35,7 +35,7 @@
 
   DiffView.prototype = {
     constructor: DiffView,
-    init: function(pane, orig, options) {
+    init(pane, orig, options) {
       this.edit = this.mv.edit;
       this.orig = CodeMirror(pane, copyObj({value: orig, readOnly: !this.mv.options.allowEditingOriginals}, copyObj(options)));
 
@@ -48,7 +48,7 @@
       setScrollLock(this, true, false);
       registerScroll(this);
     },
-    setShowDifferences: function(val) {
+    setShowDifferences(val) {
       val = val !== false;
       if (val != this.showDifferences) {
         this.showDifferences = val;
@@ -70,7 +70,8 @@
   function registerUpdate(dv) {
     var edit = {from: 0, to: 0, marked: []};
     var orig = {from: 0, to: 0, marked: []};
-    var debounceChange, updatingFast = false;
+    var debounceChange;
+    var updatingFast = false;
     function update(mode) {
       updating = true;
       updatingFast = false;
@@ -117,17 +118,17 @@
     dv.edit.on("markerCleared", setDealign);
     dv.orig.on("markerAdded", setDealign);
     dv.orig.on("markerCleared", setDealign);
-    dv.edit.on("viewportChange", function() { set(false); });
-    dv.orig.on("viewportChange", function() { set(false); });
+    dv.edit.on("viewportChange", () => { set(false); });
+    dv.orig.on("viewportChange", () => { set(false); });
     update();
     return update;
   }
 
   function registerScroll(dv) {
-    dv.edit.on("scroll", function() {
+    dv.edit.on("scroll", () => {
       syncScroll(dv, DIFF_INSERT) && makeConnections(dv);
     });
-    dv.orig.on("scroll", function() {
+    dv.orig.on("scroll", () => {
       syncScroll(dv, DIFF_DELETE) && makeConnections(dv);
     });
   }
@@ -136,7 +137,9 @@
     // Change handler will do a refresh after a timeout when diff is out of date
     if (dv.diffOutOfDate) return false;
     if (!dv.lockScroll) return true;
-    var editor, other, now = +new Date;
+    var editor;
+    var other;
+    var now = +new Date;
     if (type == DIFF_INSERT) { editor = dv.edit; other = dv.orig; }
     else { editor = dv.orig; other = dv.edit; }
     // Don't take action if the position of this editor was recently set
@@ -147,7 +150,8 @@
     if (dv.mv.options.connect == "align") {
       targetPos = sInfo.top;
     } else {
-      var halfScreen = .5 * sInfo.clientHeight, midY = sInfo.top + halfScreen;
+      var halfScreen = .5 * sInfo.clientHeight;
+      var midY = sInfo.top + halfScreen;
       var mid = editor.lineAtHeight(midY, "local");
       var around = chunkBoundariesAround(dv.chunks, mid, type == DIFF_INSERT);
       var off = getOffsets(editor, type == DIFF_INSERT ? around.edit : around.orig);
@@ -155,7 +159,8 @@
       var ratio = (midY - off.top) / (off.bot - off.top);
       var targetPos = (offOther.top - halfScreen) + ratio * (offOther.bot - offOther.top);
 
-      var botDist, mix;
+      var botDist;
+      var mix;
       // Some careful tweaking to make sure no space is left out of view
       // when scrolling to top or bottom.
       if (targetPos > sInfo.top && (mix = sInfo.top / halfScreen) < 1) {
@@ -206,7 +211,7 @@
   // FIXME maybe add a margin around viewport to prevent too many updates
   function updateMarks(editor, diff, state, type, classes) {
     var vp = editor.getViewport();
-    editor.operation(function() {
+    editor.operation(() => {
       if (state.from == state.to || vp.from - state.to > 20 || state.from - vp.to > 20) {
         clearMarks(editor, state.marked, classes);
         markChanges(editor, diff, type, state.marked, vp.from, vp.to, classes);
@@ -226,10 +231,12 @@
 
   function markChanges(editor, diff, type, marks, from, to, classes) {
     var pos = Pos(0, 0);
-    var top = Pos(from, 0), bot = editor.clipPos(Pos(to - 1));
+    var top = Pos(from, 0);
+    var bot = editor.clipPos(Pos(to - 1));
     var cls = type == DIFF_DELETE ? classes.del : classes.insert;
     function markChunk(start, end) {
-      var bfrom = Math.max(from, start), bto = Math.min(to, end);
+      var bfrom = Math.max(from, start);
+      var bto = Math.min(to, end);
       for (var i = bfrom; i < bto; ++i) {
         var line = editor.addLineClass(i, "background", classes.chunk);
         if (i == start) editor.addLineClass(line, "background", classes.start);
@@ -247,7 +254,9 @@
 
     var chunkStart = 0;
     for (var i = 0; i < diff.length; ++i) {
-      var part = diff[i], tp = part[0], str = part[1];
+      var part = diff[i];
+      var tp = part[0];
+      var str = part[1];
       if (tp == DIFF_EQUAL) {
         var cleanFrom = pos.line + (startOfLineClean(diff, i) ? 0 : 1);
         moveOver(pos, str);
@@ -259,7 +268,8 @@
       } else {
         if (tp == type) {
           var end = moveOver(pos, str, true);
-          var a = posMax(top, pos), b = posMin(bot, end);
+          var a = posMax(top, pos);
+          var b = posMin(bot, end);
           if (!posEq(a, b))
             marks.push(editor.markText(a, b, {className: cls}));
           pos = end;
@@ -281,8 +291,10 @@
     }
     if (dv.copyButtons) clear(dv.copyButtons);
 
-    var vpEdit = dv.edit.getViewport(), vpOrig = dv.orig.getViewport();
-    var sTopEdit = dv.edit.getScrollInfo().top, sTopOrig = dv.orig.getScrollInfo().top;
+    var vpEdit = dv.edit.getViewport();
+    var vpOrig = dv.orig.getViewport();
+    var sTopEdit = dv.edit.getScrollInfo().top;
+    var sTopOrig = dv.orig.getScrollInfo().top;
     for (var i = 0; i < dv.chunks.length; i++) {
       var ch = dv.chunks[i];
       if (ch.editFrom <= vpEdit.to && ch.editTo >= vpEdit.from &&
@@ -292,7 +304,8 @@
   }
 
   function getMatchingOrigLine(editLine, chunks) {
-    var editStart = 0, origStart = 0;
+    var editStart = 0;
+    var origStart = 0;
     for (var i = 0; i < chunks.length; i++) {
       var chunk = chunks[i];
       if (chunk.editTo > editLine && chunk.editFrom <= editLine) return null;
@@ -330,7 +343,7 @@
 
   function alignChunks(dv, force) {
     if (!dv.dealigned && !force) return;
-    if (!dv.orig.curOp) return dv.orig.operation(function() {
+    if (!dv.orig.curOp) return dv.orig.operation(() => {
       alignChunks(dv, force);
     });
 
@@ -348,7 +361,8 @@
       aligners[i].clear();
     aligners.length = 0;
 
-    var cm = [dv.orig, dv.edit], scroll = [];
+    var cm = [dv.orig, dv.edit];
+    var scroll = [];
     if (other) cm.push(other.orig);
     for (var i = 0; i < cm.length; i++)
       scroll.push(cm[i].getScrollInfo().top);
@@ -361,7 +375,8 @@
   }
 
   function alignLines(cm, lines, aligners) {
-    var maxOffset = 0, offset = [];
+    var maxOffset = 0;
+    var offset = [];
     for (var i = 0; i < cm.length; i++) if (lines[i] != null) {
       var off = cm[i].heightAtLine(lines[i], "local");
       offset[i] = off;
@@ -383,7 +398,7 @@
     var elt = document.createElement("div");
     elt.className = "CodeMirror-merge-spacer";
     elt.style.height = size + "px"; elt.style.minWidth = "1px";
-    return cm.addLineWidget(line, elt, {height: size, above: above});
+    return cm.addLineWidget(line, elt, {height: size, above});
   }
 
   function drawConnectorsForChunk(dv, chunk, sTopOrig, sTopEdit, w) {
@@ -435,11 +450,14 @@
     if (!(this instanceof MergeView)) return new MergeView(node, options);
 
     this.options = options;
-    var origLeft = options.origLeft, origRight = options.origRight == null ? options.orig : options.origRight;
-
-    var hasLeft = origLeft != null, hasRight = origRight != null;
+    var origLeft = options.origLeft;
+    var origRight = options.origRight == null ? options.orig : options.origRight;
+    var hasLeft = origLeft != null;
+    var hasRight = origRight != null;
     var panes = 1 + (hasLeft ? 1 : 0) + (hasRight ? 1 : 0);
-    var wrap = [], left = this.left = null, right = this.right = null;
+    var wrap = [];
+    var left = this.left = null;
+    var right = this.right = null;
     var self = this;
 
     if (hasLeft) {
@@ -471,7 +489,7 @@
 
     if (options.collapseIdentical) {
       updating = true;
-      this.editor().operation(function() {
+      this.editor().operation(() => {
         collapseIdenticalStretches(self, options.collapseIdentical);
       });
       updating = false;
@@ -481,12 +499,12 @@
       alignChunks(this.left || this.right, true);
     }
 
-    var onResize = function() {
+    var onResize = () => {
       if (left) makeConnections(left);
       if (right) makeConnections(right);
     };
     CodeMirror.on(window, "resize", onResize);
-    var resizeInterval = setInterval(function() {
+    var resizeInterval = setInterval(() => {
       for (var p = wrapElt.parentNode; p && p != document.body; p = p.parentNode) {}
       if (!p) { clearInterval(resizeInterval); CodeMirror.off(window, "resize", onResize); }
     }, 5000);
@@ -496,11 +514,11 @@
     var lock = dv.lockButton = elt("div", null, "CodeMirror-merge-scrolllock");
     lock.title = "Toggle locked scrolling";
     var lockWrap = elt("div", [lock], "CodeMirror-merge-scrolllock-wrap");
-    CodeMirror.on(lock, "click", function() { setScrollLock(dv, !dv.lockScroll); });
+    CodeMirror.on(lock, "click", () => { setScrollLock(dv, !dv.lockScroll); });
     var gapElts = [lockWrap];
     if (dv.mv.options.revertButtons !== false) {
       dv.copyButtons = elt("div", null, "CodeMirror-merge-copybuttons-" + dv.type);
-      CodeMirror.on(dv.copyButtons, "click", function(e) {
+      CodeMirror.on(dv.copyButtons, "click", e => {
         var node = e.target || e.srcElement;
         if (!node.chunk) return;
         if (node.className == "CodeMirror-merge-copy-reverse") {
@@ -523,17 +541,17 @@
 
   MergeView.prototype = {
     constuctor: MergeView,
-    editor: function() { return this.edit; },
-    rightOriginal: function() { return this.right && this.right.orig; },
-    leftOriginal: function() { return this.left && this.left.orig; },
-    setShowDifferences: function(val) {
+    editor() { return this.edit; },
+    rightOriginal() { return this.right && this.right.orig; },
+    leftOriginal() { return this.left && this.left.orig; },
+    setShowDifferences(val) {
       if (this.right) this.right.setShowDifferences(val);
       if (this.left) this.left.setShowDifferences(val);
     },
-    rightChunks: function() {
+    rightChunks() {
       if (this.right) { ensureDiff(this.right); return this.right.chunks; }
     },
-    leftChunks: function() {
+    leftChunks() {
       if (this.left) { ensureDiff(this.left); return this.left.chunks; }
     }
   };
@@ -564,16 +582,21 @@
 
   function getChunks(diff) {
     var chunks = [];
-    var startEdit = 0, startOrig = 0;
-    var edit = Pos(0, 0), orig = Pos(0, 0);
+    var startEdit = 0;
+    var startOrig = 0;
+    var edit = Pos(0, 0);
+    var orig = Pos(0, 0);
     for (var i = 0; i < diff.length; ++i) {
-      var part = diff[i], tp = part[0];
+      var part = diff[i];
+      var tp = part[0];
       if (tp == DIFF_EQUAL) {
         var startOff = startOfLineClean(diff, i) ? 0 : 1;
-        var cleanFromEdit = edit.line + startOff, cleanFromOrig = orig.line + startOff;
+        var cleanFromEdit = edit.line + startOff;
+        var cleanFromOrig = orig.line + startOff;
         moveOver(edit, part[1], null, orig);
         var endOff = endOfLineClean(diff, i) ? 1 : 0;
-        var cleanToEdit = edit.line + endOff, cleanToOrig = orig.line + endOff;
+        var cleanToEdit = edit.line + endOff;
+        var cleanToOrig = orig.line + endOff;
         if (cleanToEdit > cleanFromEdit) {
           if (i) chunks.push({origFrom: startOrig, origTo: cleanFromOrig,
                               editFrom: startEdit, editTo: cleanFromEdit});
@@ -608,7 +631,10 @@
   }
 
   function chunkBoundariesAround(chunks, n, nInEdit) {
-    var beforeE, afterE, beforeO, afterO;
+    var beforeE;
+    var afterE;
+    var beforeO;
+    var afterO;
     for (var i = 0; i < chunks.length; i++) {
       var chunk = chunks[i];
       var fromLocal = nInEdit ? chunk.editFrom : chunk.origFrom;
@@ -639,7 +665,7 @@
       cm.removeLineClass(from, "wrap", "CodeMirror-merge-collapsed-line");
     }
     widget.addEventListener("click", clear);
-    return {mark: mark, clear: clear};
+    return {mark, clear};
   }
 
   function collapseStretch(size, editors) {
@@ -668,7 +694,9 @@
 
   function collapseIdenticalStretches(mv, margin) {
     if (typeof margin != "number") margin = 2;
-    var clear = [], edit = mv.editor(), off = edit.firstLine();
+    var clear = [];
+    var edit = mv.editor();
+    var off = edit.firstLine();
     for (var l = off, e = edit.lastLine(); l <= e; l++) clear.push(true);
     if (mv.left) unclearNearChunks(mv.left, margin, off, clear);
     if (mv.right) unclearNearChunks(mv.right, margin, off, clear);
@@ -678,7 +706,7 @@
         var line = i + off;
         for (var size = 1; i < clear.length - 1 && clear[i + 1]; i++, size++) {}
         if (size > margin) {
-          var editors = [{line: line, cm: edit}];
+          var editors = [{line, cm: edit}];
           if (mv.left) editors.push({line: getMatchingOrigLine(line, mv.left.chunks), cm: mv.left.orig});
           if (mv.right) editors.push({line: getMatchingOrigLine(line, mv.right.chunks), cm: mv.right.orig});
           var mark = collapseStretch(size, editors);
@@ -716,7 +744,8 @@
   }
 
   function moveOver(pos, str, copy, other) {
-    var out = copy ? Pos(pos.line, pos.ch) : pos, at = 0;
+    var out = copy ? Pos(pos.line, pos.ch) : pos;
+    var at = 0;
     for (;;) {
       var nl = str.indexOf("\n", at);
       if (nl == -1) break;

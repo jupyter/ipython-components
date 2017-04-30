@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   CodeMirror.defineExtension("annotateScrollbar", function(options) {
@@ -30,20 +30,20 @@
 
     function scheduleRedraw(delay) {
       clearTimeout(self.doRedraw);
-      self.doRedraw = setTimeout(function() { self.redraw(); }, delay);
+      self.doRedraw = setTimeout(() => { self.redraw(); }, delay);
     }
 
     var self = this;
-    cm.on("refresh", this.resizeHandler = function() {
+    cm.on("refresh", this.resizeHandler = () => {
       clearTimeout(self.doUpdate);
-      self.doUpdate = setTimeout(function() {
+      self.doUpdate = setTimeout(() => {
         if (self.computeScale()) scheduleRedraw(20);
       }, 100);
     });
     cm.on("markerAdded", this.resizeHandler);
     cm.on("markerCleared", this.resizeHandler);
     if (options.listenForChanges !== false)
-      cm.on("change", this.changeHandler = function() {
+      cm.on("change", this.changeHandler = () => {
         scheduleRedraw(250);
       });
   }
@@ -65,9 +65,10 @@
 
   Annotation.prototype.redraw = function(compute) {
     if (compute !== false) this.computeScale();
-    var cm = this.cm, hScale = this.hScale;
-
-    var frag = document.createDocumentFragment(), anns = this.annotations;
+    var cm = this.cm;
+    var hScale = this.hScale;
+    var frag = document.createDocumentFragment();
+    var anns = this.annotations;
     if (cm.display.barWidth) for (var i = 0, nextTop; i < anns.length; i++) {
       var ann = anns[i];
       var top = nextTop || cm.charCoords(ann.from, "local").top * hScale;

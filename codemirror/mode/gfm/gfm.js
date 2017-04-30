@@ -1,38 +1,38 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../markdown/markdown"), require("../../addon/mode/overlay"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../markdown/markdown", "../../addon/mode/overlay"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("gfm", function(config, modeConfig) {
+CodeMirror.defineMode("gfm", (config, modeConfig) => {
   var codeDepth = 0;
   function blankLine(state) {
     state.code = false;
     return null;
   }
   var gfmOverlay = {
-    startState: function() {
+    startState() {
       return {
         code: false,
         codeBlock: false,
         ateSpace: false
       };
     },
-    copyState: function(s) {
+    copyState(s) {
       return {
         code: s.code,
         codeBlock: s.codeBlock,
         ateSpace: s.ateSpace
       };
     },
-    token: function(stream, state) {
+    token(stream, state) {
       state.combineTokens = null;
 
       // Hack to prevent formatting override inside code blocks (block and inline)
@@ -103,7 +103,7 @@ CodeMirror.defineMode("gfm", function(config, modeConfig) {
       stream.next();
       return null;
     },
-    blankLine: blankLine
+    blankLine
   };
 
   var markdownConfig = {

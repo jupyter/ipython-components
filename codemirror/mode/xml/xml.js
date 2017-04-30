@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("xml", function(config, parserConfig) {
+CodeMirror.defineMode("xml", (config, parserConfig) => {
   var indentUnit = config.indentUnit;
   var multilineTagIndentFactor = parserConfig.multilineTagIndentFactor || 1;
   var multilineTagIndentPastTag = parserConfig.multilineTagIndentPastTag;
@@ -61,7 +61,9 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
   var alignCDATA = parserConfig.alignCDATA;
 
   // Return variables for tokenizers
-  var type, setStyle;
+  var type;
+
+  var setStyle;
 
   function inText(stream, state) {
     function chain(parser) {
@@ -136,7 +138,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
   }
 
   function inAttribute(quote) {
-    var closure = function(stream, state) {
+    var closure = (stream, state) => {
       while (!stream.eol()) {
         if (stream.next() == quote) {
           state.tokenize = inTag;
@@ -150,7 +152,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
   }
 
   function inBlock(style, terminator) {
-    return function(stream, state) {
+    return (stream, state) => {
       while (!stream.eol()) {
         if (stream.match(terminator)) {
           state.tokenize = inText;
@@ -162,7 +164,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
     };
   }
   function doctype(depth) {
-    return function(stream, state) {
+    return (stream, state) => {
       var ch;
       while ((ch = stream.next()) != null) {
         if (ch == "<") {
@@ -265,7 +267,8 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
       setStyle = "attribute";
       return attrEqState;
     } else if (type == "endTag" || type == "selfcloseTag") {
-      var tagName = state.tagName, tagStart = state.tagStart;
+      var tagName = state.tagName;
+      var tagStart = state.tagStart;
       state.tagName = state.tagStart = null;
       if (type == "selfcloseTag" ||
           Kludges.autoSelfClosers.hasOwnProperty(tagName)) {
@@ -296,7 +299,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {tokenize: inText,
               state: baseState,
               indented: 0,
@@ -304,7 +307,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
               context: null};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (!state.tagName && stream.sol())
         state.indented = stream.indentation();
 
@@ -320,7 +323,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
       return style;
     },
 
-    indent: function(state, textAfter, fullLine) {
+    indent(state, textAfter, fullLine) {
       var context = state.context;
       // Indent multi-line strings (e.g. css).
       if (state.tokenize.isInAttribute) {

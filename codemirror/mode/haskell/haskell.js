@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("haskell", function(_config, modeConfig) {
+CodeMirror.defineMode("haskell", (_config, modeConfig) => {
 
   function switchState(source, setState, f) {
     setState(f);
@@ -126,7 +126,7 @@ CodeMirror.defineMode("haskell", function(_config, modeConfig) {
     if (nest == 0) {
       return normal;
     }
-    return function(source, setState) {
+    return (source, setState) => {
       var currNest = nest;
       while (!source.eol()) {
         var ch = source.next();
@@ -179,12 +179,12 @@ CodeMirror.defineMode("haskell", function(_config, modeConfig) {
   }
 
 
-  var wellKnownWords = (function() {
+  var wellKnownWords = ((() => {
     var wkw = {};
     function setType(t) {
-      return function () {
-        for (var i = 0; i < arguments.length; i++)
-          wkw[arguments[i]] = t;
+      return function(...args) {
+        for (var i = 0; i < args.length; i++)
+          wkw[args[i]] = t;
       };
     }
 
@@ -241,16 +241,16 @@ CodeMirror.defineMode("haskell", function(_config, modeConfig) {
       wkw[word] = override[word];
 
     return wkw;
-  })();
+  }))();
 
 
 
   return {
-    startState: function ()  { return { f: normal }; },
-    copyState:  function (s) { return { f: s.f }; },
+    startState() { return { f: normal }; },
+    copyState(s) { return { f: s.f }; },
 
-    token: function(stream, state) {
-      var t = state.f(stream, function(s) { state.f = s; });
+    token(stream, state) {
+      var t = state.f(stream, s => { state.f = s; });
       var w = stream.current();
       return wellKnownWords.hasOwnProperty(w) ? wellKnownWords[w] : t;
     },

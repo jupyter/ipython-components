@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../python/python"), require("../stex/stex"), require("../../addon/mode/overlay"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../python/python", "../stex/stex", "../../addon/mode/overlay"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode('rst', function (config, options) {
+CodeMirror.defineMode('rst', (config, options) => {
 
   var rx_strong = /^\*\*[^\*\s](?:[^\*]*[^\*\s])?\*\*/;
   var rx_emphasis = /^\*[^\*\s](?:[^\*]*[^\*\s])?\*/;
@@ -27,7 +27,7 @@ CodeMirror.defineMode('rst', function (config, options) {
   var rx_uri = new RegExp("^" + rx_uri_protocol + rx_uri_domain + rx_uri_path);
 
   var overlay = {
-    token: function (stream) {
+    token(stream) {
 
       if (stream.match(rx_strong) && stream.match (/\W+|$/, false))
         return 'strong';
@@ -68,16 +68,13 @@ CodeMirror.defineMode('rst', function (config, options) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-CodeMirror.defineMode('rst-base', function (config) {
-
+CodeMirror.defineMode('rst-base', config => {
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
 
   function format(string) {
     var args = Array.prototype.slice.call(arguments, 1);
-    return string.replace(/{(\d+)}/g, function (match, n) {
-      return typeof args[n] != 'undefined' ? args[n] : match;
-    });
+    return string.replace(/{(\d+)}/g, (match, n) => typeof args[n] != 'undefined' ? args[n] : match);
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -90,19 +87,20 @@ CodeMirror.defineMode('rst-base', function (config) {
   ///////////////////////////////////////////////////////////////////////////
 
   var SEPA = "\\s+";
-  var TAIL = "(?:\\s*|\\W|$)",
-  rx_TAIL = new RegExp(format('^{0}', TAIL));
+  var TAIL = "(?:\\s*|\\W|$)";
+  var rx_TAIL = new RegExp(format('^{0}', TAIL));
 
   var NAME =
-    "(?:[^\\W\\d_](?:[\\w!\"#$%&'()\\*\\+,\\-\\.\/:;<=>\\?]*[^\\W_])?)",
-  rx_NAME = new RegExp(format('^{0}', NAME));
+    "(?:[^\\W\\d_](?:[\\w!\"#$%&'()\\*\\+,\\-\\.\/:;<=>\\?]*[^\\W_])?)";
+
+  var rx_NAME = new RegExp(format('^{0}', NAME));
   var NAME_WWS =
     "(?:[^\\W\\d_](?:[\\w\\s!\"#$%&'()\\*\\+,\\-\\.\/:;<=>\\?]*[^\\W_])?)";
   var REF_NAME = format('(?:{0}|`{1}`)', NAME, NAME_WWS);
 
   var TEXT1 = "(?:[^\\s\\|](?:[^\\|]*[^\\s\\|])?)";
-  var TEXT2 = "(?:[^\\`]+)",
-  rx_TEXT2 = new RegExp(format('^{0}', TEXT2));
+  var TEXT2 = "(?:[^\\`]+)";
+  var rx_TEXT2 = new RegExp(format('^{0}', TEXT2));
 
   var rx_section = new RegExp(
     "^([!'#$%&\"()*+,-./:;<=>?@\\[\\\\\\]^_`{|}~])\\1{3,}\\s*$");
@@ -501,7 +499,7 @@ CodeMirror.defineMode('rst-base', function (config) {
   ///////////////////////////////////////////////////////////////////////////
 
   function context(phase, stage, mode, local) {
-    return {phase: phase, stage: stage, mode: mode, local: local};
+    return {phase, stage, mode, local};
   }
 
   function change(state, tok, ctx) {
@@ -521,26 +519,27 @@ CodeMirror.defineMode('rst-base', function (config) {
   ///////////////////////////////////////////////////////////////////////////
 
   return {
-    startState: function () {
+    startState() {
       return {tok: to_normal, ctx: context(undefined, 0)};
     },
 
-    copyState: function (state) {
-      var ctx = state.ctx, tmp = state.tmp;
+    copyState(state) {
+      var ctx = state.ctx;
+      var tmp = state.tmp;
       if (ctx.local)
         ctx = {mode: ctx.mode, local: CodeMirror.copyState(ctx.mode, ctx.local)};
       if (tmp)
         tmp = {mode: tmp.mode, local: CodeMirror.copyState(tmp.mode, tmp.local)};
-      return {tok: state.tok, ctx: ctx, tmp: tmp};
+      return {tok: state.tok, ctx, tmp};
     },
 
-    innerMode: function (state) {
+    innerMode(state) {
       return state.tmp      ? {state: state.tmp.local, mode: state.tmp.mode}
       : state.ctx.mode ? {state: state.ctx.local, mode: state.ctx.mode}
       : null;
     },
 
-    token: function (stream, state) {
+    token(stream, state) {
       return state.tok(stream, state);
     }
   };

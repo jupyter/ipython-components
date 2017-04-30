@@ -5,19 +5,19 @@
 
 // declare global: jsonlint
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.registerHelper("lint", "json", function(text) {
+CodeMirror.registerHelper("lint", "json", text => {
   var found = [];
-  jsonlint.parseError = function(str, hash) {
+  jsonlint.parseError = (str, hash) => {
     var loc = hash.loc;
     found.push({from: CodeMirror.Pos(loc.first_line - 1, loc.first_column),
                 to: CodeMirror.Pos(loc.last_line - 1, loc.last_column),

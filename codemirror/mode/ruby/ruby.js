@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("ruby", function(config) {
+CodeMirror.defineMode("ruby", config => {
   function wordObj(words) {
     var o = {};
     for (var i = 0, e = words.length; i < e; ++i) o[words[i]] = true;
@@ -43,7 +43,8 @@ CodeMirror.defineMode("ruby", function(config) {
       return "comment";
     }
     if (stream.eatSpace()) return null;
-    var ch = stream.next(), m;
+    var ch = stream.next();
+    var m;
     if (ch == "`" || ch == "'" || ch == '"') {
       return chain(readQuoted(ch, "string", ch == '"' || ch == "`"), stream, state);
     } else if (ch == "/") {
@@ -64,7 +65,8 @@ CodeMirror.defineMode("ruby", function(config) {
       }
       return "operator";
     } else if (ch == "%") {
-      var style = "string", embed = true;
+      var style = "string";
+      var embed = true;
       if (stream.eat("s")) style = "atom";
       else if (stream.eat(/[WQ]/)) style = "string";
       else if (stream.eat(/[r]/)) style = "string-2";
@@ -151,7 +153,7 @@ CodeMirror.defineMode("ruby", function(config) {
 
   function tokenBaseUntilBrace(depth) {
     if (!depth) depth = 1;
-    return function(stream, state) {
+    return (stream, state) => {
       if (stream.peek() == "}") {
         if (depth == 1) {
           state.tokenize.pop();
@@ -167,7 +169,7 @@ CodeMirror.defineMode("ruby", function(config) {
   }
   function tokenBaseOnce() {
     var alreadyCalled = false;
-    return function(stream, state) {
+    return (stream, state) => {
       if (alreadyCalled) {
         state.tokenize.pop();
         return state.tokenize[state.tokenize.length-1](stream, state);
@@ -177,8 +179,9 @@ CodeMirror.defineMode("ruby", function(config) {
     };
   }
   function readQuoted(quote, style, embed, unescaped) {
-    return function(stream, state) {
-      var escaped = false, ch;
+    return (stream, state) => {
+      var escaped = false;
+      var ch;
 
       if (state.context.type === 'read-quoted-paused') {
         state.context = state.context.prev;
@@ -208,7 +211,7 @@ CodeMirror.defineMode("ruby", function(config) {
     };
   }
   function readHereDoc(phrase) {
-    return function(stream, state) {
+    return (stream, state) => {
       if (stream.match(phrase)) state.tokenize.pop();
       else stream.skipToEnd();
       return "string";
@@ -222,7 +225,7 @@ CodeMirror.defineMode("ruby", function(config) {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {tokenize: [tokenBase],
               indented: 0,
               context: {type: "top", indented: -config.indentUnit},
@@ -231,9 +234,10 @@ CodeMirror.defineMode("ruby", function(config) {
               varList: false};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.sol()) state.indented = stream.indentation();
-      var style = state.tokenize[state.tokenize.length-1](stream, state), kwtype;
+      var style = state.tokenize[state.tokenize.length-1](stream, state);
+      var kwtype;
       var thisTok = curPunc;
       if (style == "ident") {
         var word = stream.current();
@@ -265,7 +269,7 @@ CodeMirror.defineMode("ruby", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       if (state.tokenize[state.tokenize.length-1] != tokenBase) return 0;
       var firstChar = textAfter && textAfter.charAt(0);
       var ct = state.context;

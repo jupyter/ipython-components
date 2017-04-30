@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
+CodeMirror.registerHelper("fold", "markdown", (cm, start) => {
   var maxDepth = 100;
 
   function isHeader(lineNo) {
@@ -27,12 +27,14 @@ CodeMirror.registerHelper("fold", "markdown", function(cm, start) {
     return maxDepth;
   }
 
-  var firstLine = cm.getLine(start.line), nextLine = cm.getLine(start.line + 1);
+  var firstLine = cm.getLine(start.line);
+  var nextLine = cm.getLine(start.line + 1);
   var level = headerLevel(start.line, firstLine, nextLine);
   if (level === maxDepth) return undefined;
 
   var lastLineNo = cm.lastLine();
-  var end = start.line, nextNextLine = cm.getLine(end + 2);
+  var end = start.line;
+  var nextNextLine = cm.getLine(end + 2);
   while (end < lastLineNo) {
     if (headerLevel(end + 1, nextLine, nextNextLine) <= level) break;
     ++end;

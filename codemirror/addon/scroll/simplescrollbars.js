@@ -1,14 +1,14 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   function Bar(cls, orientation, scroll) {
@@ -22,11 +22,12 @@
     this.inner = this.node.appendChild(document.createElement("div"));
 
     var self = this;
-    CodeMirror.on(this.inner, "mousedown", function(e) {
+    CodeMirror.on(this.inner, "mousedown", e => {
       if (e.which != 1) return;
       CodeMirror.e_preventDefault(e);
       var axis = self.orientation == "horizontal" ? "pageX" : "pageY";
-      var start = e[axis], startpos = self.pos;
+      var start = e[axis];
+      var startpos = self.pos;
       function done() {
         CodeMirror.off(document, "mousemove", move);
         CodeMirror.off(document, "mouseup", done);
@@ -39,9 +40,10 @@
       CodeMirror.on(document, "mouseup", done);
     });
 
-    CodeMirror.on(this.node, "click", function(e) {
+    CodeMirror.on(this.node, "click", e => {
       CodeMirror.e_preventDefault(e);
-      var innerBox = self.inner.getBoundingClientRect(), where;
+      var innerBox = self.inner.getBoundingClientRect();
+      var where;
       if (self.orientation == "horizontal")
         where = e.clientX < innerBox.left ? -1 : e.clientX > innerBox.right ? 1 : 0;
       else
@@ -132,10 +134,6 @@
     parent.removeChild(this.vert.node);
   };
 
-  CodeMirror.scrollbarModel.simple = function(place, scroll) {
-    return new SimpleScrollbars("CodeMirror-simplescroll", place, scroll);
-  };
-  CodeMirror.scrollbarModel.overlay = function(place, scroll) {
-    return new SimpleScrollbars("CodeMirror-overlayscroll", place, scroll);
-  };
+  CodeMirror.scrollbarModel.simple = (place, scroll) => new SimpleScrollbars("CodeMirror-simplescroll", place, scroll);
+  CodeMirror.scrollbarModel.overlay = (place, scroll) => new SimpleScrollbars("CodeMirror-overlayscroll", place, scroll);
 });

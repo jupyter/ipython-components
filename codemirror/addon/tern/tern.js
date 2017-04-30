@@ -43,14 +43,14 @@
 //   load. Or, if you minified those into a single script and included
 //   them in the workerScript, simply leave this undefined.
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
   // declare global: tern
 
@@ -63,32 +63,32 @@
       this.server = new WorkerServer(this);
     } else {
       this.server = new tern.Server({
-        getFile: function(name, c) { return getFile(self, name, c); },
+        getFile(name, c) { return getFile(self, name, c); },
         async: true,
         defs: this.options.defs || [],
-        plugins: plugins
+        plugins
       });
     }
     this.docs = Object.create(null);
-    this.trackChange = function(doc, change) { trackChange(self, doc, change); };
+    this.trackChange = (doc, change) => { trackChange(self, doc, change); };
 
     this.cachedArgHints = null;
     this.activeArgHints = null;
     this.jumpStack = [];
 
-    this.getHint = function(cm, c) { return hint(self, cm, c); };
+    this.getHint = (cm, c) => hint(self, cm, c);
     this.getHint.async = true;
   };
 
   CodeMirror.TernServer.prototype = {
-    addDoc: function(name, doc) {
-      var data = {doc: doc, name: name, changed: null};
+    addDoc(name, doc) {
+      var data = {doc, name, changed: null};
       this.server.addFile(name, docValue(this, data));
       CodeMirror.on(doc, "change", this.trackChange);
       return this.docs[name] = data;
     },
 
-    delDoc: function(id) {
+    delDoc(id) {
       var found = resolveDoc(this, id);
       if (!found) return;
       CodeMirror.off(found.doc, "change", this.trackChange);
@@ -96,43 +96,43 @@
       this.server.delFile(found.name);
     },
 
-    hideDoc: function(id) {
+    hideDoc(id) {
       closeArgHints(this);
       var found = resolveDoc(this, id);
       if (found && found.changed) sendDoc(this, found);
     },
 
-    complete: function(cm) {
+    complete(cm) {
       cm.showHint({hint: this.getHint});
     },
 
-    showType: function(cm, pos, c) { showContextInfo(this, cm, pos, "type", c); },
+    showType(cm, pos, c) { showContextInfo(this, cm, pos, "type", c); },
 
-    showDocs: function(cm, pos, c) { showContextInfo(this, cm, pos, "documentation", c); },
+    showDocs(cm, pos, c) { showContextInfo(this, cm, pos, "documentation", c); },
 
-    updateArgHints: function(cm) { updateArgHints(this, cm); },
+    updateArgHints(cm) { updateArgHints(this, cm); },
 
-    jumpToDef: function(cm) { jumpToDef(this, cm); },
+    jumpToDef(cm) { jumpToDef(this, cm); },
 
-    jumpBack: function(cm) { jumpBack(this, cm); },
+    jumpBack(cm) { jumpBack(this, cm); },
 
-    rename: function(cm) { rename(this, cm); },
+    rename(cm) { rename(this, cm); },
 
-    selectName: function(cm) { selectName(this, cm); },
+    selectName(cm) { selectName(this, cm); },
 
-    request: function (cm, query, c, pos) {
+    request(cm, query, c, pos) {
       var self = this;
       var doc = findDoc(this, cm.getDoc());
       var request = buildRequest(this, doc, query, pos);
 
-      this.server.request(request, function (error, data) {
+      this.server.request(request, (error, data) => {
         if (!error && self.options.responseFilter)
           data = self.options.responseFilter(doc, query, request, error, data);
         c(error, data);
       });
     },
 
-    destroy: function () {
+    destroy() {
       if (this.worker) {
         this.worker.terminate();
         this.worker = null;
@@ -187,13 +187,13 @@
     if (end >= changed.to) changed.to = end + 1;
     if (changed.from > change.from.line) changed.from = change.from.line;
 
-    if (doc.lineCount() > bigDoc && change.to - changed.from > 100) setTimeout(function() {
+    if (doc.lineCount() > bigDoc && change.to - changed.from > 100) setTimeout(() => {
       if (data.changed && data.changed.to - data.changed.from > 100) sendDoc(ts, data);
     }, 200);
   }
 
   function sendDoc(ts, doc) {
-    ts.server.request({files: [{type: "full", name: doc.name, text: docValue(ts, doc)}]}, function(error) {
+    ts.server.request({files: [{type: "full", name: doc.name, text: docValue(ts, doc)}]}, error => {
       if (error) window.console.error(error);
       else doc.changed = null;
     });
@@ -202,28 +202,31 @@
   // Completion
 
   function hint(ts, cm, c) {
-    ts.request(cm, {type: "completions", types: true, docs: true, urls: true}, function(error, data) {
+    ts.request(cm, {type: "completions", types: true, docs: true, urls: true}, (error, data) => {
       if (error) return showError(ts, cm, error);
-      var completions = [], after = "";
-      var from = data.start, to = data.end;
+      var completions = [];
+      var after = "";
+      var from = data.start;
+      var to = data.end;
       if (cm.getRange(Pos(from.line, from.ch - 2), from) == "[\"" &&
           cm.getRange(to, Pos(to.line, to.ch + 2)) != "\"]")
         after = "\"]";
 
       for (var i = 0; i < data.completions.length; ++i) {
-        var completion = data.completions[i], className = typeToIcon(completion.type);
+        var completion = data.completions[i];
+        var className = typeToIcon(completion.type);
         if (data.guess) className += " " + cls + "guess";
         completions.push({text: completion.name + after,
                           displayText: completion.name,
-                          className: className,
+                          className,
                           data: completion});
       }
 
-      var obj = {from: from, to: to, list: completions};
+      var obj = {from, to, list: completions};
       var tooltip = null;
-      CodeMirror.on(obj, "close", function() { remove(tooltip); });
-      CodeMirror.on(obj, "update", function() { remove(tooltip); });
-      CodeMirror.on(obj, "select", function(cur, node) {
+      CodeMirror.on(obj, "close", () => { remove(tooltip); });
+      CodeMirror.on(obj, "update", () => { remove(tooltip); });
+      CodeMirror.on(obj, "select", (cur, node) => {
         remove(tooltip);
         var content = ts.options.completionTip ? ts.options.completionTip(cur.data) : cur.data.doc;
         if (content) {
@@ -249,7 +252,7 @@
   // Type queries
 
   function showContextInfo(ts, cm, pos, queryName, c) {
-    ts.request(cm, queryName, function(error, data) {
+    ts.request(cm, queryName, (error, data) => {
       if (error) return showError(ts, cm, error);
       if (ts.options.typeTip) {
         var tip = ts.options.typeTip(data);
@@ -281,9 +284,12 @@
     var lex = inner.state.lexical;
     if (lex.info != "call") return;
 
-    var ch, argPos = lex.pos || 0, tabSize = cm.getOption("tabSize");
+    var ch;
+    var argPos = lex.pos || 0;
+    var tabSize = cm.getOption("tabSize");
     for (var line = cm.getCursor().line, e = Math.max(0, line - 9), found = false; line >= e; --line) {
-      var str = cm.getLine(line), extra = 0;
+      var str = cm.getLine(line);
+      var extra = 0;
       for (var pos = 0;;) {
         var tab = str.indexOf("\t", pos);
         if (tab == -1) break;
@@ -300,7 +306,7 @@
     if (cache && cache.doc == cm.getDoc() && cmpPos(start, cache.start) == 0)
       return showArgHints(ts, cm, argPos);
 
-    ts.request(cm, {type: "type", preferFunction: true, end: start}, function(error, data) {
+    ts.request(cm, {type: "type", preferFunction: true, end: start}, (error, data) => {
       if (error || !data.type || !(/^fn\(/).test(data.type)) return;
       ts.cachedArgHints = {
         start: pos,
@@ -316,7 +322,8 @@
   function showArgHints(ts, cm, pos) {
     closeArgHints(ts);
 
-    var cache = ts.cachedArgHints, tp = cache.type;
+    var cache = ts.cachedArgHints;
+    var tp = cache.type;
     var tip = elt("span", cache.guess ? cls + "fhint-guess" : null,
                   elt("span", cls + "fname", cache.name), "(");
     for (var i = 0; i < tp.args.length; ++i) {
@@ -335,10 +342,12 @@
   }
 
   function parseFnType(text) {
-    var args = [], pos = 3;
+    var args = [];
+    var pos = 3;
 
     function skipMatching(upto) {
-      var depth = 0, start = pos;
+      var depth = 0;
+      var start = pos;
       for (;;) {
         var next = text.charAt(pos);
         if (upto.test(next) && !depth) return text.slice(start, pos);
@@ -355,14 +364,14 @@
         pos += name[0].length;
         name = name[1];
       }
-      args.push({name: name, type: skipMatching(/[\),]/)});
+      args.push({name, type: skipMatching(/[\),]/)});
       if (text.charAt(pos) == ")") break;
       pos += 2;
     }
 
     var rettype = text.slice(pos).match(/^\) -> (.*)$/);
 
-    return {args: args, rettype: rettype && rettype[1]};
+    return {args, rettype: rettype && rettype[1]};
   }
 
   // Moving to the definition of something
@@ -371,12 +380,13 @@
     function inner(varName) {
       var req = {type: "definition", variable: varName || null};
       var doc = findDoc(ts, cm.getDoc());
-      ts.server.request(buildRequest(ts, doc, req), function(error, data) {
+      ts.server.request(buildRequest(ts, doc, req), (error, data) => {
         if (error) return showError(ts, cm, error);
         if (!data.file && data.url) { window.open(data.url); return; }
 
         if (data.file) {
-          var localDoc = ts.docs[data.file], found;
+          var localDoc = ts.docs[data.file];
+          var found;
           if (localDoc && (found = findContext(localDoc.doc, data))) {
             ts.jumpStack.push({file: doc.name,
                                start: cm.getCursor("from"),
@@ -390,13 +400,14 @@
     }
 
     if (!atInterestingExpression(cm))
-      dialog(cm, "Jump to variable", function(name) { if (name) inner(name); });
+      dialog(cm, "Jump to variable", name => { if (name) inner(name); });
     else
       inner();
   }
 
   function jumpBack(ts, cm) {
-    var pos = ts.jumpStack.pop(), doc = pos && ts.docs[pos.file];
+    var pos = ts.jumpStack.pop();
+    var doc = pos && ts.docs[pos.file];
     if (!doc) return;
     moveTo(ts, findDoc(ts, cm.getDoc()), doc, pos.start, pos.end);
   }
@@ -421,9 +432,11 @@
     if (text.slice(0, data.context.length) == data.context) return data;
 
     var cursor = doc.getSearchCursor(data.context, 0, false);
-    var nearest, nearestDist = Infinity;
+    var nearest;
+    var nearestDist = Infinity;
     while (cursor.findNext()) {
-      var from = cursor.from(), dist = Math.abs(from.line - start.line) * 10000;
+      var from = cursor.from();
+      var dist = Math.abs(from.line - start.line) * 10000;
       if (!dist) dist = Math.abs(from.ch - start.ch);
       if (dist < nearestDist) { nearest = from; nearestDist = dist; }
     }
@@ -437,11 +450,12 @@
       var end = Pos(nearest.line, nearest.ch + (data.end.ch - data.start.ch));
     else
       var end = Pos(nearest.line + (data.end.line - data.start.line), data.end.ch);
-    return {start: nearest, end: end};
+    return {start: nearest, end};
   }
 
   function atInterestingExpression(cm) {
-    var pos = cm.getCursor("end"), tok = cm.getTokenAt(pos);
+    var pos = cm.getCursor("end");
+    var tok = cm.getTokenAt(pos);
     if (tok.start < pos.ch && (tok.type == "comment" || tok.type == "string")) return false;
     return /\w/.test(cm.getLine(pos.line).slice(Math.max(pos.ch - 1, 0), pos.ch + 1));
   }
@@ -451,8 +465,8 @@
   function rename(ts, cm) {
     var token = cm.getTokenAt(cm.getCursor());
     if (!/\w/.test(token.string)) return showError(ts, cm, "Not at a variable");
-    dialog(cm, "New name for " + token.string, function(newName) {
-      ts.request(cm, {type: "rename", newName: newName, fullDocs: true}, function(error, data) {
+    dialog(cm, "New name for " + token.string, newName => {
+      ts.request(cm, {type: "rename", newName, fullDocs: true}, (error, data) => {
         if (error) return showError(ts, cm, error);
         applyChanges(ts, data.changes);
       });
@@ -461,9 +475,10 @@
 
   function selectName(ts, cm) {
     var name = findDoc(ts, cm.doc).name;
-    ts.request(cm, {type: "refs"}, function(error, data) {
+    ts.request(cm, {type: "refs"}, (error, data) => {
       if (error) return showError(ts, cm, error);
-      var ranges = [], cur = 0;
+      var ranges = [];
+      var cur = 0;
       for (var i = 0; i < data.refs.length; i++) {
         var ref = data.refs[i];
         if (ref.file == name) {
@@ -484,9 +499,10 @@
       (perFile[ch.file] || (perFile[ch.file] = [])).push(ch);
     }
     for (var file in perFile) {
-      var known = ts.docs[file], chs = perFile[file];;
+      var known = ts.docs[file];
+      var chs = perFile[file];
       if (!known) continue;
-      chs.sort(function(a, b) { return cmpPos(b.start, a.start); });
+      chs.sort((a, b) => cmpPos(b.start, a.start));
       var origin = "*rename" + (++nextChangeOrig);
       for (var i = 0; i < chs.length; ++i) {
         var ch = chs[i];
@@ -498,7 +514,9 @@
   // Generic request-building helper
 
   function buildRequest(ts, doc, query, pos) {
-    var files = [], offsetLines = 0, allowFragments = !query.fullDocs;
+    var files = [];
+    var offsetLines = 0;
+    var allowFragments = !query.fullDocs;
     if (!allowFragments) delete query.fullDocs;
     if (typeof query == "string") query = {type: query};
     query.lineCharPositions = true;
@@ -536,14 +554,18 @@
       }
     }
 
-    return {query: query, files: files};
+    return {query, files};
   }
 
   function getFragmentAround(data, start, end) {
     var doc = data.doc;
-    var minIndent = null, minLine = null, endLine, tabSize = 4;
+    var minIndent = null;
+    var minLine = null;
+    var endLine;
+    var tabSize = 4;
     for (var p = start.line - 1, min = Math.max(0, p - 50); p >= min; --p) {
-      var line = doc.getLine(p), fn = line.search(/\bfunction\b/);
+      var line = doc.getLine(p);
+      var fn = line.search(/\bfunction\b/);
       if (fn < 0) continue;
       var indent = CodeMirror.countColumn(line, null, tabSize);
       if (minIndent != null && minIndent <= indent) continue;
@@ -606,9 +628,10 @@
       cm.off('scroll', clear);
       fadeOut(tip);
     }
-    var mouseOnTip = false, old = false;
-    CodeMirror.on(tip, "mousemove", function() { mouseOnTip = true; });
-    CodeMirror.on(tip, "mouseout", function(e) {
+    var mouseOnTip = false;
+    var old = false;
+    CodeMirror.on(tip, "mousemove", () => { mouseOnTip = true; });
+    CodeMirror.on(tip, "mouseout", e => {
       if (!CodeMirror.contains(tip, e.relatedTarget || e.toElement)) {
         if (old) clear();
         else mouseOnTip = false;
@@ -635,7 +658,7 @@
 
   function fadeOut(tooltip) {
     tooltip.style.opacity = "0";
-    setTimeout(function() { remove(tooltip); }, 1100);
+    setTimeout(() => { remove(tooltip); }, 1100);
   }
 
   function showError(ts, cm, msg) {
@@ -663,7 +686,8 @@
                         defs: ts.options.defs,
                         plugins: ts.options.plugins,
                         scripts: ts.options.workerDeps});
-    var msgId = 0, pending = {};
+    var msgId = 0;
+    var pending = {};
 
     function send(data, c) {
       if (c) {
@@ -672,11 +696,11 @@
       }
       worker.postMessage(data);
     }
-    worker.onmessage = function(e) {
+    worker.onmessage = e => {
       var data = e.data;
       if (data.type == "getFile") {
-        getFile(ts, data.name, function(err, text) {
-          send({type: "getFile", err: String(err), text: text, id: data.id});
+        getFile(ts, data.name, (err, text) => {
+          send({type: "getFile", err: String(err), text, id: data.id});
         });
       } else if (data.type == "debug") {
         window.console.log(data.message);
@@ -685,13 +709,13 @@
         delete pending[data.id];
       }
     };
-    worker.onerror = function(e) {
+    worker.onerror = e => {
       for (var id in pending) pending[id](e);
       pending = {};
     };
 
-    this.addFile = function(name, text) { send({type: "add", name: name, text: text}); };
-    this.delFile = function(name) { send({type: "del", name: name}); };
-    this.request = function(body, c) { send({type: "req", body: body}, c); };
+    this.addFile = (name, text) => { send({type: "add", name, text}); };
+    this.delFile = name => { send({type: "del", name}); };
+    this.request = (body, c) => { send({type: "req", body}, c); };
   }
 });

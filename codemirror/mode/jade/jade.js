@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../javascript/javascript"), require("../css/css"), require("../htmlmixed/htmlmixed"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../javascript/javascript", "../css/css", "../htmlmixed/htmlmixed"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode('jade', function (config) {
+CodeMirror.defineMode('jade', config => {
   // token types
   var KEYWORD = 'keyword';
   var DOCTYPE = 'meta';
@@ -494,9 +494,7 @@ CodeMirror.defineMode('jade', function (config) {
         if (!state.innerState) {
           state.innerState = state.innerMode.startState ? state.innerMode.startState(stream.indentation()) : {};
         }
-        return stream.hideFirstChars(state.indentOf + 2, function () {
-          return state.innerMode.token(stream, state.innerState) || true;
-        });
+        return stream.hideFirstChars(state.indentOf + 2, () => state.innerMode.token(stream, state.innerState) || true);
       } else {
         stream.skipToEnd();
         return state.indentToken;
@@ -579,8 +577,8 @@ CodeMirror.defineMode('jade', function (config) {
     return tok === true ? null : tok;
   }
   return {
-    startState: startState,
-    copyState: copyState,
+    startState,
+    copyState,
     token: nextToken
   };
 });

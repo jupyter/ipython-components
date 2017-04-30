@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("eiffel", function() {
+CodeMirror.defineMode("eiffel", () => {
   function wordObj(words) {
     var o = {};
     for (var i = 0, e = words.length; i < e; ++i) o[words[i]] = true;
@@ -119,8 +119,9 @@ CodeMirror.defineMode("eiffel", function() {
   }
 
   function readQuoted(quote, style,  unescaped) {
-    return function(stream, state) {
-      var escaped = false, ch;
+    return (stream, state) => {
+      var escaped = false;
+      var ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && (unescaped || !escaped)) {
           state.tokenize.pop();
@@ -133,11 +134,11 @@ CodeMirror.defineMode("eiffel", function() {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {tokenize: [tokenBase]};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       var style = state.tokenize[state.tokenize.length-1](stream, state);
       if (style == "ident") {
         var word = stream.current();

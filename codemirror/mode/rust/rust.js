@@ -1,18 +1,19 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("rust", function() {
-  var indentUnit = 4, altIndentUnit = 2;
+CodeMirror.defineMode("rust", () => {
+  var indentUnit = 4;
+  var altIndentUnit = 2;
   var valKeywords = {
     "if": "if-style", "while": "if-style", "loop": "else-style", "else": "else-style",
     "do": "else-style", "ret": "else-style", "fail": "else-style",
@@ -24,19 +25,21 @@ CodeMirror.defineMode("rust", function() {
     "export": "else-style", "copy": "op", "log": "op", "log_err": "op",
     "use": "op", "bind": "op", "self": "atom", "struct": "enum"
   };
-  var typeKeywords = function() {
+  var typeKeywords = (() => {
     var keywords = {"fn": "fn", "block": "fn", "obj": "obj"};
     var atoms = "bool uint int i8 i16 i32 i64 u8 u16 u32 u64 float f32 f64 str char".split(" ");
     for (var i = 0, e = atoms.length; i < e; ++i) keywords[atoms[i]] = "atom";
     return keywords;
-  }();
+  })();
   var operatorChar = /[+\-*&%=<>!?|\.@]/;
 
   // Tokenizer
 
   // Used as scratch variable to communicate multiple values without
   // consing up tons of objects.
-  var tcat, content;
+  var tcat;
+
+  var content;
   function r(tc, style) {
     tcat = tc;
     return style;
@@ -102,7 +105,8 @@ CodeMirror.defineMode("rust", function() {
   }
 
   function tokenString(stream, state) {
-    var ch, escaped = false;
+    var ch;
+    var escaped = false;
     while (ch = stream.next()) {
       if (ch == '"' && !escaped) {
         state.tokenize = tokenBase;
@@ -116,8 +120,9 @@ CodeMirror.defineMode("rust", function() {
   }
 
   function tokenComment(depth) {
-    return function(stream, state) {
-      var lastCh = null, ch;
+    return (stream, state) => {
+      var lastCh = null;
+      var ch;
       while (ch = stream.next()) {
         if (ch == "/" && lastCh == "*") {
           if (depth == 1) {
@@ -141,19 +146,19 @@ CodeMirror.defineMode("rust", function() {
   // Parser
 
   var cx = {state: null, stream: null, marked: null, cc: null};
-  function pass() {
-    for (var i = arguments.length - 1; i >= 0; i--) cx.cc.push(arguments[i]);
+  function pass(...args) {
+    for (var i = args.length - 1; i >= 0; i--) cx.cc.push(args[i]);
   }
-  function cont() {
-    pass.apply(null, arguments);
+  function cont(...args) {
+    pass(...args);
     return true;
   }
 
   function pushlex(type, info) {
-    var result = function() {
+    var result = () => {
       var state = cx.state;
       state.lexical = {indented: state.indented, column: cx.stream.column(),
-                       type: type, prev: state.lexical, info: info};
+                       type, prev: state.lexical, info};
     };
     result.lex = true;
     return result;
@@ -176,7 +181,7 @@ CodeMirror.defineMode("rust", function() {
       if (type == end) return cont();
       return cont(more);
     }
-    return function(type) {
+    return type => {
       if (type == end) return cont();
       return pass(comb, more);
     };
@@ -402,7 +407,7 @@ CodeMirror.defineMode("rust", function() {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {
         tokenize: tokenBase,
         cc: [],
@@ -412,7 +417,7 @@ CodeMirror.defineMode("rust", function() {
       };
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.sol()) {
         if (!state.lexical.hasOwnProperty("align"))
           state.lexical.align = false;
@@ -429,10 +434,12 @@ CodeMirror.defineMode("rust", function() {
       return parse(state, stream, style);
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       if (state.tokenize != tokenBase) return 0;
-      var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical,
-          type = lexical.type, closing = firstChar == type;
+      var firstChar = textAfter && textAfter.charAt(0);
+      var lexical = state.lexical;
+      var type = lexical.type;
+      var closing = firstChar == type;
       if (type == "stat") return lexical.indented + indentUnit;
       if (lexical.align) return lexical.column + (closing ? 0 : 1);
       return lexical.indented + (closing ? 0 : (lexical.info == "alt" ? altIndentUnit : indentUnit));

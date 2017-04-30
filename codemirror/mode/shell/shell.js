@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode('shell', function() {
+CodeMirror.defineMode('shell', () => {
 
   var words = {};
   function define(style, string) {
@@ -82,8 +82,10 @@ CodeMirror.defineMode('shell', function() {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
-      var next, end = false, escaped = false;
+    return (stream, state) => {
+      var next;
+      var end = false;
+      var escaped = false;
       while ((next = stream.next()) != null) {
         if (next === quote && !escaped) {
           end = true;
@@ -104,9 +106,10 @@ CodeMirror.defineMode('shell', function() {
     };
   };
 
-  var tokenDollar = function(stream, state) {
+  var tokenDollar = (stream, state) => {
     if (state.tokens.length > 1) stream.eat('$');
-    var ch = stream.next(), hungry = /\w/;
+    var ch = stream.next();
+    var hungry = /\w/;
     if (ch === '{') hungry = /[^}]/;
     if (ch === '(') {
       state.tokens[0] = tokenString(')');
@@ -125,8 +128,8 @@ CodeMirror.defineMode('shell', function() {
   };
 
   return {
-    startState: function() {return {tokens:[]};},
-    token: function(stream, state) {
+    startState() {return {tokens:[]};},
+    token(stream, state) {
       return tokenize(stream, state);
     },
     lineComment: '#',

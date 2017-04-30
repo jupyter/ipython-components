@@ -1,21 +1,21 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../htmlmixed/htmlmixed"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
   var indentingTags = ["template", "literal", "msg", "fallbackmsg", "let", "if", "elseif",
                        "else", "switch", "case", "default", "foreach", "ifempty", "for",
                        "call", "param", "deltemplate", "delcall", "log"];
 
-  CodeMirror.defineMode("soy", function(config) {
+  CodeMirror.defineMode("soy", config => {
     var textMode = CodeMirror.getMode(config, "text/plain");
     var modes = {
       html: CodeMirror.getMode(config, {name: "text/html", multilineTagIndentFactor: 2, multilineTagIndentPastTag: false}),
@@ -38,15 +38,13 @@
         // This uses an undocumented API.
         stream.string = oldString.substr(0, stream.pos + match.index);
       }
-      var result = stream.hideFirstChars(state.indent, function() {
-        return state.localMode.token(stream, state.localState);
-      });
+      var result = stream.hideFirstChars(state.indent, () => state.localMode.token(stream, state.localState));
       stream.string = oldString;
       return result;
     }
 
     return {
-      startState: function() {
+      startState() {
         return {
           kind: [],
           kindTag: [],
@@ -57,7 +55,7 @@
         };
       },
 
-      copyState: function(state) {
+      copyState(state) {
         return {
           tag: state.tag, // Last seen Soy tag.
           kind: state.kind.concat([]), // Values of kind="" attributes.
@@ -69,7 +67,7 @@
         };
       },
 
-      token: function(stream, state) {
+      token(stream, state) {
         var match;
 
         switch (last(state.soyState)) {
@@ -160,8 +158,9 @@
         return tokenUntil(stream, state, /\{|\s+\/\/|\/\*/);
       },
 
-      indent: function(state, textAfter) {
-        var indent = state.indent, top = last(state.soyState);
+      indent(state, textAfter) {
+        var indent = state.indent;
+        var top = last(state.soyState);
         if (top == "comment") return CodeMirror.Pass;
 
         if (top == "literal") {
@@ -177,7 +176,7 @@
         return indent;
       },
 
-      innerMode: function(state) {
+      innerMode(state) {
         if (state.soyState.length && last(state.soyState) != "literal") return null;
         else return {state: state.localState, mode: state.localMode};
       },

@@ -12,17 +12,17 @@ E.G.:
       });
 */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("vbscript", function(conf, parserConf) {
+CodeMirror.defineMode("vbscript", (conf, parserConf) => {
     var ERRORCLASS = 'error';
 
     function wordRegexp(words) {
@@ -260,7 +260,7 @@ CodeMirror.defineMode("vbscript", function(conf, parserConf) {
         var singleline = delimiter.length == 1;
         var OUTCLASS = 'string';
 
-        return function(stream, state) {
+        return (stream, state) => {
             while (!stream.eol()) {
                 stream.eatWhile(/[^'"]/);
                 if (stream.match(delimiter)) {
@@ -306,7 +306,7 @@ CodeMirror.defineMode("vbscript", function(conf, parserConf) {
 
     var external = {
         electricChars:"dDpPtTfFeE ",
-        startState: function() {
+        startState() {
             return {
               tokenize: tokenBase,
               lastToken: null,
@@ -319,7 +319,7 @@ CodeMirror.defineMode("vbscript", function(conf, parserConf) {
           };
         },
 
-        token: function(stream, state) {
+        token(stream, state) {
             if (stream.sol()) {
               state.currentIndent += state.nextLineIndent;
               state.nextLineIndent = 0;
@@ -327,14 +327,14 @@ CodeMirror.defineMode("vbscript", function(conf, parserConf) {
             }
             var style = tokenLexer(stream, state);
 
-            state.lastToken = {style:style, content: stream.current()};
+            state.lastToken = {style, content: stream.current()};
 
             if (style==='space') style=null;
 
             return style;
         },
 
-        indent: function(state, textAfter) {
+        indent(state, textAfter) {
             var trueText = textAfter.replace(/^\s+|\s+$/g, '') ;
             if (trueText.match(closing) || trueText.match(doubleClosing) || trueText.match(middle)) return conf.indentUnit*(state.currentIndent-1);
             if(state.currentIndent < 0) return 0;

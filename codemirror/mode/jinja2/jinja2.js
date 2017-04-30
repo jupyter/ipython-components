@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
   "use strict";
 
-  CodeMirror.defineMode("jinja2", function() {
+  CodeMirror.defineMode("jinja2", () => {
     var keywords = ["and", "as", "block", "endblock", "by", "cycle", "debug", "else", "elif",
       "extends", "filter", "endfilter", "firstof", "for",
       "endfor", "if", "endif", "ifchanged", "endifchanged",
@@ -24,11 +24,12 @@
       "closecomment", "widthratio", "url", "with", "endwith",
       "get_current_language", "trans", "endtrans", "noop", "blocktrans",
       "endblocktrans", "get_available_languages",
-      "get_current_language_bidi", "plural"],
-    operator = /^[+\-*&%=<>!?|~^]/,
-    sign = /^[:\[\(\{]/,
-    atom = ["true", "false"],
-    number = /^(\d[+\-\*\/])?\d+(\.\d+)?/;
+      "get_current_language_bidi", "plural"];
+
+    var operator = /^[+\-*&%=<>!?|~^]/;
+    var sign = /^[:\[\(\{]/;
+    var atom = ["true", "false"];
+    var number = /^(\d[+\-\*\/])?\d+(\.\d+)?/;
 
     keywords = new RegExp("((" + keywords.join(")|(") + "))\\b");
     atom = new RegExp("((" + atom.join(")|(") + "))\\b");
@@ -128,13 +129,13 @@
         }
       }
       stream.next();
-    };
+    }
 
     return {
-      startState: function () {
+      startState() {
         return {tokenize: tokenBase};
       },
-      token: function (stream, state) {
+      token(stream, state) {
         return state.tokenize(stream, state);
       }
     };

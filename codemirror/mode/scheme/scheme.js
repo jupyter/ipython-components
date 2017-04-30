@@ -5,23 +5,28 @@
  * Author: Koh Zi Han, based on implementation by Koh Zi Chun
  */
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("scheme", function () {
-    var BUILTIN = "builtin", COMMENT = "comment", STRING = "string",
-        ATOM = "atom", NUMBER = "number", BRACKET = "bracket";
+CodeMirror.defineMode("scheme", () => {
+    var BUILTIN = "builtin";
+    var COMMENT = "comment";
+    var STRING = "string";
+    var ATOM = "atom";
+    var NUMBER = "number";
+    var BRACKET = "bracket";
     var INDENT_WORD_SKIP = 2;
 
     function makeKeywords(str) {
-        var obj = {}, words = str.split(" ");
+        var obj = {};
+        var words = str.split(" ");
         for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
         return obj;
     }
@@ -68,7 +73,7 @@ CodeMirror.defineMode("scheme", function () {
     }
 
     return {
-        startState: function () {
+        startState() {
             return {
                 indentStack: null,
                 indentation: 0,
@@ -77,7 +82,7 @@ CodeMirror.defineMode("scheme", function () {
             };
         },
 
-        token: function (stream, state) {
+        token(stream, state) {
             if (state.indentStack == null && stream.sol()) {
                 // update indentation, but only if indentStack is empty
                 state.indentation = stream.indentation();
@@ -90,8 +95,10 @@ CodeMirror.defineMode("scheme", function () {
             var returnType = null;
 
             switch(state.mode){
-                case "string": // multi-line string parsing mode
-                    var next, escaped = false;
+                case // multi-line string parsing mode
+                "string":
+                    var next;
+                    var escaped = false;
                     while ((next = stream.next()) != null) {
                         if (next == "\"" && !escaped) {
 
@@ -102,8 +109,10 @@ CodeMirror.defineMode("scheme", function () {
                     }
                     returnType = STRING; // continue on in scheme-string mode
                     break;
-                case "comment": // comment parsing mode
-                    var next, maybeEnd = false;
+                case // comment parsing mode
+                "comment":
+                    var next;
+                    var maybeEnd = false;
                     while ((next = stream.next()) != null) {
                         if (next == "#" && maybeEnd) {
 
@@ -144,7 +153,9 @@ CodeMirror.defineMode("scheme", function () {
                             state.mode = "s-expr-comment";
                             returnType = COMMENT;
                         } else {
-                            var numTest = null, hasExactness = false, hasRadix = true;
+                            var numTest = null;
+                            var hasExactness = false;
+                            var hasRadix = true;
                             if (stream.eat(/[ei]/i)) {
                                 hasExactness = true;
                             } else {
@@ -180,7 +191,9 @@ CodeMirror.defineMode("scheme", function () {
                         stream.skipToEnd(); // rest of the line is a comment
                         returnType = COMMENT;
                     } else if (ch == "(" || ch == "[") {
-                      var keyWord = ''; var indentTemp = stream.column(), letter;
+                        var keyWord = '';
+                        var indentTemp = stream.column();
+                        var letter;
                         /**
                         Either
                         (indent-word ..
@@ -234,7 +247,7 @@ CodeMirror.defineMode("scheme", function () {
             return (typeof state.sExprComment == "number") ? COMMENT : returnType;
         },
 
-        indent: function (state) {
+        indent(state) {
             if (state.indentStack == null) return state.indentation;
             return state.indentStack.indent;
         },

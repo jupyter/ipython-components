@@ -1,23 +1,23 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("rpm-changes", function() {
+CodeMirror.defineMode("rpm-changes", () => {
   var headerSeperator = /^-+$/;
   var headerLine = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)  ?\d{1,2} \d{2}:\d{2}(:\d{2})? [A-Z]{3,4} \d{4} - /;
   var simpleEmail = /^[\w+.-]+@[\w.-]+/;
 
   return {
-    token: function(stream) {
+    token(stream) {
       if (stream.sol()) {
         if (stream.match(headerSeperator)) { return 'tag'; }
         if (stream.match(headerLine)) { return 'tag'; }
@@ -33,7 +33,7 @@ CodeMirror.defineMIME("text/x-rpm-changes", "rpm-changes");
 
 // Quick and dirty spec file highlighting
 
-CodeMirror.defineMode("rpm-spec", function() {
+CodeMirror.defineMode("rpm-spec", () => {
   var arch = /^(i386|i586|i686|x86_64|ppc64|ppc|ia64|s390x|s390|sparc64|sparcv9|sparc|noarch|alphaev6|alpha|hppa|mipsel)/;
 
   var preamble = /^(Name|Version|Release|License|Summary|Url|Group|Source|BuildArch|BuildRequires|BuildRoot|AutoReqProv|Provides|Requires(\(\w+\))?|Obsoletes|Conflicts|Recommends|Source\d*|Patch\d*|ExclusiveArch|NoSource|Supplements):/;
@@ -43,14 +43,14 @@ CodeMirror.defineMode("rpm-spec", function() {
   var operators = /^(\!|\?|\<\=|\<|\>\=|\>|\=\=|\&\&|\|\|)/; // operators in control flow macros
 
   return {
-    startState: function () {
+    startState() {
         return {
           controlFlow: false,
           macroParameters: false,
           section: false
         };
     },
-    token: function (stream, state) {
+    token(stream, state) {
       var ch = stream.peek();
       if (ch == "#") { stream.skipToEnd(); return "comment"; }
 

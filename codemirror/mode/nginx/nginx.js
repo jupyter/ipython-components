@@ -1,20 +1,20 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("nginx", function(config) {
-
+CodeMirror.defineMode("nginx", config => {
   function words(str) {
-    var obj = {}, words = str.split(" ");
+    var obj = {};
+    var words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
@@ -32,7 +32,8 @@ CodeMirror.defineMode("nginx", function(config) {
     /* ngxDirectiveImportant */ "include root server server_name listen internal proxy_pass memcached_pass fastcgi_pass try_files"
     );
 
-  var indentUnit = config.indentUnit, type;
+  var indentUnit = config.indentUnit;
+  var type;
   function ret(style, tp) {type = tp; return style;}
 
   function tokenBase(stream, state) {
@@ -95,7 +96,8 @@ CodeMirror.defineMode("nginx", function(config) {
   }
 
   function tokenCComment(stream, state) {
-    var maybeEnd = false, ch;
+    var maybeEnd = false;
+    var ch;
     while ((ch = stream.next()) != null) {
       if (maybeEnd && ch == "/") {
         state.tokenize = tokenBase;
@@ -107,7 +109,8 @@ CodeMirror.defineMode("nginx", function(config) {
   }
 
   function tokenSGMLComment(stream, state) {
-    var dashes = 0, ch;
+    var dashes = 0;
+    var ch;
     while ((ch = stream.next()) != null) {
       if (dashes >= 2 && ch == ">") {
         state.tokenize = tokenBase;
@@ -119,8 +122,9 @@ CodeMirror.defineMode("nginx", function(config) {
   }
 
   function tokenString(quote) {
-    return function(stream, state) {
-      var escaped = false, ch;
+    return (stream, state) => {
+      var escaped = false;
+      var ch;
       while ((ch = stream.next()) != null) {
         if (ch == quote && !escaped)
           break;
@@ -132,13 +136,13 @@ CodeMirror.defineMode("nginx", function(config) {
   }
 
   return {
-    startState: function(base) {
+    startState(base) {
       return {tokenize: tokenBase,
               baseIndent: base || 0,
               stack: []};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (stream.eatSpace()) return null;
       type = null;
       var style = state.tokenize(stream, state);
@@ -162,7 +166,7 @@ CodeMirror.defineMode("nginx", function(config) {
       return style;
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       var n = state.stack.length;
       if (/^\}/.test(textAfter))
         n -= state.stack[state.stack.length-1] == "rule" ? 2 : 1;

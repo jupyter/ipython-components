@@ -1,24 +1,25 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../xml/xml"), require("../javascript/javascript"), require("../css/css"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../javascript/javascript", "../css/css"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
+CodeMirror.defineMode("htmlmixed", (config, parserConfig) => {
   var htmlMode = CodeMirror.getMode(config, {name: "xml",
                                              htmlMode: true,
                                              multilineTagIndentFactor: parserConfig.multilineTagIndentFactor,
                                              multilineTagIndentPastTag: parserConfig.multilineTagIndentPastTag});
   var cssMode = CodeMirror.getMode(config, "css");
 
-  var scriptTypes = [], scriptTypesConf = parserConfig && parserConfig.scriptTypes;
+  var scriptTypes = [];
+  var scriptTypesConf = parserConfig && parserConfig.scriptTypes;
   scriptTypes.push({matches: /^(?:text|application)\/(?:x-)?(?:java|ecma)script$|^$/i,
                     mode: CodeMirror.getMode(config, "javascript")});
   if (scriptTypesConf) for (var i = 0; i < scriptTypesConf.length; ++i) {
@@ -57,7 +58,8 @@ CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
   }
   function maybeBackup(stream, pat, style) {
     var cur = stream.current();
-    var close = cur.search(pat), m;
+    var close = cur.search(pat);
+    var m;
     if (close > -1) stream.backUp(cur.length - close);
     else if (m = cur.match(/<\/?$/)) {
       stream.backUp(cur.length);
@@ -85,23 +87,23 @@ CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
   }
 
   return {
-    startState: function() {
+    startState() {
       var state = htmlMode.startState();
       return {token: html, localMode: null, localState: null, htmlState: state};
     },
 
-    copyState: function(state) {
+    copyState(state) {
       if (state.localState)
         var local = CodeMirror.copyState(state.localMode, state.localState);
       return {token: state.token, localMode: state.localMode, localState: local,
               htmlState: CodeMirror.copyState(htmlMode, state.htmlState)};
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       return state.token(stream, state);
     },
 
-    indent: function(state, textAfter) {
+    indent(state, textAfter) {
       if (!state.localMode || /^\s*<\//.test(textAfter))
         return htmlMode.indent(state.htmlState, textAfter);
       else if (state.localMode.indent)
@@ -110,7 +112,7 @@ CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
         return CodeMirror.Pass;
     },
 
-    innerMode: function(state) {
+    innerMode(state) {
       return {state: state.localState || state.htmlState, mode: state.localMode || htmlMode};
     }
   };

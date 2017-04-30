@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("diff", function() {
+CodeMirror.defineMode("diff", () => {
 
   var TOKEN_NAMES = {
     '+': 'positive',
@@ -20,7 +20,7 @@ CodeMirror.defineMode("diff", function() {
   };
 
   return {
-    token: function(stream) {
+    token(stream) {
       var tw_pos = stream.string.search(/[\t ]+?$/);
 
       if (!stream.sol() || tw_pos === 0) {

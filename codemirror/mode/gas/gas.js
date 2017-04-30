@@ -1,17 +1,17 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+((mod => {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+}))(CodeMirror => {
 "use strict";
 
-CodeMirror.defineMode("gas", function(_config, parserConfig) {
+CodeMirror.defineMode("gas", (_config, parserConfig) => {
   'use strict';
 
   // If an architecture is specified, its initialization function may
@@ -216,7 +216,7 @@ CodeMirror.defineMode("gas", function(_config, parserConfig) {
     registers.r14 = registers.lr;
     registers.r15 = registers.pc;
 
-    custom.push(function(ch, stream) {
+    custom.push((ch, stream) => {
       if (ch === '#') {
         stream.eatWhile(/\w/);
         return "number";
@@ -232,7 +232,8 @@ CodeMirror.defineMode("gas", function(_config, parserConfig) {
   }
 
   function nextUntilUnescaped(stream, end) {
-    var escaped = false, next;
+    var escaped = false;
+    var next;
     while ((next = stream.next()) != null) {
       if (next === end && !escaped) {
         return false;
@@ -243,7 +244,8 @@ CodeMirror.defineMode("gas", function(_config, parserConfig) {
   }
 
   function clikeComment(stream, state) {
-    var maybeEnd = false, ch;
+    var maybeEnd = false;
+    var ch;
     while ((ch = stream.next()) != null) {
       if (ch === "/" && maybeEnd) {
         state.tokenize = null;
@@ -255,13 +257,13 @@ CodeMirror.defineMode("gas", function(_config, parserConfig) {
   }
 
   return {
-    startState: function() {
+    startState() {
       return {
         tokenize: null
       };
     },
 
-    token: function(stream, state) {
+    token(stream, state) {
       if (state.tokenize) {
         return state.tokenize(stream, state);
       }
@@ -270,7 +272,9 @@ CodeMirror.defineMode("gas", function(_config, parserConfig) {
         return null;
       }
 
-      var style, cur, ch = stream.next();
+      var style;
+      var cur;
+      var ch = stream.next();
 
       if (ch === "/") {
         if (stream.eat("*")) {
